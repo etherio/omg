@@ -1,0 +1,46 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // check user is logged in
+    function User() {
+      return  request.auth != null && request.auth.uid != null &&
+      request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    // check user is admin
+    function Admin() {
+      return Moderator() &&
+      get(/databases/$(database)/documents/private/$(request.auth.uid)).data.role.has("admin");
+    }
+
+    // check user is moderator
+    function Moderator() {
+      return exists(/databases/$(database)/documents/private/$(request.auth.uid));
+    }
+
+    // [PRIVATE]
+    match /private/{document} {
+      match /users/{userId} {
+        allow get: if User();
+        allow list: if Admin();
+        allow write: if Admin();
+      }
+    }
+
+    // [PUBLIC]
+    match /public/{document} {
+      match /{collection}/{anyPath=**} {
+        allow read: if User();
+        allow write: if Moderator() || Admin();
+      }
+    }
+
+    // [Deprecation] backward compatibility...
+    match /databases/{document} {
+      match /{anyPath=**} {
+        allow read: if User();
+        allow write: if Moderator() || Admin();
+      }
+    }
+  }
+}
