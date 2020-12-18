@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdn.etherio.net/milligram/milligram.css">
+</head>
+
+<body>
+  <div class="container">
+    <form action="/.netlify/functions/resizeImage" method="POST">
+      <label for="itemCode">Image Name</label>
+      <input type="text" name="itemCode" id="itemCode" placeholder="Item Code#" required>
+      <label for="image">Upload an image</label>
+      <input type="file" name="image" id="image" accept="image/jpg,image/jpeg,image/png" required>
+      <input type="hidden" name="data">
+      <button type="submit">Upload</button>
+    </form>
+
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Preview</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <center><code id="previewImageSize"></code>KB</center>
+            </td>
+            <td>
+              <center><code id="resultImageSize"></code>KB</center>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <center><img id="preview" src="" alt="preview" height="400px"></center>
+            </td>
+            <td>
+              </center><img id="output" src="" alt="result" height="400px"></center>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <script>
+      let preview = document.getElementById('preview')
+      let output = document.getElementById('output')
+      let form = document.querySelector('form')
+      let { itemCode, image, data } = form.elements
+
+      itemCode.onchange = () => itemCode.value = itemCode.value.toUpperCase()
+
+      image.onchange = async (event) => {
+        if (image.files.length < 1) return
+        let img = image.files[0]
+        let bin = encodeImageFileAsURL(img, data)
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault()
+        fetch(form.action, {
+          method: form.method,
+          body: JSON.stringify({
+            code: itemCode.value,
+            image: data.value,
+          })
+        })
+          .then((r) => r.text())
+          .then((r) => {
+            output.src = r.slice(1, -1)
+            document.getElementById('resultImageSize').textContent = imageSize(output.src)
+          })
+      })
+
+      function encodeImageFileAsURL(fs, dt) {
+        var fr = new FileReader()
+        fr.onload = function (fe) {
+          data.value = fe.target.result
+          preview.src = data.value
+          document.getElementById('previewImageSize').textContent = imageSize(preview.src)
+        }
+        fr.readAsDataURL(fs)
+      }
+
+      function imageSize(src) {
+        let i = src.length / 1000
+        if (i < 1000) return i.toFixed(2) + ' KB';
+        i = i / 1000
+        return i.toFixed(2) + ' MB';
+      }
+    </script>
+  </div>
+</body>
+
+</html>
