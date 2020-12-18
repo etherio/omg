@@ -53,12 +53,6 @@ import LoginPage from "./components/LoginPage.vue";
 export default {
   name: "App",
 
-  components: {
-    NavBar,
-    LoginPage,
-    AccessDenied,
-  },
-
   data: () => ({
     drawer: false,
     group: null,
@@ -67,6 +61,12 @@ export default {
       { icon: "mdi-cart", title: "Products", path: "/products" },
     ],
   }),
+
+  components: {
+    NavBar,
+    LoginPage,
+    AccessDenied,
+  },
 };
 </script>
 

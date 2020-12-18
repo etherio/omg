@@ -1,13 +1,15 @@
-import { credential } from "../firebase";
-
-let ref;
+import { auth } from "../firebase";
 
 export default class User {
-  static async canAccess(uid) {
-    if (!ref) {
-      ref = credential.doc(uid);
-      ref = await ref.get();
+  static async getRole() {
+    let user;
+    if (!(user = auth().currentUser)) {
+      return false;
     }
-    return ref.exists;
+    let customToken = await user.getIdTokenResult(true);
+    console.log(
+      `${location.protocol}//${location.host}/.netlify/functions/auth?token=${customToken.token}&role=admin`
+    );
+    return customToken.claims.role;
   }
 }

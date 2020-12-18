@@ -23,11 +23,11 @@ const store = {
 export default {
   async fetch() {
     if (!store.ref) {
-      console.log("firestore:", firestore.path);
-      store.ref = await firestore.get();
-      var { categories, colors } = store.ref.data();
-      store.colors = colors;
-      store.categories = categories;
+      store.ref = await firestore
+        .collection("meta")
+        .doc("data")
+        .get();
+      store.data = store.ref.data();
     } else {
       console.log("memory:", firestore.path);
     }

@@ -9,15 +9,17 @@ const data = {
   loaded: false,
   user: null,
   denied: null,
+  role: null,
 };
 
 app.analytics();
 
 auth().onAuthStateChanged((user) => {
   if (user) {
-    data.user = user.toJSON();
-    User.canAccess(user.uid).then((access) => {
-      data.denied = !access;
+    User.getRole().then((role) => {
+      data.role = role;
+      data.denied = !Boolean(role);
+      data.user = user.toJSON();
       data.loaded = true;
     });
   } else {

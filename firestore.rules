@@ -3,43 +3,49 @@ service cloud.firestore {
 
     // check user is logged in
     function User() {
-      return  request.auth != null && request.auth.uid != null &&
+      return request.auth != null &&
+      request.auth.uid != null &&
       request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    // check user has role
+    function hasRole() {
+      return request.auth.token != null &&
+      request.auth.token.role != null;
     }
 
     // check user is admin
     function Admin() {
-      return Moderator() &&
-      get(/databases/$(database)/documents/private/$(request.auth.uid)).data.role.has("admin");
+      return request.auth.token.role == 'admin';
     }
 
     // check user is moderator
     function Moderator() {
-      return exists(/databases/$(database)/documents/private/$(request.auth.uid));
+      return request.auth.token.role == 'moderator';
     }
 
     // [PRIVATE]
     match /private/{document} {
       match /users/{userId} {
         allow get: if User();
-        allow list: if Admin();
-        allow write: if Admin();
+        allow list: if User() && hasRole() && Admin();
+        allow write: if User() && hasRole() && Admin();
       }
     }
 
     // [PUBLIC]
     match /public/{document} {
       match /{collection}/{anyPath=**} {
-        allow read: if User();
-        allow write: if Moderator() || Admin();
+        allow read: if hasRole();
+        allow write: if hasRole() && Admin();
       }
     }
 
     // [Deprecation] backward compatibility...
     match /databases/{document} {
       match /{anyPath=**} {
-        allow read: if User();
-        allow write: if Moderator() || Admin();
+        allow read: if User() && hasRole();
+        allow write: if User() && hasRole() && (Moderator() || Admin());
       }
     }
   }

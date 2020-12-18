@@ -4,13 +4,11 @@ import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
 
-const APP_ID = "MTo5NjYwNDA3NDU0NDI6d2ViOjJhODNjMDgyMTM3MjFjZGFhY2I1YmI=";
-const API_KEY = "QUl6YVN5QmlTa3hYX2dmbnF5aFBhdGgydkZ3bjJnakxjbHJGQ3RJ";
 const DATABASE_NAME = "Y3RrZXNxbVBIR0pIVzk1Z012bkw=";
 
 export const app = firebase.initializeApp({
-  appId: atob(APP_ID),
-  apiKey: atob(API_KEY),
+  appId: atob("MTo5NjYwNDA3NDU0NDI6d2ViOjJhODNjMDgyMTM3MjFjZGFhY2I1YmI="),
+  apiKey: atob("QUl6YVN5QmlTa3hYX2dmbnF5aFBhdGgydkZ3bjJnakxjbHJGQ3RJ"),
   projectId: atob("ZXRoZXJpby12dWU="),
   authDomain: "etherio-vue.firebaseapp.com",
   storageBucket: "etherio-vue.appspot.com",
@@ -23,13 +21,7 @@ export const storage = firebase
 
 export const firestore = firebase
   .firestore()
-  .collection("databases")
+  .collection("public")
   .doc(atob(DATABASE_NAME));
-
-export const credential = firebase
-  .firestore()
-  .collection("private")
-  .doc(atob(DATABASE_NAME))
-  .collection("users");
 
 export const auth = firebase.auth;

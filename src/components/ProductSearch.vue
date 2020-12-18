@@ -140,12 +140,14 @@ export default {
     async search() {
       this.loading = true;
       let started = Date.now();
-      let productRef = product.orderBy("stocks");
+      console.log("firestore:", product.path);
+      let productRef = product;
       if (!this.fetchAllProducts) {
         productRef = this.fetchInStockOnly
           ? product.where("stocks", ">", 0)
           : product.where("stocks", "<", 1);
       }
+      productRef.orderBy("stocks");
       let docRef = await productRef.get();
       docs = docRef.docs;
       this.panel = [];

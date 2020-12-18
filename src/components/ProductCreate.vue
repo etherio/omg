@@ -111,14 +111,10 @@
 </template>
 
 <script>
-import Meta from "../app/meta";
+import meta from "../app/meta";
 import product from "../app/product";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import { storage, firestore } from "../firebase";
-
-function fetchMetaData() {
-  return Meta.fetch();
-}
 
 export default {
   name: "ProductSearch",
@@ -205,10 +201,10 @@ export default {
   },
 
   beforeMount() {
-    fetchMetaData().then(({ source, data }) => {
+    meta.fetch().then(({ colors, categories }) => {
       this.loading = false;
-      this.categories = data.categories;
-      this.colors = data.colors;
+      this.categories = categories;
+      this.colors = colors;
     });
   },
 };
