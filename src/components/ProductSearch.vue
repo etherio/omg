@@ -192,9 +192,9 @@ export default {
         return false;
       }
       let [ref, bRef] = docs[refID];
-      console.log(ref, bRef);
-      await ref.ref.delete();
+      let result = await ref.ref.delete();
       this.results = this.results.filter((result) => result.id != ref.id);
+      return result;
     },
   },
   computed: {

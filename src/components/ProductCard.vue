@@ -53,11 +53,18 @@
 
     <v-card-actions>
       <v-row justify="space-between">
-        <v-btn color="blue" text @click="destroy(product.id)">Edit</v-btn>
+        <v-btn color="blue" text>Edit</v-btn>
         <v-btn fab v-if="product.stock" outlined color="primary" small>{{
           product.stock
         }}</v-btn>
-        <v-btn color="red" text @click="destroy(product.id)">Delete</v-btn>
+        <v-btn
+          color="red"
+          text
+          @click="deleted()"
+          :disabled="loading"
+          :loading="loading"
+          >Delete</v-btn
+        >
       </v-row>
     </v-card-actions>
   </v-card>
@@ -73,7 +80,12 @@ export default {
     loading: false,
   }),
 
-  methods: {},
+  methods: {
+    deleted() {
+      this.loading = true;
+      this.destroy(this.product.id).then((res) => (this.loading = false));
+    },
+  },
 };
 </script>
 
