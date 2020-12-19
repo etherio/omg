@@ -7,9 +7,6 @@ export default class User {
       return false;
     }
     let customToken = await user.getIdTokenResult(true);
-    console.log(
-      `${location.protocol}//${location.host}/.netlify/functions/auth?token=${customToken.token}&role=admin`
-    );
     return customToken.claims.role;
   }
 }

@@ -42,8 +42,8 @@
     <v-card-actions>
       <v-row justify="space-between">
         <v-btn color="blue" text @click="reserve">Edit</v-btn>
-        <v-btn fab v-if="item.stocks" outlined color="primary" small>{{
-          item.stocks
+        <v-btn fab v-if="item.stock" outlined color="primary" small>{{
+          item.stock
         }}</v-btn>
         <v-btn color="red" text @click="reserve">Delete</v-btn>
       </v-row>
@@ -65,7 +65,6 @@ export default {
   methods: {
     reserve() {
       this.loading = true;
-
       setTimeout(() => (this.loading = false), 2000);
     },
   },

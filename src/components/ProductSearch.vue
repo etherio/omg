@@ -86,7 +86,15 @@
       <v-divider class="my-5"></v-divider>
       <!-- search result -->
       <v-row>
-        <v-col cols="4" v-for="(item, index) in results" :key="index">
+        <v-col
+          cols="12"
+          sm="6"
+          md="6"
+          lg="4"
+          xl="3"
+          v-for="(item, index) in results"
+          :key="index"
+        >
           <product-card :item="item" />
         </v-col>
       </v-row>
@@ -102,9 +110,24 @@
 import meta from "../app/meta";
 import product from "../app/product";
 import ProductCard from "../components/ProductCard.vue";
+import { firestore } from "../firebase";
 
-let MAX_SHOW_RESULTS = 10;
+let MAX_SHOW_RESULTS;
 let docs = [];
+
+const setMaxShowResult = () => {
+  if (outerWidth < 600) {
+    MAX_SHOW_RESULTS = 10; // xs: 1 cards, 10 rows
+  } else if (outerWidth < 960) {
+    MAX_SHOW_RESULTS = 10; // sm: 2 cards, 5 rows
+  } else if (outerWidth < 1264) {
+    MAX_SHOW_RESULTS = 12; // md: 3 cards, 4 rows
+  } else if (outerWidth < 1904) {
+    MAX_SHOW_RESULTS = 12; // lg: 3 cards, 4 rows
+  } else {
+    MAX_SHOW_RESULTS = 16; // xl: 4 cards, 4 rows
+  }
+};
 
 export default {
   name: "ProductSearch",
@@ -144,10 +167,10 @@ export default {
       let productRef = product;
       if (!this.fetchAllProducts) {
         productRef = this.fetchInStockOnly
-          ? product.where("stocks", ">", 0)
-          : product.where("stocks", "<", 1);
+          ? product.where("stock", ">", 0)
+          : product.where("stock", "<", 1);
       }
-      productRef.orderBy("stocks");
+      productRef.orderBy("stock");
       let docRef = await productRef.get();
       docs = docRef.docs;
       this.panel = [];
@@ -184,6 +207,10 @@ export default {
     },
   },
   beforeMount() {
+    setMaxShowResult();
+
+    window.addEventListener("resize", setMaxShowResult);
+
     meta.fetch().then(({ categories, colors }) => {
       this.colors = colors;
       this.categories = categories;
@@ -198,7 +225,6 @@ export default {
       this.paginate.startAt = this.paginate.endAt - MAX_SHOW_RESULTS;
       let chunkRef = docs.slice(this.paginate.startAt, this.paginate.endAt);
       chunkRef.forEach((doc) => {
-        console.log(doc);
         let product = doc.data();
         products.push(product);
       });
