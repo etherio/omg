@@ -92,10 +92,10 @@
           md="6"
           lg="4"
           xl="3"
-          v-for="(item, index) in results"
+          v-for="(product, index) in results"
           :key="index"
         >
-          <product-card :item="item" />
+          <product-card :product="product" :destroy="deleteProduct" />
         </v-col>
       </v-row>
 
@@ -113,7 +113,7 @@ import ProductCard from "../components/ProductCard.vue";
 import { firestore } from "../firebase";
 
 let MAX_SHOW_RESULTS;
-let docs = [];
+let docs = {};
 
 const setMaxShowResult = () => {
   if (outerWidth < 600) {
@@ -161,6 +161,8 @@ export default {
   }),
   methods: {
     async search() {
+      this.results = [];
+      this.page = 0;
       this.loading = true;
       let started = Date.now();
       console.log("firestore:", product.path);
@@ -172,7 +174,7 @@ export default {
       }
       productRef.orderBy("stock");
       let docRef = await productRef.get();
-      docs = docRef.docs;
+      docRef.docs.forEach((doc) => (docs[doc.id] = [doc]));
       this.panel = [];
       let pages = docRef.size / MAX_SHOW_RESULTS;
       let paginate = Math.round(pages);
@@ -183,6 +185,16 @@ export default {
       this.loading = false;
       this.queried.size = docRef.size;
       this.queried.time = (Date.now() - started) / 1000;
+    },
+
+    async deleteProduct(refID) {
+      if (!docs[refID]) {
+        return false;
+      }
+      let [ref, bRef] = docs[refID];
+      console.log(ref, bRef);
+      await ref.ref.delete();
+      this.results = this.results.filter((result) => result.id != ref.id);
     },
   },
   computed: {
@@ -208,9 +220,7 @@ export default {
   },
   beforeMount() {
     setMaxShowResult();
-
     window.addEventListener("resize", setMaxShowResult);
-
     meta.fetch().then(({ categories, colors }) => {
       this.colors = colors;
       this.categories = categories;
@@ -219,17 +229,19 @@ export default {
   watch: {
     page() {
       let p = this.page;
-      let products = [];
       this.paginate.page = p;
       this.paginate.endAt = MAX_SHOW_RESULTS * p;
       this.paginate.startAt = this.paginate.endAt - MAX_SHOW_RESULTS;
-      let chunkRef = docs.slice(this.paginate.startAt, this.paginate.endAt);
+      let chunkRef = Object.values(docs).slice(
+        this.paginate.startAt,
+        this.paginate.endAt
+      );
       chunkRef.forEach((doc) => {
-        let product = doc.data();
-        products.push(product);
+        let product = doc[0].data();
+        product.id = doc[0].id;
+        docs[doc[0].id][1] = product.ref;
+        this.results.push(product);
       });
-      products = products.sort((a, b) => b.createdAt - a.createdAt);
-      this.results = products;
     },
   },
   components: {

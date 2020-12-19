@@ -30,7 +30,7 @@ class Product {
     this.description = String(description || "");
     this.image = image || null;
     this.category = String(category) || null;
-    this.colors = Array(colors) || [];
+    this.colors = Array(...colors);
     this.stock = Number(stock || 0);
     this.minAge = Number(minAge || 0) || null;
     this.maxAge = Number(maxAge || 0) || null;
@@ -40,10 +40,8 @@ class Product {
         .child(this.image)
         .getDownloadURL()
         .then((url) => {
-          console.log(url);
           this.photoURL = url;
         });
-      console.log(this, "product:fromFirebase");
     }
   }
 
@@ -53,7 +51,6 @@ class Product {
     price,
     description,
     image,
-    images,
     category,
     colors,
     stock,
@@ -70,13 +67,12 @@ class Product {
     this.code = String(code);
     this.price = Number(price);
     this.description = String(description) || null;
-    this.image = String(image || images[0]) || null;
+    this.image = String(image) || null;
     this.category = String(category) || null;
-    this.colors = Array(colors) || [];
+    this.colors = Array(...colors);
     this.stock = Number(stock) || 0;
     this.minAge = Number(minAge) || 0;
     this.maxAge = Number(maxAge) || 0;
-    console.log(this, "product:toFirebase");
   }
 }
 

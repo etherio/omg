@@ -8,32 +8,44 @@
         indeterminate
       ></v-progress-linear>
     </template>
-    <v-img height="250" :src="item.photoURL"></v-img>
+    <v-img height="250" :src="product.photoURL"></v-img>
 
-    <v-card-title>{{ item.name }}</v-card-title>
+    <v-card-title>{{ product.name }}</v-card-title>
 
     <v-card-text>
       <div class="grey--text">
-        <v-chip v-if="item.code" small color="blue lighten-4">
-          #{{ item.code }}
+        <v-chip v-if="product.code" small color="blue lighten-4">
+          #{{ product.code }}
         </v-chip>
-        <v-chip v-if="item.category" color="primary" small class="mx-1">
-          {{ item.category }}
+        <v-chip v-if="product.category" color="primary" small class="mx-1">
+          {{ product.category }}
         </v-chip>
-        <v-chip v-if="item.color" small class="ma-1">
-          {{ item.color }}
+        <span v-for="color in product.colors" :key="color">
+          <v-chip v-if="color.length" small class="ma-1">
+            {{ color }}
+          </v-chip>
+        </span>
+        <v-chip
+          v-if="product.minAge"
+          small
+          class="ma-1"
+          color="green lighten-4"
+        >
+          {{ product.minAge }}yrs.
         </v-chip>
-        <v-chip v-if="item.minAge" small class="ma-1" color="green lighten-4">
-          {{ item.minAge }}yrs.
-        </v-chip>
-        <v-chip v-if="item.maxAge" small class="ma-1" color="green lighten-3">
-          {{ item.maxAge }}yrs.
+        <v-chip
+          v-if="product.maxAge"
+          small
+          class="ma-1"
+          color="green lighten-3"
+        >
+          {{ product.maxAge }}yrs.
         </v-chip>
       </div>
-      <div class="my-4 subtitle-1">{{ item.price }} Kyats</div>
+      <div class="my-4 subtitle-1">{{ product.price }} Kyats</div>
 
       <div>
-        {{ item.description }}
+        {{ product.description }}
       </div>
     </v-card-text>
 
@@ -41,11 +53,11 @@
 
     <v-card-actions>
       <v-row justify="space-between">
-        <v-btn color="blue" text @click="reserve">Edit</v-btn>
-        <v-btn fab v-if="item.stock" outlined color="primary" small>{{
-          item.stock
+        <v-btn color="blue" text @click="destroy(product.id)">Edit</v-btn>
+        <v-btn fab v-if="product.stock" outlined color="primary" small>{{
+          product.stock
         }}</v-btn>
-        <v-btn color="red" text @click="reserve">Delete</v-btn>
+        <v-btn color="red" text @click="destroy(product.id)">Delete</v-btn>
       </v-row>
     </v-card-actions>
   </v-card>
@@ -55,19 +67,13 @@
 export default {
   name: "ProductCard",
 
-  props: ["item"],
+  props: ["product", "destroy"],
 
   data: () => ({
     loading: false,
-    selection: 1,
   }),
 
-  methods: {
-    reserve() {
-      this.loading = true;
-      setTimeout(() => (this.loading = false), 2000);
-    },
-  },
+  methods: {},
 };
 </script>
 
