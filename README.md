@@ -2,20 +2,22 @@
 
 ## Static Page
 
-```
+```sh
 npm install
 ```
 
 ### Compiles and hot-reloads for development
 
-```
-npm run serve
+```sh
+# vue default is `npm run serve`
+npm test
 ```
 
 ### Compiles and minifies for production
 
-```
-npm run build
+```sh
+# vue default is `npm run build`
+npm start
 ```
 
 ## Functions

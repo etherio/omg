@@ -10,6 +10,7 @@ const data = {
   user: null,
   denied: null,
   role: null,
+  overlay: () => null,
 };
 
 app.analytics();
@@ -23,6 +24,7 @@ auth().onAuthStateChanged((user) => {
       data.loaded = true;
     });
   } else {
+    data.role = null;
     data.user = null;
     data.loaded = true;
   }

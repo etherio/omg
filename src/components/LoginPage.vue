@@ -1,29 +1,32 @@
 <template>
-  <v-container>
+  <v-container justify="center">
     <v-overlay :value="loading">
       <v-progress-circular indeterminate size="64" />
     </v-overlay>
 
-    <v-form ref="form">
+    <v-form ref="form" v-model="valid" lazy-validation>
       <h2 class="mb-4">Log In with Email</h2>
       <v-text-field
         v-model="email"
         label="Email"
         type="email"
         :rules="rules.email"
+        @keyup.enter="signInWithEmailAndPassword()"
         outlined
       />
       <v-text-field
         v-model="password"
         label="Password"
-        type="password"
+        autocapitalize="off"
+        :append-icon="showPassword ? '' : ''"
+        :type="showPassword ? 'text' : 'password'"
         :rules="rules.password"
+        @keyup.enter="signInWithEmailAndPassword()"
         outlined
       />
       <v-btn
         class="my-4"
         align="center"
-        justify="space-around"
         color="primary"
         large
         block
@@ -37,26 +40,10 @@
 
     <v-divider class="my-10" />
 
-    <v-btn
-      class="mt-5"
-      align="center"
-      justify="space-around"
-      color="error"
-      @click="signInWithGoogle()"
-      block
-      large
-    >
+    <v-btn class="mt-5" color="error" @click="signInWithGoogle()" block large>
       <span class="mr-2"> <v-icon>mdi-google</v-icon> Log In with Google </span>
     </v-btn>
-    <v-btn
-      class="mt-5"
-      align="center"
-      justify="space-around"
-      color="primary"
-      @click="signInWithFacebook()"
-      block
-      large
-    >
+    <v-btn class="mt-5" color="primary" @click="signInWithFacebook()" block large>
       <span class="mr-2"> <v-icon>mdi-facebook</v-icon> Log In with Facebook </span>
     </v-btn>
   </v-container>
@@ -70,8 +57,10 @@ export default {
   data: () => ({
     loading: false,
     error: null,
+    valid: null,
     email: null,
     password: null,
+    showPassword: false,
     rules: {
       email: [
         (value) =>
@@ -124,6 +113,9 @@ export default {
         .signInWithRedirect(provider)
         .then(() => (this.loading = false));
     },
+  },
+  beforeMount() {
+    this.$root.overlay(false);
   },
 };
 </script>

@@ -1,5 +1,7 @@
 <template>
   <v-app>
+    <v-overlay :value="overlay" />
+
     <v-navigation-drawer v-model="drawer" fixed temporary>
       <v-list nav dense>
         <v-list-item-group
@@ -55,6 +57,7 @@ export default {
   name: "App",
 
   data: () => ({
+    overlay: false,
     drawer: false,
     group: null,
     items: [
@@ -78,6 +81,12 @@ export default {
     NavBar,
     LoginPage,
     AccessDenied,
+  },
+
+  beforeMount() {
+    this.$root.overlay = (value) => {
+      this.overlay = value;
+    };
   },
 };
 </script>
