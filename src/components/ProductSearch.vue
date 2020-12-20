@@ -107,10 +107,10 @@
 </template>
 
 <script>
-import meta from "../app/meta";
 import product from "../app/product";
+import color from "../app/color";
+import category from "../app/category";
 import ProductCard from "../components/ProductCard.vue";
-import { firestore } from "../firebase";
 
 let MAX_SHOW_RESULTS;
 let docs = {};
@@ -218,14 +218,16 @@ export default {
       return !this.filter.mode[0] && this.filter.mode[1];
     },
   },
-  beforeMount() {
+
+  async beforeMount() {
     setMaxShowResult();
     window.addEventListener("resize", setMaxShowResult);
-    meta.fetch().then(({ categories, colors }) => {
-      this.colors = colors;
-      this.categories = categories;
-    });
+    let colors = await color.get();
+    let categories = await category.get();
+    this.colors = Object.values(await colors.toJSON());
+    this.categories = Object.values(await categories.toJSON());
   },
+
   watch: {
     page() {
       let p = this.page;
@@ -244,6 +246,7 @@ export default {
       });
     },
   },
+
   components: {
     ProductCard,
   },

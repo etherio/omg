@@ -10,9 +10,9 @@
         >
           <v-list-item
             v-for="(item, index) in items"
+            v-if="item.visibility ? item.visibility.includes($root.role) : true"
             :key="index"
             :to="item.path"
-            v-if="item.visibility ? item.visibility.includes($root.role) : true"
           >
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>

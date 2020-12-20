@@ -111,7 +111,8 @@
 </template>
 
 <script>
-import meta from "../app/meta";
+import category from "../app/category";
+import color from "../app/color";
 import product from "../app/product";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import { storage, firestore } from "../firebase";
@@ -200,15 +201,13 @@ export default {
     },
   },
 
-  beforeMount() {
-    meta.fetch().then(({ colors, categories }) => {
-      this.loading = false;
-      this.categories = categories;
-      this.colors = colors;
-    });
+  async beforeMount() {
+    let colors = await color.get();
+    let categories = await category.get();
+    this.colors = Object.values(await colors.toJSON());
+    this.categories = Object.values(await categories.toJSON());
   },
 };
 </script>
 
-<style>
-</style>
+<style></style>

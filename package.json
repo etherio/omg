@@ -8,6 +8,7 @@
     "deploy": "npm start && git add . && git commit -m 'Updated' && git push"
   },
   "dependencies": {
+    "axios": "^0.21.0",
     "core-js": "^3.6.5",
     "firebase": "^8.2.0",
     "jimp": "^0.16.1",

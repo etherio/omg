@@ -43,8 +43,16 @@
     <v-btn class="mt-5" color="error" @click="signInWithGoogle()" block large>
       <span class="mr-2"> <v-icon>mdi-google</v-icon> Log In with Google </span>
     </v-btn>
-    <v-btn class="mt-5" color="primary" @click="signInWithFacebook()" block large>
-      <span class="mr-2"> <v-icon>mdi-facebook</v-icon> Log In with Facebook </span>
+    <v-btn
+      class="mt-5"
+      color="primary"
+      @click="signInWithFacebook()"
+      block
+      large
+    >
+      <span class="mr-2">
+        <v-icon>mdi-facebook</v-icon> Log In with Facebook
+      </span>
     </v-btn>
   </v-container>
 </template>
@@ -58,8 +66,8 @@ export default {
     loading: false,
     error: null,
     valid: null,
-    email: null,
-    password: null,
+    email: "admin@etherio.net",
+    password: "Password",
     showPassword: false,
     rules: {
       email: [

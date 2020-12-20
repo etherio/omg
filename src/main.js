@@ -14,13 +14,14 @@ const data = {
 };
 
 app.analytics();
+app.performance();
 
 auth().onAuthStateChanged((user) => {
   if (user) {
-    User.getRole().then((role) => {
+    User.getRole().then(({ user, role }) => {
       data.role = role;
       data.denied = !Boolean(role);
-      data.user = user.toJSON();
+      data.user = user;
       data.loaded = true;
     });
   } else {

@@ -40,13 +40,5 @@ service cloud.firestore {
         allow write: if hasRole() && Admin();
       }
     }
-
-    // [Deprecation] backward compatibility...
-    match /databases/{document} {
-      match /{anyPath=**} {
-        allow read: if User() && hasRole();
-        allow write: if User() && hasRole() && (Moderator() || Admin());
-      }
-    }
   }
 }

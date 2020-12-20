@@ -2,11 +2,17 @@ import { auth } from "../firebase";
 
 export default class User {
   static async getRole() {
-    let user;
+    let user, token;
     if (!(user = auth().currentUser)) {
       return false;
     }
-    let customToken = await user.getIdTokenResult(true);
-    return customToken.claims.role;
+    token = await user.getIdTokenResult(true);
+    user = user.toJSON();
+    user.role = token.role;
+    user.token = token.token;
+    return {
+      user,
+      role: token.claims.role,
+    };
   }
 }

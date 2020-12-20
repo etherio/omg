@@ -1,7 +1,9 @@
 import firebase from "firebase/app";
 import "firebase/analytics";
 import "firebase/auth";
+import "firebase/database";
 import "firebase/firestore";
+import "firebase/performance";
 import "firebase/storage";
 
 const DATABASE_NAME = "Y3RrZXNxbVBIR0pIVzk1Z012bkw=";
@@ -14,6 +16,8 @@ export const app = firebase.initializeApp({
   storageBucket: "etherio-vue.appspot.com",
   databaseURL: "https://etherio-vue.firebaseio.com",
 });
+
+export const database = firebase.database().ref(atob(DATABASE_NAME));
 
 export const storage = firebase
   .storage()
