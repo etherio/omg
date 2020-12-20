@@ -1,5 +1,9 @@
 <template>
   <v-container>
+    <v-overlay :value="loading">
+      <v-progress-circular indeterminate size="64" />
+    </v-overlay>
+
     <v-form ref="form">
       <h2 class="mb-4">Log In with Email</h2>
       <v-text-field
@@ -64,6 +68,7 @@ import { auth } from "../firebase";
 export default {
   name: "LoginPage",
   data: () => ({
+    loading: false,
     error: null,
     email: null,
     password: null,
@@ -79,19 +84,24 @@ export default {
   }),
   methods: {
     signInWithEmailAndPassword() {
-      this.errors = [];
-
       if (!this.$refs.form.validate()) {
         return;
       }
+      this.loading = true;
+      this.error = null;
 
       auth()
         .signInWithEmailAndPassword(this.email, this.password)
+        .then(() => (this.loading = true))
         .catch((err) => {
-          console.error(err);
+          this.loading = false;
+
           switch (err.code) {
             case "auth/user-not-found":
-              this.error = "User does not exist";
+              this.error = "Email does not exist";
+              break;
+            case "auth/wrong-password":
+              this.error = "Incorrect password";
               break;
             default:
               this.error = err.message || err.toString();
@@ -99,11 +109,20 @@ export default {
         });
     },
     signInWithGoogle() {
-      var provider = new auth.GoogleAuthProvider();
-      auth().signInWithRedirect(provider);
+      const provider = new auth.GoogleAuthProvider();
+      this.loading = true;
+      this.error = null;
+      auth()
+        .signInWithRedirect(provider)
+        .then(() => (this.loading = false));
     },
     signInWithFacebook() {
-      auth().signInWithRedirect(new auth.FacebookAuthProvider());
+      const provider = new auth.FacebookAuthProvider();
+      this.loading = true;
+      this.error = null;
+      auth()
+        .signInWithRedirect(provider)
+        .then(() => (this.loading = false));
     },
   },
 };

@@ -25,20 +25,10 @@
             {{ color }}
           </v-chip>
         </span>
-        <v-chip
-          v-if="product.minAge"
-          small
-          class="ma-1"
-          color="green lighten-4"
-        >
+        <v-chip v-if="product.minAge" small class="ma-1" color="green lighten-4">
           {{ product.minAge }}yrs.
         </v-chip>
-        <v-chip
-          v-if="product.maxAge"
-          small
-          class="ma-1"
-          color="green lighten-3"
-        >
+        <v-chip v-if="product.maxAge" small class="ma-1" color="green lighten-3">
           {{ product.maxAge }}yrs.
         </v-chip>
       </div>
@@ -61,7 +51,7 @@
           color="red"
           text
           @click="deleted()"
-          :disabled="loading"
+          :disabled="this.$root.role !== 'admin'"
           :loading="loading"
           >Delete</v-btn
         >
@@ -82,6 +72,9 @@ export default {
 
   methods: {
     deleted() {
+      if (this.$root.role !== "admin") {
+        return;
+      }
       this.loading = true;
       this.destroy(this.product.id).then((res) => (this.loading = false));
     },
@@ -89,5 +82,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

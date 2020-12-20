@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" absolute temporary>
+    <v-navigation-drawer v-model="drawer" fixed temporary>
       <v-list nav dense>
         <v-list-item-group
           v-model="group"
@@ -10,6 +10,7 @@
             v-for="(item, index) in items"
             :key="index"
             :to="item.path"
+            v-if="item.visibility ? item.visibility.includes($root.role) : true"
           >
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
@@ -58,7 +59,18 @@ export default {
     group: null,
     items: [
       { icon: "mdi-home", title: "Home", path: "/" },
-      { icon: "mdi-cart", title: "Products", path: "/products" },
+      {
+        icon: "mdi-account",
+        title: "User",
+        path: "/users",
+        visibility: ["admin"],
+      },
+      {
+        icon: "mdi-cart",
+        title: "Products",
+        path: "/products",
+        visibility: ["admin", "moderator"],
+      },
     ],
   }),
 
