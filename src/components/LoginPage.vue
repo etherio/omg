@@ -66,8 +66,8 @@ export default {
     loading: false,
     error: null,
     valid: null,
-    email: "admin@etherio.net",
-    password: "Password",
+    email: "",
+    password: "",
     showPassword: false,
     rules: {
       email: [
