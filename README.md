@@ -1,5 +1,7 @@
 # omg
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/4a1fea98-6608-4e58-a29b-ebf2f2d7910b/deploy-status)](https://app.netlify.com/sites/serene-galileo-f84e05/deploys)
+
 ## Static Page
 
 ```sh
@@ -22,7 +24,17 @@ npm start
 
 ## Firebase Configuration
 
-### Firestore [Indexes]
+### Authentication
+
+**Sign-In Methods**
+
+- Email / Password
+- Google
+- Facebook
+
+> **Multiple accounts per email address:** Allow users to create multiple accounts for authentication providers that use the same email address.
+
+### Firestore (Indexes)
 
 ```json
 {
@@ -46,56 +58,41 @@ npm start
 }
 ```
 
-### Firestore [Rule]
+### Firestore (Rule)
 
-```ts
+```js
 service cloud.firestore {
-  match /databases/{database}/documents {
+  match /databases/{document}/documents {
 
-    // check user is logged in
-    function User() {
+    function isLogin() {
       return request.auth != null &&
-      request.auth.uid != null &&
-      request.auth.token.firebase.sign_in_provider != 'anonymous';
+      request.auth.uid != null;
     }
 
-    // check user has role
     function hasRole() {
       return request.auth.token != null &&
       request.auth.token.role != null;
     }
 
-    // check user is admin
-    function Admin() {
+    function isAdmin() {
       return request.auth.token.role == 'admin';
     }
 
-    // check user is moderator
-    function Moderator() {
+    function isModerator() {
       return request.auth.token.role == 'moderator';
     }
 
-    // [PRIVATE]
-    match /private/{document} {
-      match /users/{userId} {
-        allow get: if User();
-        allow list: if User() && hasRole() && Admin();
-        allow write: if User() && hasRole() && Admin();
-      }
-    }
-
-    // [PUBLIC]
-    match /public/{document} {
+    match /public/{database} {
       match /{collection}/{anyPath=**} {
-        allow read: if hasRole();
-        allow write: if hasRole() && Admin();
+        allow read: if isLogin() && hasRole() && isModerator();
+        allow write: if isLogin() && hasRole() && isAdmin();
       }
     }
   }
 }
 ```
 
-### Database [Rule]
+### Realtime Database (Rule)
 
 ```json
 {
@@ -113,6 +110,19 @@ service cloud.firestore {
         ".read": "auth.token.role === 'admin'",
         ".write": "auth.uid != null"
       }
+    }
+  }
+}
+```
+
+### Storage [Rule]
+
+```js
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{document=**} {
+      allow read, write: if request.auth!=null;
     }
   }
 }

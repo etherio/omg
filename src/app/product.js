@@ -1,6 +1,4 @@
-import { firestore, storage, auth } from "../firebase";
-
-const IMAGE_PLACEHOLDER = "/assets/image.png";
+import { firestore } from "../firebase";
 
 class Product {
   constructor({
@@ -16,63 +14,44 @@ class Product {
     minAge,
     maxAge,
     createdAt,
-    createdBy,
   }) {
     let now = new Date();
     now.setTime(createdAt);
-    this.photoURL = IMAGE_PLACEHOLDER;
-    this.createdBy = uid || createdBy;
+    this.uid = uid;
     this.createdAt = now;
-    this.uid = String(uid);
-    this.name = String(name);
-    this.code = String(code);
-    this.price = Number(price || 0);
-    this.description = String(description || "");
+    this.name = name;
+    this.code = code;
+    this.price = Number(price);
+    this.description = description;
     this.image = image || null;
-    this.category = String(category) || null;
-    this.colors = Array(...colors);
+    this.category = category;
+    this.colors = colors;
     this.stock = Number(stock || 0);
-    this.minAge = Number(minAge || 0) || null;
-    this.maxAge = Number(maxAge || 0) || null;
-
-    if (this.image) {
-      storage
-        .child(this.image)
-        .getDownloadURL()
-        .then((url) => {
-          this.photoURL = url;
-        });
-    }
+    this.minAge = Number(minAge || 0);
+    this.maxAge = Number(maxAge || 0);
   }
 
-  static make({
-    name,
-    code,
-    price,
-    description,
-    image,
-    category,
-    colors,
-    stock,
-    minAge,
-    maxAge,
-    createdAt,
-  }) {
-    let currentUser = auth().currentUser;
-    let now = new Date();
-    now.setTime(createdAt);
-    this.createdAt = now.getTime();
-    this.createdBy = currentUser;
-    this.name = String(name);
-    this.code = String(code);
-    this.price = Number(price);
-    this.description = String(description) || null;
-    this.image = String(image) || null;
-    this.category = String(category) || null;
-    this.colors = Array(...colors);
-    this.stock = Number(stock) || 0;
-    this.minAge = Number(minAge) || 0;
-    this.maxAge = Number(maxAge) || 0;
+  static make(product) {
+    let newProduct = {};
+    newProduct.name = product.name;
+    newProduct.code = product.code;
+    newProduct.price = parseFloat(product.price);
+    newProduct.description = product.description || null;
+    newProduct.image = product.image || null;
+    newProduct.category = product.category || null;
+    newProduct.colors = product.colors || [];
+    newProduct.minAge = Number(product.minAge);
+    newProduct.maxAge = Number(product.maxAge);
+    newProduct.stock = Number(product.stock) || 0;
+    newProduct.uid = product.uid;
+    newProduct.createdAt = product.createdAt;
+    if (newProduct.minAge === NaN) {
+      newProduct.minAge = null;
+    }
+    if (newProduct.maxAge === NaN) {
+      newProduct.maxAge = null;
+    }
+    return newProduct;
   }
 }
 

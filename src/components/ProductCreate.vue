@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <skeleton-loader v-if="loading" type="article, list-item-two-line" />
-    <v-form v-else @submit.prevent="onSubmit($event)">
+    <v-form v-else ref="form" @submit.prevent="onSubmit($event)">
       <v-row>
         <v-col cols="12">
           <h2>Add New Product</h2>
@@ -88,7 +88,7 @@
         </v-col>
         <v-col cols="12">
           <v-file-input
-            v-model="select.file"
+            v-model="select.image"
             accept="image/png, image/jpeg, image/bmp"
             placeholder="Upload an image"
             prepend-icon="mdi-camera"
@@ -97,9 +97,6 @@
         </v-col>
       </v-row>
       <v-col cols="12">
-        <v-alert type="error" v-for="error in errors" :key="error">
-          {{ error }}
-        </v-alert>
         <v-card-actions>
           <v-btn type="submit" text color="primary" block outlined large>
             Save
@@ -111,6 +108,8 @@
 </template>
 
 <script>
+import axios from "axios";
+import server from "../app/server";
 import category from "../app/category";
 import color from "../app/color";
 import product from "../app/product";
@@ -118,7 +117,7 @@ import SkeletonLoader from "../components/SkeletonLoader.vue";
 import { storage, firestore } from "../firebase";
 
 export default {
-  name: "ProductSearch",
+  name: "ProductCreate",
 
   components: {
     SkeletonLoader,
@@ -126,14 +125,16 @@ export default {
 
   data: () => ({
     loading: false,
-    errors: [],
     select: {
       name: null,
-      price: null,
+      code: null,
+      price: 0,
       description: null,
       category: null,
       colors: [],
-      file: null,
+      image: null,
+      minAge: null,
+      maxAge: null,
     },
     rules: {
       name: [(value) => value != null],
@@ -145,67 +146,81 @@ export default {
   }),
 
   methods: {
-    validate() {
-      let errors = [];
-      if (!this.rules.name[0](this.select.name)) {
-        errors.push("You should enter product name");
-      }
-      if (!this.rules.code[0](this.select.code)) {
-        errors.push("You should enter item code");
-      }
-      if (!this.rules.price[0](this.select.price)) {
-        errors.push("You should enter product price");
-      }
-      return errors;
-    },
-
     async onSubmit(event) {
-      let image = null,
-        color = null;
-      let el = event.target;
-      this.errors = this.validate();
-      // validate the input values
-      if (this.errors.length) {
-        return false;
+      if (!this.$refs.form.validate()) {
+        return;
       }
-      // get server current timestamp
+      let {
+        data: { timestamp },
+      } = await axios.get(server.timestamp);
       let now = new Date();
-      let response = await fetch(
-        "https://ethereal-demo-link.netlify.app/.netlify/functions/timestamp"
-      );
-      now.setTime(await response.text());
+      now.setTime(timestamp);
 
-      // put file to storage before saving to database if file exists
-      if (this.select.file) {
-        image = `${timestamp.getYear() - 100}/${timestamp.getMonth() + 1}`;
-        await storage.child(image).put(this.select.file);
-      }
-      let product = {
+      let newProduct = {
+        name: this.select.name,
         code: this.select.code,
         price: this.select.price,
         description: this.select.description,
         category: this.select.category,
-        color,
-        image,
-        createdAt: now.getTime(),
+        colors: this.select.colors,
+        image: null,
+        createdAt: now,
+        uid: this.$root.user.uid,
+        minAge: null,
+        maxAge: null,
       };
-      // if (this.select.colors.length) {
-      //   this.select.colors.forEach((color) => {
-      //     product.color = color;
-      //     firestore.doc().set(product);
-      //   });
-      // } else {
-      //   firestore.doc().set(product);
-      // }
-      console.log("donne!!!", product);
+
+      if (this.select.image) {
+        // create image path
+        let [y, m] = [now.getYear() - 100, now.getMonth() + 1];
+        newProduct.image = `${y}/${m}/${newProduct.uid}/${timestamp}`;
+        // optimize image
+        //...
+        // upload to storage
+        let storageRef = await storage
+          .child(newProduct.image)
+          .put(this.select.image);
+      }
+
+      await product.doc().set(newProduct);
+
+      try {
+        if (
+          newProduct.category &&
+          !this.categories.includes(newProduct.category)
+        ) {
+          await category.push(newProduct.category);
+          this.categories.push(newProduct.category);
+        }
+
+        if (newProduct.colors.length) {
+          let newColors = newProduct.colors.filter(
+            (color) => !this.colors.includes(color)
+          );
+          if (newColors.length) {
+            newColors.forEach(async (c) => {
+              await color.push(c);
+              this.colors.push(c);
+            });
+          }
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+
+      this.$refs.form.reset();
+    },
+
+    goToRequiredField() {
+      // if(this.select.)
     },
   },
 
   async beforeMount() {
     let colors = await color.get();
     let categories = await category.get();
-    this.colors = Object.values(await colors.toJSON());
-    this.categories = Object.values(await categories.toJSON());
+    this.colors = Object.values(colors.toJSON());
+    this.categories = Object.values(categories.toJSON());
   },
 };
 </script>

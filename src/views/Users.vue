@@ -78,12 +78,10 @@
 
 <script>
 import axios from "axios";
+import server from "../app/server";
 import requestAccess from "../app/requestAccess";
 
-const HOST_URL = "https://serene-galileo-f84e05.netlify.app/.netlify/functions";
-// const HOST_URL = "http://localhost:8888/.netlify/functions";
-
-const PROVIDER_ICONS = {
+const providerIcons = {
   password: {
     icon: "mdi-key",
   },
@@ -111,48 +109,23 @@ export default {
 
   methods: {
     setAdmin(uid) {
-      axios
-        .get(
-          `${HOST_URL}/role?uid=${uid}&role=admin&token=${this.$root.user.stsTokenManager.accessToken}`
-        )
-        .then(() => {
-          let user = this.users.find((user) => user.uid == uid);
-          user.role = "admin";
-          console.log(user);
-        });
+      axios.get(server.role).then(() => {
+        let user = this.users.find((user) => user.uid == uid);
+        user.role = "admin";
+      });
     },
 
     setModerator(uid) {
-      axios
-        .get(
-          `${HOST_URL}/role?uid=${uid}&role=moderator&token=${this.$root.user.stsTokenManager.accessToken}`
-        )
-        .then(() => {
-          let user = this.users.find((user) => user.uid == uid);
-          user.role = "moderator";
-          console.log(user);
-        });
+      axios.get(server.users).then(() => {
+        let user = this.users.find((user) => user.uid == uid);
+        user.role = "moderator";
+        console.log(user);
+      });
     },
 
     deleteUser(uid) {
-      axios
-        .delete(
-          `${HOST_URL}/users?token=${this.$root.user.stsTokenManager.accessToken}&uid=${uid}`
-        )
-        .then((res) => {
-          this.users = this.users.filter((user) => user.uid != uid);
-        });
-    },
-
-    acceptRequest(uid) {
-      this.request_access.filter((user) => {
-        if (user.uid !== uid) {
-          return true;
-        }
-        axios({
-          method: "GET",
-          url: `${HOST_URL}/role?uid=${user.uid}&role=moderator&token=${this.$root.user.stsTokenManager.accessToken}`,
-        });
+      axios.delete(server.users).then((res) => {
+        this.users = this.users.filter((user) => user.uid != uid);
       });
     },
   },
@@ -165,19 +138,15 @@ export default {
         this.request_access.push(user);
       });
     });
-    axios
-      .get(
-        `${HOST_URL}/users?token=${this.$root.user.stsTokenManager.accessToken}`
-      )
-      .then(({ data }) => {
-        let users = data.filter((user) => user.uid != this.$root.user.uid);
-        users.forEach((user) => {
-          user.providers = user.providers.map(
-            (provider) => PROVIDER_ICONS[provider.split(".")[0]]
-          );
-        });
-        this.users = users;
+    axios.get(server.users).then(({ data }) => {
+      data.forEach((user) => {
+        user.providers = user.providers.map(
+          (p) => providerIcons[p.split(".")[0]]
+        );
       });
+
+      this.users = data;
+    });
   },
 };
 </script>

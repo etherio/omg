@@ -78,9 +78,11 @@
       </v-expansion-panel>
     </v-expansion-panels>
     <div class="ma-2"></div>
-    <div v-if="queried.time">
+    <div v-if="queried.size || queried.time">
       <p>
-        showing {{ queried.size }} documents ({{ queried.time.toFixed(2) }}
+        showing {{ queried.size }} documents ({{
+          (Number(queried.time) || 0).toFixed(2)
+        }}
         seconds)
       </p>
       <v-divider class="my-5"></v-divider>
@@ -92,10 +94,10 @@
           md="6"
           lg="4"
           xl="3"
-          v-for="(product, index) in results"
+          v-for="(productRef, index) in results"
           :key="index"
         >
-          <product-card :product="product" :destroy="deleteProduct" />
+          <product-card :_ref="productRef" :removeProduct="removeProduct" />
         </v-col>
       </v-row>
 
@@ -131,6 +133,7 @@ const setMaxShowResult = () => {
 
 export default {
   name: "ProductSearch",
+
   data: () => ({
     loading: false,
     panel: [],
@@ -159,44 +162,46 @@ export default {
     colors: [],
     hover: false,
   }),
+
   methods: {
     async search() {
-      this.results = [];
       this.page = 0;
       this.loading = true;
       let started = Date.now();
-      console.log("firestore:", product.path);
       let productRef = product;
       if (!this.fetchAllProducts) {
         productRef = this.fetchInStockOnly
           ? product.where("stock", ">", 0)
           : product.where("stock", "<", 1);
+        // if (!this.filter.mode[0] && !this.filter.mode[1]) {
+        //   this.filter.mode[0] = true;
+        // }
       }
       productRef.orderBy("stock");
       let docRef = await productRef.get();
-      docRef.docs.forEach((doc) => (docs[doc.id] = [doc]));
+      this.results = [];
       this.panel = [];
-      let pages = docRef.size / MAX_SHOW_RESULTS;
-      let paginate = Math.round(pages);
-      paginate < pages && paginate++;
-      this.page = 1;
-      this.paginate.length = paginate;
-      this.paginate.startAt = this.paginate.startAt + MAX_SHOW_RESULTS;
+      docRef.docs.forEach((doc) => {
+        this.results.push(doc);
+      });
+      // let pages = docRef.size / MAX_SHOW_RESULTS;
+      // let paginate = Math.round(pages);
+      // paginate < pages && paginate++;
+      // this.page = 1;
+      // this.paginate.length = paginate;
+      // this.paginate.startAt = this.paginate.startAt + MAX_SHOW_RESULTS;
       this.loading = false;
       this.queried.size = docRef.size;
       this.queried.time = (Date.now() - started) / 1000;
     },
 
-    async deleteProduct(refID) {
-      if (!docs[refID]) {
-        return false;
-      }
-      let [ref, bRef] = docs[refID];
-      let result = await ref.ref.delete();
-      this.results = this.results.filter((result) => result.id != ref.id);
-      return result;
+    removeProduct(productId) {
+      this.results = this.results.filter((r) => r.ref.id !== productId);
+      this.queried.size = this.results.length;
+      this.queried.time = 0;
     },
   },
+
   computed: {
     ageGroupHint() {
       let [minAge, maxAge] = this.filter.ageGroup;
