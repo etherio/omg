@@ -95,7 +95,9 @@
 <script>
 import axios from "axios";
 import server from "../app/server";
-// server.useEmulator("http://localhost:8888");
+if (process.env.NODE_ENV === "development") {
+  server.useEmulator("http://localhost:8888");
+}
 const providerIcons = {
   password: {
     icon: "mdi-key",
@@ -135,8 +137,7 @@ export default {
       url.searchParams.append("role", "admin");
       axios({
         url,
-        method: "POST",
-        data: JSON.stringify({ uid, role: "admin" }),
+        method: "PUT",
         headers: {
           "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
         },
@@ -147,7 +148,7 @@ export default {
           this.loading = this.loadingRole = false;
         })
         .catch((e) => {
-          this.error = "Unexcepted error occured";
+          this.error = "Opps! Something went wrong...";
           this.loading = this.loadingRole = false;
         });
     },
@@ -160,8 +161,7 @@ export default {
       url.searchParams.append("role", "moderator");
       axios({
         url,
-        method: "POST",
-        data: JSON.stringify({ uid, role: "moderator" }),
+        method: "PUT",
         headers: {
           "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
         },
@@ -172,7 +172,7 @@ export default {
           this.loadingRole = this.loading = false;
         })
         .catch((e) => {
-          this.error = "Unexcepted error occured";
+          this.error = "Opps! Something went wrong...";
           this.loadingRole = this.loading = false;
         });
     },
@@ -183,10 +183,7 @@ export default {
       url.searchParams.append("uid", uid);
       axios({
         url,
-        method: "POST",
-        data: JSON.stringify({
-          uid,
-        }),
+        method: "PUT",
         headers: {
           "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
         },
@@ -197,7 +194,7 @@ export default {
           this.loadingRole = this.loading = this.loadingDelete = false;
         })
         .catch((e) => {
-          this.error = "Unexcepted error occured";
+          this.error = "Opps! Something went wrong...";
           this.loadingRole = this.loading = this.loadingDelete = false;
         });
     },
@@ -220,7 +217,7 @@ export default {
           this.loadingDelete = this.loading = false;
         })
         .catch((e) => {
-          this.error = "Unexcepted error occured";
+          this.error = "Unable to delete an user! Please try again...";
           this.loadingDelete = this.loading = false;
         });
     },
@@ -245,7 +242,7 @@ export default {
         this.users = data;
       })
       .catch((e) => {
-        this.error = "Unexcepted error occured";
+        this.error = "Something went wrong! Please reload this page...";
         this.loading = false;
       });
   },

@@ -26,10 +26,10 @@ exports.handler = async (event, context) => {
     const auth = await app.auth();
     const user = await auth.verifyIdToken(token);
     if (user && allowRoles.includes(user.role)) {
+      let { uid, role } = event.queryStringParameters;
       try {
-        let { uid, role } = JSON.parse(event.body);
         switch (method) {
-          case "POST":
+          case "PUT":
             await setRole(auth, uid, role);
             return sendResponse(201);
         }
