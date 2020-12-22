@@ -42,7 +42,6 @@ exports.handler = async (event, context) => {
             return sendResponse(201, await auth.deleteUser(uid));
           case "GET":
             let users = await listUsers(auth, uid);
-            console.log(users);
             return sendResponse(
               200,
               users.filter((u) => u.uid !== user.uid)

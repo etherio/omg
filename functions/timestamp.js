@@ -1,9 +1,9 @@
-const response = require("./utils/sendResponse");
+const sendResponse = require("./utils/sendResponse");
 
 exports.handler = async (event, context) => {
   const timestamp = Date.now();
 
-  return response(200, {
+  return sendResponse(200, {
     timestamp,
   });
 };

@@ -95,7 +95,7 @@
 <script>
 import axios from "axios";
 import server from "../app/server";
-
+server.useEmulator("http://localhost:8888");
 const providerIcons = {
   password: {
     icon: "mdi-key",
