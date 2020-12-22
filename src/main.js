@@ -4,6 +4,7 @@ import router from "./router";
 import vuetify from "./plugins/vuetify";
 import { app, auth } from "./firebase";
 import User from "./app/User";
+import "./registerServiceWorker";
 
 const data = {
   loaded: false,
