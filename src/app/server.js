@@ -1,16 +1,10 @@
 import { auth } from "../firebase";
 
-const SERVER_HOST_URL = "https://serene-galileo-f84e05.netlify.app";
-// const SERVER_HOST_URL = "http://localhost:8888";
+let serverURL = "https://serene-galileo-f84e05.netlify.app";
 
 function getUrl(path) {
-  const url = new URL(SERVER_HOST_URL);
-  const user = auth().currentUser;
+  const url = new URL(serverURL);
   url.pathname = [".netlify/functions", path].join("/");
-  if (user) {
-    const token = user.toJSON().stsTokenManager.accessToken;
-    token && url.searchParams.append("token", token);
-  }
   return url;
 }
 
@@ -21,5 +15,11 @@ export default {
   get role() {
     return getUrl("role");
   },
-  timestamp: getUrl("timestamp"),
+  get timestamp() {
+    return getUrl("timestamp");
+  },
+
+  useEmulator() {
+    serverURL = [location.protocol, location.host].join("/");
+  },
 };

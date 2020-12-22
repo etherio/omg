@@ -9,8 +9,6 @@
 </template>
 
 <script>
-import requestAccess from "../app/requestAccess";
-
 export default {
   name: "AccessDenied",
 };

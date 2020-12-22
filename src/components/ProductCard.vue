@@ -44,7 +44,7 @@
           {{ product.maxAge }}yrs.
         </v-chip>
       </div>
-      <div class="my-4 subtitle-1">
+      <div class="my-4 subtitle-1 stock">
         Stock: <code>{{ product.stock || "out of stock" }}</code>
       </div>
 
@@ -91,6 +91,7 @@ export default {
 
   data: () => ({
     loading: false,
+    snapshot: null,
     product: {},
     imageURL: imagePlaceholder,
   }),
@@ -100,37 +101,50 @@ export default {
       //
     },
 
-    async purchase() {
-      await this._ref.ref.update({
-        stock: ++this.product.stock,
+    purchase() {
+      this.snapshot.update({
+        stock: this.product.stock + 1,
       });
     },
 
-    sale() {},
+    sale() {
+      this.snapshot.update({
+        stock: this.product.stock - 1,
+      });
+    },
 
     destory() {
       try {
         this.loading = true;
-        this._ref.ref.delete().then(() => {
-          this.removeProduct(this._ref.ref.id);
+        this.snapshot.delete().then(() => {
           this.loading = false;
         });
       } catch (e) {
         this.loading = false;
-        this.error = "Unexcepted error";
-        console.error(e);
+        this.removeProduct(snapshot.ref.id);
       }
     },
   },
 
   async beforeMount() {
-    let product = this._ref.data();
-    this.product = product;
-    if (this.product.image) {
-      this.imageURL = await storage.child(this.product.image).getDownloadURL();
-    }
+    this._ref.onSnapshot((snapshot) => {
+      let product = snapshot.data();
+      if (!product) return this.removeProduct(snapshot.ref.id);
+      this.snapshot = snapshot.ref;
+      this.product = product;
+      this.product.image &&
+        storage
+          .child(this.product.image)
+          .getDownloadURL()
+          .then((url) => (this.imageURL = url));
+    });
   },
 };
 </script>
 
-<style></style>
+<style>
+.stock code {
+  font-size: 1rem;
+  padding: 5px 10px;
+}
+</style>

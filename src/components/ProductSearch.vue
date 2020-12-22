@@ -97,7 +97,7 @@
           v-for="(productRef, index) in results"
           :key="index"
         >
-          <product-card :_ref="productRef" :removeProduct="removeProduct" />
+          <product-card :_ref="productRef.ref" :removeProduct="removeProduct" />
         </v-col>
       </v-row>
 

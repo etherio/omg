@@ -4,6 +4,7 @@ import router from "./router";
 import vuetify from "./plugins/vuetify";
 import { app, auth } from "./firebase";
 import User from "./app/User";
+import server from "./app/server";
 
 const data = {
   loaded: false,
@@ -15,6 +16,8 @@ const data = {
 
 app.analytics();
 app.performance();
+
+server.useEmulator();
 
 auth().onAuthStateChanged((user) => {
   if (user) {

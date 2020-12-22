@@ -1,7 +1,10 @@
 <template>
   <v-container>
-    <skeleton-loader v-if="loading" type="article, list-item-two-line" />
-    <v-form v-else ref="form" @submit.prevent="onSubmit($event)">
+    <v-overlay :value="loading">
+      <v-progress-circular indeterminate size="64" />
+    </v-overlay>
+
+    <v-form ref="form" @submit.prevent="onSubmit($event)">
       <v-row>
         <v-col cols="12">
           <h2>Add New Product</h2>
@@ -13,6 +16,7 @@
             :rules="rules.name"
             hint="required"
             outlined
+            id="input-name"
           >
             <template v-slot:label>
               <div>Product Name <b>*</b></div>
@@ -25,8 +29,10 @@
           <v-text-field
             v-model="select.code"
             :rules="rules.code"
+            @change="select.code = select.code.toUpperCase()"
             hint="required"
             outlined
+            id="input-code"
           >
             <template v-slot:label>
               <div>Item Code <b>*</b></div>
@@ -43,6 +49,7 @@
             suffix="Ks."
             outlined
             required
+            id="input-price"
           >
             <template v-slot:label>
               <div>Sale Price <b>*</b></div>
@@ -113,22 +120,17 @@ import server from "../app/server";
 import category from "../app/category";
 import color from "../app/color";
 import product from "../app/product";
-import SkeletonLoader from "../components/SkeletonLoader.vue";
 import { storage, firestore } from "../firebase";
 
 export default {
   name: "ProductCreate",
-
-  components: {
-    SkeletonLoader,
-  },
 
   data: () => ({
     loading: false,
     select: {
       name: null,
       code: null,
-      price: 0,
+      price: null,
       description: null,
       category: null,
       colors: [],
@@ -139,7 +141,7 @@ export default {
     rules: {
       name: [(value) => value != null],
       code: [(value) => value != null],
-      price: [(value) => value != null],
+      price: [(value) => value != null, (value) => Number(value) >= 0],
     },
     colors: [],
     categories: [],
@@ -148,8 +150,9 @@ export default {
   methods: {
     async onSubmit(event) {
       if (!this.$refs.form.validate()) {
-        return;
+        return this.goToRequiredField();
       }
+      this.loading = true;
       let {
         data: { timestamp },
       } = await axios.get(server.timestamp);
@@ -187,32 +190,58 @@ export default {
       try {
         if (
           newProduct.category &&
-          !this.categories.includes(newProduct.category)
+          !this.categories.includes(newProduct.category.toLowerCase())
         ) {
-          await category.push(newProduct.category);
-          this.categories.push(newProduct.category);
+          await category.push(newProduct.category.toLowerCase());
+          this.categories.push(newProduct.category.toLowerCase());
         }
 
         if (newProduct.colors.length) {
           let newColors = newProduct.colors.filter(
-            (color) => !this.colors.includes(color)
+            (color) => !this.colors.includes(color.toLowerCase())
           );
           if (newColors.length) {
             newColors.forEach(async (c) => {
-              await color.push(c);
-              this.colors.push(c);
+              await color.push(c.toLowerCase());
+              this.colors.push(c.toLowerCase());
             });
           }
         }
       } catch (e) {
         console.warn(e);
       }
-
+      this.loading = false;
       this.$refs.form.reset();
     },
 
     goToRequiredField() {
-      // if(this.select.)
+      if (!this.select.name) {
+        var el = document.querySelector("#input-name");
+        el.select();
+        return el.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+          inline: "nearest",
+        });
+      }
+      if (!this.select.code) {
+        var el = document.querySelector("#input-code");
+        el.select();
+        return el.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+          inline: "nearest",
+        });
+      }
+      if (!this.select.price) {
+        var el = document.querySelector("#input-price");
+        el.select();
+        return el.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+          inline: "nearest",
+        });
+      }
     },
   },
 
