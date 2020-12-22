@@ -1,12 +1,12 @@
-const json = require("./utils/json");
 const admin = require("./src/admin");
 const allowRoles = ["admin"];
 const acceptRoles = ["admin", "moderator"];
+const sendResponse = require("./utils/sendResponse");
 
 async function setRole(auth, uid, role) {
   if (role) {
     if (!acceptRoles.includes(role)) {
-      throw Error(`Unexcepted input value [${role}]`);
+      return false;
     }
     return await auth.setCustomUserClaims(uid, {
       role,
@@ -16,10 +16,8 @@ async function setRole(auth, uid, role) {
 }
 
 exports.handler = async (event, context) => {
-  var status, response;
   let method = event.httpMethod;
-  let { authorization: token } = event.headers;
-  let { uid, role } = event.queryStringParameters;
+  let { "x-access-token": token } = event.headers;
   if (method === "OPTIONS") {
     method = event.headers["access-control-request-method"];
   }
@@ -27,28 +25,22 @@ exports.handler = async (event, context) => {
     const app = await admin.init();
     const auth = await app.auth();
     const user = await auth.verifyIdToken(token);
-    // allow only "admin"
     if (user && allowRoles.includes(user.role)) {
       try {
-        await setRole(auth, uid, role);
-        status = 202;
+        let { uid, role } = JSON.parse(event.body);
+        switch (method) {
+          case "POST":
+            await setRole(auth, uid, role);
+            return sendResponse(201);
+        }
+        return sendResponse(404);
       } catch (e) {
-        context.fail(json({ error: e.message }));
+        console.error(e);
+        return sendResponse(500, { error: "Unexcepted error" });
       }
     } else {
-      context.fail(json({ error: "Access token is not valid" }));
+      return sendResponse(403, { error: "Access token is invalid" });
     }
-  } else {
-    context.fail(json({ error: "Access token is required" }));
   }
-
-  return {
-    statusCode: status,
-    headers: {
-      "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-      "access-control-allow-origin": "*",
-      "content-type": "application/json;charset=utf-8",
-    },
-    body: json(response),
-  };
+  return sendResponse(204);
 };

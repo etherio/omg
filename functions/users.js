@@ -1,35 +1,25 @@
-const json = require("./utils/json");
+const sendResponse = require("./utils/sendResponse");
 const admin = require("./src/admin");
 const roles = ["admin"];
 
-async function deleteUser(auth, uid) {
-  return {
-    status: 201,
-    response: await auth.deleteUser(uid),
-  };
-}
-
-async function getUser(auth) {
+async function listUsers(auth) {
   const { users } = await auth.listUsers();
-  return {
-    status: 200,
-    response: users.map((user) => ({
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      createdAt: user.metadata.creationTime,
-      lastLogin: user.metadata.lastSignInTime,
-      role: (user.customClaims && user.customClaims.role) || null,
-      providers: user.providerData.map((provider) => provider.providerId),
-    })),
-  };
+
+  return users.map((user) => ({
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName,
+    photoURL: user.photoURL,
+    createdAt: user.metadata.creationTime,
+    lastLogin: user.metadata.lastSignInTime,
+    role: (user.customClaims && user.customClaims.role) || null,
+    providers: user.providerData.map((provider) => provider.providerId),
+  }));
 }
 
 exports.handler = async (event, context) => {
-  var status, response;
   let method = event.httpMethod;
-  let { authorization: token } = event.headers;
+  let { "x-access-token": token } = event.headers;
   let { uid } = event.queryStringParameters;
   if (method === "OPTIONS") {
     method = event.headers["access-control-request-method"];
@@ -44,36 +34,27 @@ exports.handler = async (event, context) => {
         switch (method) {
           case "DELETE":
             if (uid === user.uid) {
-              context.fail(
-                json({
-                  error:
-                    "You cannot delete your own account by using this operation",
-                })
-              );
-            } else {
-              var { status, response } = await deleteUser(auth, uid);
+              return sendResponse(401, {
+                error:
+                  "You cannot delete your own account by using this operation",
+              });
             }
-            break;
-          default:
-            var { status, response } = await getUser(auth, user.uid);
-            response = response.filter((u) => u.uid !== user.uid);
+            return sendResponse(201, await auth.deleteUser(uid));
+          case "GET":
+            let users = await listUsers(auth, uid);
+            console.log(users);
+            return sendResponse(
+              200,
+              users.filter((u) => u.uid !== user.uid)
+            );
         }
       } catch (e) {
-        context.fail(json({ error: "Unexcepted error" }));
+        console.error(e);
+        return sendResponse(500, { error: "Unexcepted error" });
       }
     } else {
-      context.fail(json({ error: "Access token is invalid" }));
+      return sendResponse(403, { error: "Access token is invalid" });
     }
-  } else {
-    context.fail(json({ error: "Access token is required" }));
   }
-  return {
-    statusCode: status,
-    headers: {
-      "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-      "access-control-allow-origin": "*",
-      "content-type": "application/json;charset=utf-8",
-    },
-    body: json(response),
-  };
+  return sendResponse(204);
 };

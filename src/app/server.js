@@ -19,7 +19,7 @@ export default {
     return getUrl("timestamp");
   },
 
-  useEmulator() {
-    serverURL = [location.protocol, location.host].join("/");
+  useEmulator(url) {
+    serverURL = url || [location.protocol, location.host].join("/");
   },
 };

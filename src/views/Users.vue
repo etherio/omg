@@ -96,6 +96,8 @@
 import axios from "axios";
 import server from "../app/server";
 
+server.useEmulator("http://localhost:8888");
+
 const providerIcons = {
   password: {
     icon: "mdi-key",
@@ -136,8 +138,9 @@ export default {
       axios({
         url,
         method: "POST",
+        data: JSON.stringify({ uid, role: "admin" }),
         headers: {
-          Authorization: this.$root.user.stsTokenManager.accessToken,
+          "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
         },
       })
         .then(() => {
@@ -160,8 +163,9 @@ export default {
       axios({
         url,
         method: "POST",
+        data: JSON.stringify({ uid, role: "moderator" }),
         headers: {
-          Authorization: this.$root.user.stsTokenManager.accessToken,
+          "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
         },
       })
         .then(() => {
@@ -182,8 +186,11 @@ export default {
       axios({
         url,
         method: "POST",
+        data: JSON.stringify({
+          uid,
+        }),
         headers: {
-          Authorization: this.$root.user.stsTokenManager.accessToken,
+          "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
         },
       })
         .then(() => {
@@ -207,7 +214,7 @@ export default {
         url,
         method: "DELETE",
         headers: {
-          Authorization: this.$root.user.stsTokenManager.accessToken,
+          "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
         },
       })
         .then((res) => {
@@ -227,7 +234,7 @@ export default {
       url,
       method: "GET",
       headers: {
-        Authorization: this.$root.user.stsTokenManager.accessToken,
+        "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
       },
     })
       .then(({ data }) => {
