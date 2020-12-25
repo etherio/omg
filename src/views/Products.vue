@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ProductCreate from "@/components/ProductCreate.vue";
+import ProductCreate from "../components/ProductCreate.vue";
 
 export default {
   name: "Products",

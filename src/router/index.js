@@ -1,17 +1,24 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "@/views/Home.vue";
+import Dashboard from "@/views/Dashboard.vue";
 import Users from "@/views/Users.vue";
+import Search from "@/views/Home.vue";
 import Profile from "@/views/Profile.vue";
 import Products from "@/views/Products.vue";
+import Categories from "@/views/Categories.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    name: "Dashboard",
+    component: Dashboard,
+  },
+  {
+    path: "/search",
+    name: "Search",
+    component: Search,
   },
   {
     path: "/users",
@@ -27,6 +34,11 @@ const routes = [
     path: "/products",
     name: "Products",
     component: Products,
+  },
+  {
+    path: "/categories",
+    name: "Categories",
+    component: Categories,
   },
 ];
 

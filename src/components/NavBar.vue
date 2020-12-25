@@ -3,22 +3,25 @@
     <slot></slot>
 
     <v-toolbar-title>
-      <v-img
-        alt="OMG"
-        class="shrink mr-2"
-        contain
-        src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-        transition="scale-transition"
-        width="40"
-      />
+      <a :href="$router.resolve('/').href">
+        <v-img
+          id="logo"
+          alt="OMG"
+          class="shrink mr-2"
+          contain
+          :src="logo"
+          transition="scale-transition"
+          width="80"
+        />
+      </a>
     </v-toolbar-title>
 
     <v-spacer></v-spacer>
 
     <!-- user logged in -->
     <div v-if="$root.user">
-      <v-btn text @click="showAccount = !showAccount">
-        <v-avatar color="primary" size="30">
+      <v-btn @click="showAccount = !showAccount" icon x-large class="mr-4">
+        <v-avatar color="primary" size="30" id="avatar">
           <img
             v-if="$root.user.photoURL"
             :src="$root.user.photoURL"
@@ -26,10 +29,6 @@
           />
           <v-icon v-else>mdi-account-circle</v-icon>
         </v-avatar>
-        <span
-          class="text-regular"
-          v-html="$root.user.displayName || 'My Account'"
-        ></span>
       </v-btn>
 
       <!-- dropdrop for account -->
@@ -64,11 +63,13 @@
 </template>
 
 <script>
+import logo from "../assets/omg-logo-white-stroke.png";
 import { auth } from "../firebase";
 
 export default {
   name: "NavBar",
   data: () => ({
+    logo,
     showAccount: false,
   }),
   methods: {
@@ -110,5 +111,10 @@ export default {
   position: absolute;
   top: 65px;
   right: 10px;
+}
+
+#avatar {
+  box-shadow: 0 0 0 1px #fff;
+  border-radius: 50%;
 }
 </style>

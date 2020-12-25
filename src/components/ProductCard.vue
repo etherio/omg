@@ -80,19 +80,17 @@
 </template>
 
 <script>
-import { storage } from "../firebase";
+import Product from "../app/Product";
 
 const imagePlaceholder = "/assets/image.png";
 
 export default {
   name: "ProductCard",
 
-  props: ["_ref", "removeProduct"],
+  props: ["product", "removeProduct"],
 
   data: () => ({
     loading: false,
-    snapshot: null,
-    product: {},
     imageURL: imagePlaceholder,
   }),
 
@@ -114,30 +112,23 @@ export default {
     },
 
     destory() {
+      this.loading = true;
       try {
-        this.loading = true;
-        this.snapshot.delete().then(() => {
-          this.loading = false;
+        this.product.delete().then(() => {
+          this.removeProduct(this.product._id);
+          console.log("done");
         });
       } catch (e) {
         this.loading = false;
-        this.removeProduct(snapshot.ref.id);
+        this.removeProduct(this.product._id);
       }
     },
   },
 
   async beforeMount() {
-    this._ref.onSnapshot((snapshot) => {
-      let product = snapshot.data();
-      if (!product) return this.removeProduct(snapshot.ref.id);
-      this.snapshot = snapshot.ref;
-      this.product = product;
-      this.product.image &&
-        storage
-          .child(this.product.image)
-          .getDownloadURL()
-          .then((url) => (this.imageURL = url));
-    });
+    if (this.product.images && this.product.images.length) {
+      this.product.getPhotoURL().then((url) => (this.imageURL = url));
+    }
   },
 };
 </script>

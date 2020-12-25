@@ -1,5 +1,16 @@
-import { database } from "../firebase";
+import Eloquent from "./Eloquent";
 
-const category = database.child("categories");
+class Category extends Eloquent {
+  getCollection() {
+    return "categories";
+  }
 
-export default category;
+  defineProperties() {
+    return {
+      title: null,
+      total: 0,
+    };
+  }
+}
+
+export default Category;

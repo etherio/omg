@@ -29,15 +29,12 @@
       </nav-bar>
     </v-app-bar>
 
+    <!-- contents -->
     <v-main v-if="$root.loaded">
-      <!-- if User is LOGGED IN -->
       <v-container v-if="$root.user">
-        <!-- if Access Permission is NOT DENIED -->
         <access-denied v-if="$root.denied" />
-        <!-- if Access Permission is DENIED -->
         <router-view v-else></router-view>
       </v-container>
-      <!-- if User is NOT LOGGED IN -->
       <login-page v-else />
     </v-main>
     <v-container v-else>
@@ -45,6 +42,12 @@
         <v-progress-circular size="70" indeterminate color="primary" />
       </div>
     </v-container>
+    <!-- footer -->
+    <v-footer padless>
+      <v-col class="text-center" cols="12">
+        &copy; {{ new Date().getFullYear() }} <strong>OMG</strong>
+      </v-col>
+    </v-footer>
   </v-app>
 </template>
 
@@ -61,18 +64,64 @@ export default {
     drawer: false,
     group: null,
     items: [
-      { icon: "mdi-home", title: "Home", path: "/" },
       {
-        icon: "mdi-account",
-        title: "User",
+        icon: "mdi-apps",
+        title: "Dashboard",
+        path: "/",
+      },
+      {
+        icon: "mdi-account-multiple",
+        title: "Customers",
+        path: "/customers",
+        visibility: ["admin", "moderator"],
+      },
+      {
+        icon: "mdi-store",
+        title: "Products",
+        path: "/products",
+        visibility: ["admin", "moderator"],
+      },
+      {
+        icon: "mdi-tag",
+        title: "Category",
+        path: "/Categories",
+        visibility: ["admin", "moderator"],
+      },
+      {
+        icon: "mdi-dolly",
+        title: "Inventory",
+        path: "/search",
+        visibility: ["admin", "moderator"],
+      },
+      {
+        icon: "mdi-truck",
+        title: "Orders",
+        path: "/orders",
+        visibility: ["admin", "moderator"],
+      },
+      {
+        icon: " mdi-cash-multiple",
+        title: "Transactions",
+        path: "/transactions",
+        visibility: ["admin", "moderator"],
+      },
+      {
+        icon: " mdi-folder-outline",
+        title: "Storage",
+        path: "/storage",
+        visibility: ["admin"],
+      },
+      {
+        icon: "mdi-security",
+        title: "User Permssions",
         path: "/users",
         visibility: ["admin"],
       },
       {
-        icon: "mdi-cart",
-        title: "Products",
-        path: "/products",
-        visibility: ["admin", "moderator"],
+        icon: " mdi-receipt",
+        title: "Logs",
+        path: "/logs",
+        visibility: ["admin"],
       },
     ],
   }),

@@ -40,7 +40,7 @@
           <v-row>
             <v-col cols="6">
               <v-select
-                :items="categories"
+                :items="categories.map((category) => category.title)"
                 v-model="filter.categories"
                 label="Categories"
                 chips
@@ -52,7 +52,7 @@
               <v-select
                 solo
                 v-model="filter.colors"
-                :items="colors"
+                :items="colors.map((color) => color.title)"
                 label="Colors"
                 chips
                 multiple
@@ -65,10 +65,7 @@
                 v-model="filter.ageGroup"
                 step=".5"
                 :thumb-label="hover"
-                @mouseenter.native="hover = true"
-                @mouseleave.native="hover = false"
-                :hint="ageGroupHint"
-                :rules="rules.ageGroup"
+                @input="hover = false"
                 max="15"
                 persistent-hint
               />
@@ -78,7 +75,7 @@
       </v-expansion-panel>
     </v-expansion-panels>
     <div class="ma-2"></div>
-    <div v-if="queried.size || queried.time">
+    <div v-if="queried.time">
       <p>
         showing {{ queried.size }} documents ({{
           (Number(queried.time) || 0).toFixed(2)
@@ -94,10 +91,10 @@
           md="6"
           lg="4"
           xl="3"
-          v-for="(productRef, index) in results"
+          v-for="(product, index) in results"
           :key="index"
         >
-          <product-card :_ref="productRef.ref" :removeProduct="removeProduct" />
+          <product-card :product="product" :removeProduct="removeProduct" />
         </v-col>
       </v-row>
 
@@ -109,27 +106,13 @@
 </template>
 
 <script>
-import product from "../app/product";
-import color from "../app/color";
-import category from "../app/category";
+import Product from "../app/Product";
+import Color from "../app/Color";
+import Category from "../app/Category";
 import ProductCard from "../components/ProductCard.vue";
 
-let MAX_SHOW_RESULTS;
-let docs = {};
-
-const setMaxShowResult = () => {
-  if (outerWidth < 600) {
-    MAX_SHOW_RESULTS = 10; // xs: 1 cards, 10 rows
-  } else if (outerWidth < 960) {
-    MAX_SHOW_RESULTS = 10; // sm: 2 cards, 5 rows
-  } else if (outerWidth < 1264) {
-    MAX_SHOW_RESULTS = 12; // md: 3 cards, 4 rows
-  } else if (outerWidth < 1904) {
-    MAX_SHOW_RESULTS = 12; // lg: 3 cards, 4 rows
-  } else {
-    MAX_SHOW_RESULTS = 16; // xl: 4 cards, 4 rows
-  }
-};
+let MAX_SHOW_RESULTS = 15;
+let products = [];
 
 export default {
   name: "ProductSearch",
@@ -142,9 +125,6 @@ export default {
       categories: [],
       colors: [],
       mode: [true, false],
-    },
-    rules: {
-      ageGroup: [([min, max]) => max > min],
     },
     results: [],
     queried: {
@@ -168,35 +148,24 @@ export default {
       this.page = 0;
       this.loading = true;
       let started = Date.now();
-      let productRef = product;
-      if (!this.fetchAllProducts) {
-        productRef = this.fetchInStockOnly
-          ? product.where("stock", ">", 0)
-          : product.where("stock", "<", 1);
-        // if (!this.filter.mode[0] && !this.filter.mode[1]) {
-        //   this.filter.mode[0] = true;
-        // }
-      }
-      productRef.orderBy("stock");
-      let docRef = await productRef.get();
-      this.results = [];
+      let queried = Product.orderByChild("createdAt");
+      queried = await queried.get();
+      products = await Product.make(queried);
       this.panel = [];
-      docRef.docs.forEach((doc) => {
-        this.results.push(doc);
-      });
+      this.results = [];
       // let pages = docRef.size / MAX_SHOW_RESULTS;
       // let paginate = Math.round(pages);
       // paginate < pages && paginate++;
-      // this.page = 1;
+      this.page = 1;
       // this.paginate.length = paginate;
       // this.paginate.startAt = this.paginate.startAt + MAX_SHOW_RESULTS;
       this.loading = false;
-      this.queried.size = docRef.size;
+      this.queried.size = products.size;
       this.queried.time = (Date.now() - started) / 1000;
     },
 
-    removeProduct(productId) {
-      this.results = this.results.filter((r) => r.ref.id !== productId);
+    removeProduct(_id) {
+      this.results = this.results.filter((r) => r._id !== _id);
       this.queried.size = this.results.length;
       this.queried.time = 0;
     },
@@ -225,12 +194,8 @@ export default {
   },
 
   async beforeMount() {
-    setMaxShowResult();
-    window.addEventListener("resize", setMaxShowResult);
-    let colors = await color.get();
-    let categories = await category.get();
-    this.colors = Object.values(await colors.toJSON());
-    this.categories = Object.values(await categories.toJSON());
+    this.colors = await Color.all();
+    this.categories = await Category.all();
   },
 
   watch: {
@@ -239,16 +204,7 @@ export default {
       this.paginate.page = p;
       this.paginate.endAt = MAX_SHOW_RESULTS * p;
       this.paginate.startAt = this.paginate.endAt - MAX_SHOW_RESULTS;
-      let chunkRef = Object.values(docs).slice(
-        this.paginate.startAt,
-        this.paginate.endAt
-      );
-      chunkRef.forEach((doc) => {
-        let product = doc[0].data();
-        product.id = doc[0].id;
-        docs[doc[0].id][1] = product.ref;
-        this.results.push(product);
-      });
+      this.results = products.slice(this.paginate.startAt, this.paginate.endAt);
     },
   },
 

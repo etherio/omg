@@ -1,5 +1,15 @@
-import { database } from "../firebase";
+import Eloquent from "./Eloquent";
 
-const color = database.child("colors");
+class Color extends Eloquent {
+  getCollection() {
+    return "colors";
+  }
 
-export default color;
+  defineProperties() {
+    return {
+      title: null,
+    };
+  }
+}
+
+export default Color;
