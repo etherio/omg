@@ -47,6 +47,7 @@
             suffix="Ks."
             outlined
             required
+            id="input-price"
           >
             <template v-slot:label>
               <div>Sale Price <b>*</b></div>
@@ -68,7 +69,7 @@
         <v-col cols="5">
           <v-combobox
             v-model="select.category"
-            :items="categories.map((category) => category.title)"
+            :items="categories.map((category) => category._id)"
             label="Category"
             outlined
             persistent-hint
@@ -160,7 +161,7 @@ export default {
       let product = new Product();
       product.name = this.select.name;
       product.code = this.select.code;
-      product.price = this.select.price;
+      product.price = Number(this.select.price);
       product.description = this.select.description;
       product.category = this.select.category;
       product.colors = this.select.colors;
@@ -171,7 +172,7 @@ export default {
       product.createdUid = this.$root.user.uid;
       if (product.category) {
         let categoryRef = this.categories.find(
-          (cat) => cat.title.toLowerCase() == product.category.toLowerCase()
+          (cat) => cat._id.toLowerCase() == product.category.toLowerCase()
         );
         await categoryRef.update({ total: categoryRef.total++ });
       }

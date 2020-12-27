@@ -23,7 +23,7 @@
           {{ product.category }}
         </v-chip>
         <span v-for="color in product.colors" :key="color">
-          <v-chip v-if="color.length" small class="ma-1">
+          <v-chip v-if="color" small class="ma-1">
             {{ color }}
           </v-chip>
         </span>
@@ -45,7 +45,7 @@
         </v-chip>
       </div>
       <div class="my-4 subtitle-1 stock">
-        Stock: <code>{{ product.stock || "out of stock" }}</code>
+        Stock: <code>{{ inventory.stock || "out of stock" }}</code>
       </div>
 
       <div>
@@ -63,13 +63,14 @@
           @click="destory()"
           :disabled="this.$root.role !== 'admin'"
           :loading="loading"
-          >Delete</v-btn
         >
+          Delete
+        </v-btn>
         <span>
-          <v-btn icon color="primary" @click="purchase()">
+          <v-btn icon color="primary" @click="add()">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
-          <v-btn icon color="primary" @click="sale()">
+          <v-btn icon color="primary" @click="remove()">
             <v-icon>mdi-minus</v-icon>
           </v-btn>
         </span>
@@ -81,6 +82,7 @@
 
 <script>
 import Product from "../app/Product";
+import Inventory from "../app/Inventory";
 
 const imagePlaceholder = "/assets/image.png";
 
@@ -92,23 +94,27 @@ export default {
   data: () => ({
     loading: false,
     imageURL: imagePlaceholder,
+    inventory: {
+      stock: 0,
+    },
   }),
 
   methods: {
-    edit() {
+    async edit() {
       //
     },
 
-    purchase() {
-      this.snapshot.update({
-        stock: this.product.stock + 1,
-      });
+    async add(qty) {
+      this.inventory.stock += 1;
+      await this.inventory.update();
     },
 
-    sale() {
-      this.snapshot.update({
-        stock: this.product.stock - 1,
-      });
+    async remove(qty = 1) {
+      if (!this.inventory.stock) {
+        return alert("cannot remove out of stock product");
+      }
+      this.inventory.stock -= 1;
+      await this.inventory.update();
     },
 
     destory() {
@@ -116,19 +122,22 @@ export default {
       try {
         this.product.delete().then(() => {
           this.removeProduct(this.product._id);
-          console.log("done");
         });
       } catch (e) {
-        this.loading = false;
         this.removeProduct(this.product._id);
       }
+      this.loading = false;
     },
   },
 
   async beforeMount() {
-    if (this.product.images && this.product.images.length) {
-      this.product.getPhotoURL().then((url) => (this.imageURL = url));
+    if (this.product.images instanceof Array && this.product.images.length) {
+      this.imageURL = await this.product.getPhotoURL();
     }
+    this.inventory = new Inventory({
+      id: this.product._id,
+    });
+    await this.inventory.get();
   },
 };
 </script>

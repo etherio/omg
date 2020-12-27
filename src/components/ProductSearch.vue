@@ -98,9 +98,9 @@
         </v-col>
       </v-row>
 
-      <div class="text-center">
+      <!-- <div class="text-center">
         <v-pagination v-model="page" :length="paginate.length"></v-pagination>
-      </div>
+      </div> -->
     </div>
   </v-container>
 </template>
@@ -145,20 +145,17 @@ export default {
 
   methods: {
     async search() {
-      this.page = 0;
-      this.loading = true;
       let started = Date.now();
       let queried = Product.orderByChild("createdAt");
-      queried = await queried.get();
-      products = await Product.make(queried);
-      this.panel = [];
+      this.page = 0;
+      this.loading = true;
       this.results = [];
-      // let pages = docRef.size / MAX_SHOW_RESULTS;
-      // let paginate = Math.round(pages);
-      // paginate < pages && paginate++;
+      this.panel = [];
+
+      queried = await queried.get();
+      products = (await Product.make(queried)).reverse();
+
       this.page = 1;
-      // this.paginate.length = paginate;
-      // this.paginate.startAt = this.paginate.startAt + MAX_SHOW_RESULTS;
       this.loading = false;
       this.queried.size = products.size;
       this.queried.time = (Date.now() - started) / 1000;

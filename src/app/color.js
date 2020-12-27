@@ -1,6 +1,6 @@
-import Eloquent from "./Eloquent";
+import Model from "./Model";
 
-class Color extends Eloquent {
+class Color extends Model {
   getCollection() {
     return "colors";
   }

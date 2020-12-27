@@ -1,7 +1,9 @@
 import { auth, storage } from "../firebase";
-import Eloquent from "./Eloquent";
+import Model from "./Model";
+import Category from "./Category";
+import Metadata from "./Metadata";
 
-class Product extends Eloquent {
+class Product extends Model {
   getCollection() {
     return "products";
   }
@@ -23,13 +25,33 @@ class Product extends Eloquent {
     };
   }
 
-  async beforeUpload() {
+  async onSave() {
+    let metadata = new Metadata({
+      id: "products",
+    });
+    if (this.category) {
+      let category = new Category({
+        id: this.category,
+      });
+      await category.get();
+      if (!category._data.total) {
+        category.total = 1;
+        await category.save();
+      } else {
+        category.total += 1;
+        await category.update();
+      }
+    }
+    await metadata.get();
+    metadata.count++;
+    await metadata.update();
+
     if (this.images && this.images.length) {
       let dt = new Date();
       let [m, y] = [dt.getMonth() + 1, dt.getYear() - 100];
       let images = this.images;
       this.images = [`${this.createdUid}/${y}/${m}/${Date.now()}`];
-      return await storage.child(this.images[0]).put(images[0]);
+      await storage.child(this.images[0]).put(images[0]);
     }
   }
 

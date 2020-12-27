@@ -4,49 +4,51 @@
     <div class="text-right">
       <add-category label="Add" icon="mdi-plus" />
     </div>
-    <v-simple-table>
-      <template v-slot:default>
-        <thead>
-          <tr>
-            <th>Category Name</th>
-            <th class="text-center">Products</th>
-            <th><span class="sr-only">actions</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(category, index) in categories" :key="index">
-            <td class="text-capitalize">{{ category.title }}</td>
-            <td class="text-center">{{ category.total }}</td>
-            <td class="text-right">
-              <v-menu bottom left>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn icon v-bind="attrs" v-on="on">
-                    <v-icon>mdi-dots-vertical</v-icon>
-                  </v-btn>
-                </template>
+    <v-card :loading="loading">
+      <v-simple-table>
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th>Category Name</th>
+              <th class="text-center">Products</th>
+              <th><span class="sr-only">actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(category, index) in categories" :key="index">
+              <td class="text-capitalize">{{ category._id }}</td>
+              <td class="text-center">{{ category.total }}</td>
+              <td class="text-right">
+                <v-menu bottom left>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon v-bind="attrs" v-on="on">
+                      <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
 
-                <v-list>
-                  <v-list-item>
-                    <v-list-item-title class="action-link">
-                      Edit
-                    </v-list-item-title>
-                  </v-list-item>
+                  <v-list>
+                    <v-list-item>
+                      <v-list-item-title class="action-link">
+                        Edit
+                      </v-list-item-title>
+                    </v-list-item>
 
-                  <v-list-item>
-                    <v-list-item-title
-                      class="action-link"
-                      @click="deleteCategory(category)"
-                    >
-                      Delete
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </td>
-          </tr>
-        </tbody>
-      </template>
-    </v-simple-table>
+                    <v-list-item>
+                      <v-list-item-title
+                        class="action-link"
+                        @click="deleteCategory(category)"
+                      >
+                        Delete
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </td>
+            </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
+    </v-card>
   </v-container>
 </template>
 
@@ -56,6 +58,7 @@ import AddCategory from "../components/AddCategory.vue";
 
 export default {
   data: () => ({
+    loading: true,
     categories: [],
   }),
   components: {
@@ -72,9 +75,10 @@ export default {
     let categories = await Category.all();
     this.categories = categories.sort(
       (a, b) =>
-        (a.title || "").substr(0, 1).toUpperCase().charCodeAt() -
-        (b.title || "").substr(0, 1).toUpperCase().charCodeAt()
+        (a._id || "").substr(0, 1).toUpperCase().charCodeAt() -
+        (b._id || "").substr(0, 1).toUpperCase().charCodeAt()
     );
+    this.loading = false;
   },
 };
 </script>
