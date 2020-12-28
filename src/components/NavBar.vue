@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import logo from "../assets/omg-logo-white-stroke.png";
+import logo from "../assets/logo.png";
 import { auth } from "../firebase";
 
 export default {

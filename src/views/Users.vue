@@ -95,9 +95,7 @@
 <script>
 import axios from "axios";
 import server from "../app/server";
-if (process.env.NODE_ENV === "development") {
-  server.useEmulator("http://localhost:8888");
-}
+
 const providerIcons = {
   password: {
     icon: "mdi-key",
@@ -130,18 +128,15 @@ export default {
 
   methods: {
     setAdmin(uid) {
-      let url = server.role;
       this.loading = true;
       this.loadingRole = true;
-      url.searchParams.append("uid", uid);
-      url.searchParams.append("role", "admin");
-      axios({
-        url,
-        method: "PUT",
-        headers: {
-          "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
-        },
-      })
+
+      axios
+        .post(server.setRole, {
+          headers: {
+            "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
+          },
+        })
         .then(() => {
           let user = this.users.find((user) => user.uid == uid);
           user.role = "admin";

@@ -1,25 +1,19 @@
-import { auth } from "../firebase";
-
-let serverURL = "https://serene-galileo-f84e05.netlify.app";
-
-function getUrl(path) {
-  const url = new URL(serverURL);
-  url.pathname = [".netlify/functions", path].join("/");
-  return url;
-}
+let BASE_URL = "https://serene-galileo-f84e05.netlify.app";
 
 export default {
-  get users() {
-    return getUrl("users");
-  },
-  get role() {
-    return getUrl("role");
+  get me() {
+    return `${BASE_URL}/api/me`;
   },
   get timestamp() {
-    return getUrl("timestamp");
+    return `${BASE_URL}/api/timestamp`;
   },
-
-  useEmulator(url) {
-    serverURL = url || [location.protocol, location.host].join("/");
+  get listUsers() {
+    return `${BASE_URL}/api/listUsers`;
+  },
+  get setRole() {
+    return `${BASE_URL}/api/setRole`;
+  },
+  get deleteUser() {
+    return `${BASE_URL}/api/deleteUser`;
   },
 };
