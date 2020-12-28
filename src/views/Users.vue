@@ -130,13 +130,19 @@ export default {
     setAdmin(uid) {
       this.loading = true;
       this.loadingRole = true;
-
       axios
-        .post(server.setRole, {
-          headers: {
-            "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
+        .post(
+          server.setRole,
+          {
+            uid,
+            role: "admin",
           },
-        })
+          {
+            headers: {
+              "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
+            },
+          }
+        )
         .then(() => {
           let user = this.users.find((user) => user.uid == uid);
           user.role = "admin";
@@ -149,18 +155,21 @@ export default {
     },
 
     setModerator(uid) {
-      let url = server.role;
       this.loading = true;
       this.loadingRole = true;
-      url.searchParams.append("uid", uid);
-      url.searchParams.append("role", "moderator");
-      axios({
-        url,
-        method: "PUT",
-        headers: {
-          "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
-        },
-      })
+      axios
+        .post(
+          server.setRole,
+          {
+            uid,
+            role: "moderator",
+          },
+          {
+            headers: {
+              "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
+            },
+          }
+        )
         .then(() => {
           let user = this.users.find((user) => user.uid == uid);
           user.role = "moderator";
@@ -173,16 +182,19 @@ export default {
     },
 
     setUser(uid) {
-      let url = server.role;
       this.loading = this.loadingDelete = this.loadingRole = true;
-      url.searchParams.append("uid", uid);
-      axios({
-        url,
-        method: "PUT",
-        headers: {
-          "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
-        },
-      })
+      axios
+        .post(
+          server.setRole,
+          {
+            uid,
+          },
+          {
+            headers: {
+              "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
+            },
+          }
+        )
         .then(() => {
           let user = this.users.find((user) => user.uid == uid);
           user.role = null;
@@ -196,17 +208,20 @@ export default {
 
     deleteUser(uid) {
       let user = this.users.find((u) => u.uid == uid);
-      if (user.role) return this.setUser(uid);
-      let url = server.users;
+      // if (user.role) return this.setUser(uid);
       this.loadingDelete = this.loading = true;
-      url.searchParams.append("uid", uid);
-      axios({
-        url,
-        method: "DELETE",
-        headers: {
-          "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
-        },
-      })
+      axios
+        .post(
+          server.deleteUser,
+          {
+            uid,
+          },
+          {
+            headers: {
+              "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
+            },
+          }
+        )
         .then((res) => {
           this.users = this.users.filter((user) => user.uid != uid);
           this.loadingDelete = this.loading = false;
@@ -218,15 +233,13 @@ export default {
     },
   },
 
-  beforeMount() {
-    let url = server.users;
-    axios({
-      url,
-      method: "GET",
-      headers: {
-        "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
-      },
-    })
+  created() {
+    axios
+      .get(server.listUsers, {
+        headers: {
+          "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
+        },
+      })
       .then(({ data }) => {
         data.forEach((user) => {
           user.providers = user.providers.map(
