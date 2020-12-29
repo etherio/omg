@@ -45,7 +45,8 @@
     <!-- footer -->
     <v-footer padless>
       <v-col class="text-center" cols="12">
-        &copy; {{ new Date().getFullYear() }} <strong>OMG</strong>
+        &copy; {{ translateNumber(new Date().getFullYear()) }}
+        <strong>OMG</strong>
       </v-col>
     </v-footer>
   </v-app>
@@ -55,6 +56,7 @@
 import AccessDenied from "./components/AccessDenied.vue";
 import NavBar from "./components/NavBar.vue";
 import LoginPage from "./components/LoginPage.vue";
+import { translateNumber } from "./app/burmese";
 
 export default {
   name: "App",
@@ -66,60 +68,36 @@ export default {
     items: [
       {
         icon: "mdi-apps",
-        title: "Dashboard",
+        title: "မူလစာမျက်နှာ",
         path: "/",
       },
       {
         icon: "mdi-account-multiple",
-        title: "Customers",
+        title: "အဆက်အသွယ်များ",
         path: "/customers",
         visibility: ["admin", "moderator"],
       },
       {
         icon: "mdi-store",
-        title: "Products",
+        title: "ကုန်ပစ္စည်းများ",
         path: "/products",
         visibility: ["admin", "moderator"],
       },
       {
-        icon: "mdi-tag",
-        title: "Category",
-        path: "/Categories",
-        visibility: ["admin", "moderator"],
-      },
-      {
-        icon: "mdi-dolly",
-        title: "Inventory",
-        path: "/search",
-        visibility: ["admin", "moderator"],
-      },
-      {
         icon: "mdi-truck",
-        title: "Orders",
+        title: "အော်ဒါများ",
         path: "/orders",
         visibility: ["admin", "moderator"],
       },
       {
-        icon: " mdi-cash-multiple",
-        title: "Transactions",
-        path: "/transactions",
-        visibility: ["admin", "moderator"],
-      },
-      {
-        icon: " mdi-folder-outline",
-        title: "Storage",
-        path: "/storage",
-        visibility: ["admin"],
-      },
-      {
         icon: "mdi-security",
-        title: "User Permssions",
+        title: "ခွင့်ပြုချက်များ",
         path: "/users",
         visibility: ["admin"],
       },
       {
         icon: " mdi-receipt",
-        title: "Logs",
+        title: "မှတ်တမ်းများ",
         path: "/logs",
         visibility: ["admin"],
       },
@@ -132,7 +110,11 @@ export default {
     AccessDenied,
   },
 
-  beforeMount() {
+  methods: {
+    translateNumber,
+  },
+
+  created() {
     this.$root.overlay = (value) => {
       this.overlay = value;
     };

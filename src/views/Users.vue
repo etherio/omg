@@ -188,6 +188,7 @@ export default {
           server.setRole,
           {
             uid,
+            role: null,
           },
           {
             headers: {
@@ -208,7 +209,7 @@ export default {
 
     deleteUser(uid) {
       let user = this.users.find((u) => u.uid == uid);
-      // if (user.role) return this.setUser(uid);
+      if (user.role) return this.setUser(uid);
       this.loadingDelete = this.loading = true;
       axios
         .post(

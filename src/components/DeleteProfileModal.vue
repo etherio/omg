@@ -1,25 +1,26 @@
 <template>
   <v-container>
     <v-btn color="error" class="pl-8 pr-10" @click="dialog = !dialog">
-      <v-icon class="pr-2">mdi-delete</v-icon> Delete Account
+      <v-icon class="pr-2">mdi-delete</v-icon> အကောင့်ဖျက်သိမ်းရန်
     </v-btn>
 
-    <v-dialog v-model="dialog" persistent max-width="400">
+    <v-dialog v-model="dialog" persistent max-width="500">
       <v-card>
         <v-card-title class="headline">
-          Are you sure?
+          အကောင့်ဖျက်သိမ်းခြင်း
         </v-card-title>
         <v-card-text>
-          Your account data will be <b>permanently deleted</b>. This action
-          cannot be undone.
+          သင်၏အကောင့်ဆိုင်ရာခွင့်ပြုချက်များကို
+          <b>အပြီးတိုင်ပယ်ဖျက်သွားမည်</b>ဖြစ်သည်။ ဤလုပ်ဆောင်ချက်ကို
+          လုပ်ဆောင်ပြီးနောက် ဘွာတေးလုပ်လို့မရပါ။
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="grey" text @click="dialog = false">
-            Cancel
+            ပယ်ဖျက်ရန်
           </v-btn>
           <v-btn color="red" text @click="deleteAccount()">
-            Delete
+            ဖျက်သိမ်းရန်
           </v-btn>
         </v-card-actions>
       </v-card>

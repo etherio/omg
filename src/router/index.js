@@ -13,32 +13,42 @@ const routes = [
   {
     path: "/",
     name: "Dashboard",
-    component: Dashboard,
+    component: () => import("../views/Dashboard.vue"),
   },
   {
     path: "/search",
     name: "Search",
-    component: Search,
+    component: () => import("../components/ProductSearch.vue"),
   },
   {
     path: "/users",
     name: "Users",
-    component: Users,
+    component: () => import("../views/Users.vue"),
   },
   {
     path: "/profile",
     name: "Profile",
-    component: Profile,
+    component: () => import("../views/Profile.vue"),
   },
   {
     path: "/products",
     name: "Products",
-    component: Products,
+    component: () => import("../views/Products.vue"),
+  },
+  {
+    path: "/product/new",
+    name: "Create new product",
+    component: () => import("../components/ProductCreate.vue"),
+  },
+  {
+    path: "/product/:id",
+    name: "Product",
+    component: () => import("../views/Product.vue"),
   },
   {
     path: "/categories",
     name: "Categories",
-    component: Categories,
+    component: () => import("../views/Categories.vue"),
   },
 ];
 

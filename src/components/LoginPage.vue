@@ -1,59 +1,77 @@
 <template>
-  <v-container justify="center">
-    <v-overlay :value="loading">
-      <v-progress-circular indeterminate size="64" />
-    </v-overlay>
+  <v-container>
+    <v-row align="center" justify="center">
+      <v-col cols="12" sm="8" class="mt-10">
+        <v-card :loading="loading" class="mx-5 px-4 pt-4">
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-card-title>
+              <span class="text-center w">လက်မှတ်ထိုးဝင်ပါ</span>
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="email"
+                label="သင့်အီးမေးလ် ထည့်ပါ"
+                type="email"
+                :rules="rules.email"
+                @keyup.enter="signInWithEmailAndPassword()"
+                outlined
+              />
+              <v-text-field
+                v-model="password"
+                label="သင့်စကားဝှက် ထည့်ပါ"
+                autocapitalize="off"
+                :append-icon="showPassword ? '' : ''"
+                :type="showPassword ? 'text' : 'password'"
+                :rules="rules.password"
+                @keyup.enter="signInWithEmailAndPassword()"
+                outlined
+              />
+              <v-alert
+                v-if="error"
+                dense
+                outlined
+                type="error"
+                v-text="error"
+              ></v-alert>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer />
+              <v-btn
+                color="primary"
+                block
+                @click="signInWithEmailAndPassword()"
+              >
+                ဝင်ရောက်ရန်
+              </v-btn>
+              <v-spacer />
+            </v-card-actions>
+          </v-form>
+          <v-card-subtitle class="text-center">
+            <v-btn
+              class="mt-5"
+              color="red"
+              dark
+              @click="signInWithGoogle()"
+              icon
+              large
+            >
+              <v-icon>mdi-google</v-icon>
+            </v-btn>
 
-    <v-form ref="form" v-model="valid" lazy-validation>
-      <h2 class="mb-4">Log In with Email</h2>
-      <v-text-field
-        v-model="email"
-        label="Email"
-        type="email"
-        :rules="rules.email"
-        @keyup.enter="signInWithEmailAndPassword()"
-        outlined
-      />
-      <v-text-field
-        v-model="password"
-        label="Password"
-        autocapitalize="off"
-        :append-icon="showPassword ? '' : ''"
-        :type="showPassword ? 'text' : 'password'"
-        :rules="rules.password"
-        @keyup.enter="signInWithEmailAndPassword()"
-        outlined
-      />
-      <v-btn
-        class="my-4"
-        align="center"
-        color="primary"
-        large
-        block
-        outlined
-        @click="signInWithEmailAndPassword()"
-      >
-        Log In
-      </v-btn>
-      <v-alert v-if="error" dense outlined type="error">{{ error }}</v-alert>
-    </v-form>
-
-    <v-divider class="my-10" />
-
-    <v-btn class="mt-5" color="error" @click="signInWithGoogle()" block large>
-      <span class="mr-2"> <v-icon>mdi-google</v-icon> Log In with Google </span>
-    </v-btn>
-    <v-btn
-      class="mt-5"
-      color="primary"
-      @click="signInWithFacebook()"
-      block
-      large
-    >
-      <span class="mr-2">
-        <v-icon>mdi-facebook</v-icon> Log In with Facebook
-      </span>
-    </v-btn>
+            <v-btn
+              class="mt-5"
+              color="blue"
+              dark
+              @click="signInWithFacebook()"
+              icon
+              large
+            >
+              <v-icon>mdi-facebook</v-icon>
+            </v-btn>
+          </v-card-subtitle>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

@@ -6,7 +6,7 @@ import "firebase/firestore";
 import "firebase/performance";
 import "firebase/storage";
 
-const DATABASE_NAME = "Y3RrZXNxbVBIR0pIVzk1Z012bkw=";
+export const databaseName = "ctkesqmPHGJHW95gMvnL";
 
 export const app = firebase.initializeApp({
   appId: atob("MTo5NjYwNDA3NDU0NDI6d2ViOjJhODNjMDgyMTM3MjFjZGFhY2I1YmI="),
@@ -17,15 +17,13 @@ export const app = firebase.initializeApp({
   databaseURL: "https://etherio-vue.firebaseio.com",
 });
 
-export const database = firebase.database().ref(atob(DATABASE_NAME));
+export const database = firebase.database().ref(databaseName);
 
-export const storage = firebase
-  .storage()
-  .ref(`databases/${atob(DATABASE_NAME)}`);
+export const storage = firebase.storage().ref(`databases/${databaseName}`);
 
 export const firestore = firebase
   .firestore()
   .collection("public")
-  .doc(atob(DATABASE_NAME));
+  .doc(databaseName);
 
 export const auth = firebase.auth;

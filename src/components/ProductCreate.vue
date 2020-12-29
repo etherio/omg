@@ -7,7 +7,12 @@
     <v-form ref="form" @submit.prevent="onSubmit($event)">
       <v-row>
         <v-col cols="12">
-          <h2>Add New Product</h2>
+          <h2>
+            <v-btn icon @click="$router.back()">
+              <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
+            Add New Product
+          </h2>
         </v-col>
         <!-- Product Name -->
         <v-col cols="12">
@@ -179,7 +184,7 @@ export default {
       await product.save();
       this.$refs.form.reset();
       this.loading = false;
-      // this.$router.go("/search");
+      this.$router.replace("/products");
     },
 
     goToRequiredField() {

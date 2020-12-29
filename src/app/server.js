@@ -1,5 +1,9 @@
 let BASE_URL = "https://serene-galileo-f84e05.netlify.app";
 
+if (process.env.NODE_ENV === "development") {
+  BASE_URL = "http://localhost:8888";
+}
+
 export default {
   get me() {
     return `${BASE_URL}/api/me`;
@@ -15,5 +19,11 @@ export default {
   },
   get deleteUser() {
     return `${BASE_URL}/api/deleteUser`;
+  },
+  get listProducts() {
+    return `${BASE_URL}/api/listProducts`;
+  },
+  get getProduct() {
+    return `${BASE_URL}/api/getProduct`;
   },
 };
