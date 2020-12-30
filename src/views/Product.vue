@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card :loading="loading" v-if="!loading">
+    <v-card :loading="loading">
       <v-card-title>
         <v-btn icon to="/products">
           <v-icon>mdi-arrow-left</v-icon>
@@ -11,7 +11,16 @@
       <v-card-text>
         <v-row>
           <v-col cols="5">
-            <v-img :src="photoURL" alt="image"></v-img>
+            <v-img :src="photoURL" :lazy-src="placeholder" alt="image">
+              <template v-slot:placeholder>
+                <v-row class="fill-height ma-0" align="center" justify="center">
+                  <v-progress-circular
+                    indeterminate
+                    color="grey lighten-5"
+                  ></v-progress-circular>
+                </v-row>
+              </template>
+            </v-img>
           </v-col>
           <v-col cols="7">
             <v-card-subtitle id="price">
@@ -58,6 +67,7 @@
 <script>
 import axios from "axios";
 import server from "../app/server";
+import placeholder from "../assets/img/image.png";
 import { databaseName, storage } from "../firebase";
 import { translateAge, translateNumber } from "../app/burmese";
 
@@ -73,9 +83,10 @@ export default {
     images: [],
     colors: [],
     stock: 0,
-    photoURL: "/assets/image.png",
+    photoURL: null,
     loading: true,
     editing: false,
+    placeholder,
   }),
   created() {
     let url = new URL(server.getProduct);

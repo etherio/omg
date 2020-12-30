@@ -31,11 +31,7 @@
                 <td class="text-left">
                   <v-row>
                     <v-col>
-                      <v-img
-                        lazy-src="/assets/image.png"
-                        :src="product.photoURL"
-                        width="120"
-                      >
+                      <v-img :src="product.photoURL" width="120">
                         <template v-slot:placeholder>
                           <v-row
                             class="fill-height ma-0"
@@ -69,7 +65,7 @@
                     {{ age(product.maxAge) }}ထိ
                   </span>
                 </td>
-                <td class="text-center"></td>
+                <td class="text-center">{{ product.stock }}</td>
               </tr>
             </tbody>
           </template>
@@ -83,8 +79,9 @@
 import axios from "axios";
 import server from "../app/server";
 import ProductCreate from "../components/ProductCreate.vue";
-import { databaseName, storage } from "../firebase";
+import { databaseName, database, storage } from "../firebase";
 import { translateNumber, translateAge } from "../app/burmese";
+import placeholder from "../assets/img/image.png";
 
 export default {
   name: "Products",
@@ -118,8 +115,21 @@ export default {
         headers: { "X-Access-Token": this.$root.user.token },
       })
       .then(({ data }) => {
+        const db = database.child("inventory");
         this.products = data.map((product) => {
-          product.photoURL = "/assets/image.png";
+          product.photoURL = placeholder;
+          product.stock = 0;
+
+          db.child(product.id)
+            .child("stock")
+            .get()
+            .then((inventory) => {
+              return inventory.exists() ? inventory.val() : "-";
+            })
+            .then((value) => {
+              product.stock = value;
+            });
+
           if (product.images && product.images.length) {
             storage
               .child(product.images[0])

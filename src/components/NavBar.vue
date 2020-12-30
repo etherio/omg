@@ -42,7 +42,7 @@
                   ><v-icon>mdi-account</v-icon></v-list-item-icon
                 >
                 <v-list-item-content>
-                  <v-list-item-title>Profile</v-list-item-title>
+                  <v-list-item-title>အကောင့်ပရိုဖိုင်</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
               <!-- sign out action -->
@@ -51,7 +51,7 @@
                   ><v-icon>mdi-login-variant</v-icon></v-list-item-icon
                 >
                 <v-list-item-content>
-                  <v-list-item-title>Log Out</v-list-item-title>
+                  <v-list-item-title>အကောင့်မှထွက်ရန်</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -63,7 +63,8 @@
 </template>
 
 <script>
-import logo from "../assets/logo.png";
+import { stateSwitch } from "../app/soundEffects";
+import logo from "../assets/img/logo.png";
 import { auth } from "../firebase";
 
 export default {
@@ -80,12 +81,11 @@ export default {
       }
       this.$router.replace("/profile");
     },
-    signOut() {
+    async signOut() {
       let { name } = this.$route;
       this.showAccount = false;
-      auth()
-        .signOut()
-        .then(() => (name === "Home" ? null : this.$router.replace("/")));
+      await stateSwitch.offline().play();
+      await auth().signOut();
     },
   },
   watch: {

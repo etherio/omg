@@ -1,8 +1,8 @@
-let BASE_URL = "https://omg.etherio.net";
+let BASE_URL = "https://omg-api.etherio.net";
 
-if (process.env.NODE_ENV === "development") {
-  BASE_URL = "http://localhost:8888";
-}
+// if (process.env.NODE_ENV === "development") {
+//   BASE_URL = "http://localhost:8888";
+// }
 
 export default {
   get me() {

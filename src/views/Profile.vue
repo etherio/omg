@@ -36,6 +36,7 @@
 <script>
 import { auth } from "../firebase";
 import DeleteProfileModal from "../components/DeleteProfileModal.vue";
+import placeholder from "../assets/img/image.png";
 
 export default {
   name: "Profile",
@@ -70,7 +71,7 @@ export default {
     this.name = this.$root.user.displayName || " ";
     this.email = this.$root.user.email || " ";
     this.phone = this.$root.user.phoneNumber || " ";
-    this.avatar = this.$root.user.photoURL || "/assets/image.png";
+    this.avatar = this.$root.user.photoURL || placeholder;
   },
 };
 </script>

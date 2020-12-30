@@ -34,11 +34,7 @@
       </v-container>
       <login-page v-else />
     </v-main>
-    <v-container>
-      <div id="preload">
-        <v-progress-circular size="70" indeterminate color="primary" />
-      </div>
-    </v-container>
+
     <!-- footer -->
     <v-footer padless>
       <v-col class="text-center" cols="12">
@@ -47,6 +43,13 @@
       </v-col>
     </v-footer>
   </v-app>
+
+  <!-- loading -->
+  <v-container v-else>
+    <div id="preload">
+      <v-progress-circular size="70" indeterminate color="primary" />
+    </div>
+  </v-container>
 </template>
 
 <script>
@@ -54,6 +57,8 @@ import AccessDenied from "./components/AccessDenied.vue";
 import NavBar from "./components/NavBar.vue";
 import LoginPage from "./components/LoginPage.vue";
 import { translateNumber } from "./app/burmese";
+import { stateSwitch } from "./app/soundEffects";
+import { auth } from "./firebase";
 
 export default {
   name: "App",
@@ -120,6 +125,12 @@ export default {
     this.$root.overlay = (value) => {
       this.overlay = value;
     };
+
+    auth()
+      .getRedirectResult()
+      .then((data) => {
+        if (!data) return;
+      });
   },
 };
 </script>

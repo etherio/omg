@@ -2,8 +2,8 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import vuetify from "./plugins/vuetify";
-import { app, auth } from "./firebase";
 import User from "./app/User";
+import { app, auth } from "./firebase";
 
 const data = {
   loaded: false,
@@ -16,8 +16,8 @@ if (process.env.NODE_ENV === "production") {
   app.performance();
 }
 
-auth().onAuthStateChanged(async (user) => {
-  User.resolve(user).then((user) => {
+auth().onAuthStateChanged((user) => {
+  User.resolve(user).then(async (user) => {
     data.user = user;
     data.loaded = true;
   });

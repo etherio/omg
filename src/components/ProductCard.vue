@@ -83,8 +83,7 @@
 <script>
 import Product from "../app/Product";
 import Inventory from "../app/Inventory";
-
-const imagePlaceholder = "/assets/image.png";
+import placeholder from "../assets/img/image.png";
 
 export default {
   name: "ProductCard",
@@ -93,7 +92,7 @@ export default {
 
   data: () => ({
     loading: false,
-    imageURL: imagePlaceholder,
+    imageURL: placeholder,
     inventory: {
       stock: 0,
     },
