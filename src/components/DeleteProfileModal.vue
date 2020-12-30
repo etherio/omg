@@ -30,6 +30,7 @@
 
 <script>
 import firebase from "firebase/app";
+import soundEffects from "../app/soundEffects";
 
 export default {
   name: "DeleteProfileModal",
@@ -37,6 +38,8 @@ export default {
     dialog: false,
   }),
   methods: {
+    soundEffects,
+
     async deleteAccount() {
       this.dialog = false;
       try {
@@ -54,6 +57,11 @@ export default {
             this.$parent.error = e.message;
         }
       }
+    },
+  },
+  watch: {
+    dialog(value) {
+      value === true && soundEffects.errorAlert01.play();
     },
   },
 };

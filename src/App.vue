@@ -1,43 +1,40 @@
 <template>
-  <v-app>
+  <v-app v-if="$root.loaded">
     <v-overlay :value="overlay" />
 
-    <v-navigation-drawer v-model="drawer" fixed temporary>
+    <v-navigation-drawer v-model="drawer" fixed temporary v-if="$root.user">
       <v-list nav dense>
         <v-list-item-group
           v-model="group"
           active-class="deep-purple--text text--accent-4"
         >
-          <v-list-item
-            v-for="(item, index) in items"
-            v-if="item.visibility ? item.visibility.includes($root.role) : true"
-            :key="index"
-            :to="item.path"
-          >
-            <v-list-item-icon>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
+          <template v-for="(item, index) in items">
+            <v-list-item :to="item.path" :key="index" v-if="can(item.visible)">
+              <v-list-item-icon>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </template>
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="primary" dark>
+    <v-app-bar app color="primary" dark v-if="$root.user">
       <nav-bar>
         <v-app-bar-nav-icon @click="drawer = true" />
       </nav-bar>
     </v-app-bar>
 
     <!-- contents -->
-    <v-main v-if="$root.loaded">
+    <v-main>
       <v-container v-if="$root.user">
-        <access-denied v-if="$root.denied" />
-        <router-view v-else></router-view>
+        <router-view v-if="$root.user.role" />
+        <access-denied v-else />
       </v-container>
       <login-page v-else />
     </v-main>
-    <v-container v-else>
+    <v-container>
       <div id="preload">
         <v-progress-circular size="70" indeterminate color="primary" />
       </div>
@@ -75,31 +72,31 @@ export default {
         icon: "mdi-account-multiple",
         title: "အဆက်အသွယ်များ",
         path: "/customers",
-        visibility: ["admin", "moderator"],
+        visible: ["admin", "moderator"],
       },
       {
         icon: "mdi-store",
         title: "ကုန်ပစ္စည်းများ",
         path: "/products",
-        visibility: ["admin", "moderator"],
+        visible: ["admin", "moderator"],
       },
       {
         icon: "mdi-truck",
         title: "အော်ဒါများ",
         path: "/orders",
-        visibility: ["admin", "moderator"],
+        visible: ["admin", "moderator"],
       },
       {
         icon: "mdi-security",
         title: "ခွင့်ပြုချက်များ",
         path: "/users",
-        visibility: ["admin"],
+        visible: ["admin"],
       },
       {
         icon: " mdi-receipt",
         title: "မှတ်တမ်းများ",
         path: "/logs",
-        visibility: ["admin"],
+        visible: ["admin"],
       },
     ],
   }),
@@ -112,6 +109,11 @@ export default {
 
   methods: {
     translateNumber,
+
+    can(visible) {
+      let user = this.$root.user;
+      return visible ? visible.includes(user && user.role) : true;
+    },
   },
 
   created() {

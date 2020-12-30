@@ -1,16 +1,18 @@
 <template>
-  <v-container>
+  <v-container class="mt-5 pa-2">
     <v-row align="center" justify="center">
-      <v-col cols="12" sm="8" class="mt-10">
-        <v-card :loading="loading" class="mx-5 px-4 pt-4">
+      <v-col cols="12" sm="8">
+        <v-card :loading="loading" class="px-2" elevation="4">
           <v-form ref="form" v-model="valid" lazy-validation>
-            <v-card-title>
-              <span class="text-center w">လက်မှတ်ထိုးဝင်ပါ</span>
+            <v-card-title class="pt-6 pb-5">
+              <span class="text-center" style="width: 100%;">
+                လက်မှတ်ထိုးဝင်ပါ
+              </span>
             </v-card-title>
             <v-card-text>
               <v-text-field
                 v-model="email"
-                label="သင့်အီးမေးလ် ထည့်ပါ"
+                label="သင့်အီးမေးလ်ထည့်ပါ"
                 type="email"
                 :rules="rules.email"
                 @keyup.enter="signInWithEmailAndPassword()"
@@ -18,7 +20,7 @@
               />
               <v-text-field
                 v-model="password"
-                label="သင့်စကားဝှက် ထည့်ပါ"
+                label="သင့်စကားဝှက်ထည့်ပါ"
                 autocapitalize="off"
                 :append-icon="showPassword ? '' : ''"
                 :type="showPassword ? 'text' : 'password'"
@@ -113,7 +115,7 @@ export default {
 
           switch (err.code) {
             case "auth/user-not-found":
-              this.error = "Email does not exist";
+              this.error = "အကောင့်ရှာမတွေ့ပါ";
               break;
             case "auth/wrong-password":
               this.error = "Incorrect password";

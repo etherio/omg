@@ -1,18 +1,13 @@
-import { auth } from "../firebase";
-
 export default class User {
-  static async getRole() {
-    let user, token;
-    if (!(user = auth().currentUser)) {
-      return false;
+  static resolve(user) {
+    if (!user) {
+      return Promise.resolve(null);
     }
-    token = await user.getIdTokenResult(true);
-    user = user.toJSON();
-    user.role = token.role;
-    user.token = token.token;
-    return {
-      user,
-      role: token.claims.role,
-    };
+    return user.getIdTokenResult(true).then(({ token, claims }) => {
+      user = user.toJSON();
+      user.token = token;
+      user.role = claims.role;
+      return user;
+    });
   }
 }

@@ -66,7 +66,7 @@ export default {
     },
   },
 
-  beforeMount() {
+  created() {
     this.name = this.$root.user.displayName || " ";
     this.email = this.$root.user.email || " ";
     this.phone = this.$root.user.phoneNumber || " ";

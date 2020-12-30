@@ -8,27 +8,19 @@ import User from "./app/User";
 const data = {
   loaded: false,
   user: null,
-  denied: null,
-  role: null,
   overlay: () => null,
 };
 
-app.analytics();
-app.performance();
+if (process.env.NODE_ENV === "production") {
+  app.analytics();
+  app.performance();
+}
 
-auth().onAuthStateChanged((user) => {
-  if (user) {
-    User.getRole().then(({ user, role }) => {
-      data.role = role;
-      data.denied = !Boolean(role);
-      data.user = user;
-      data.loaded = true;
-    });
-  } else {
-    data.role = null;
-    data.user = null;
+auth().onAuthStateChanged(async (user) => {
+  User.resolve(user).then((user) => {
+    data.user = user;
     data.loaded = true;
-  }
+  });
 });
 
 Vue.config.productionTip = true;
