@@ -1,7 +1,7 @@
 name: Vue@2
 on:
   push:
-    branch: 
+    branches: 
       - master
 
 jobs:
