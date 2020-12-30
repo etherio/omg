@@ -1,0 +1,24 @@
+name: Vue@2
+on:
+  push:
+    branch: 
+      - master
+
+jobs:
+  build:
+    run-ons: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1 
+        with: node-version: 12 
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Deploy
+        uses: crazy-max/ghaction-github-pages@v1
+        with:
+          target_branch: gh-pages
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_REPO_TOKEN }}
+        
