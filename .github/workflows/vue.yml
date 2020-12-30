@@ -12,7 +12,11 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
+          env:
+            SCERET_TOKEN: {{secret.gh-page.GPA_TOKEN}}
       - run: rm -rf ./docs >/dev/null 2>&1
+      - run: git config user.name {{secret.gh-page.USER_NAME}}
+      - run: git config user.email {{secret.gh-page.USER_EMAIL}}
       - run: npm install
       - run: ls -lA
       - run: node bin/deploy.js
