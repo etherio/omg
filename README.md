@@ -1,6 +1,6 @@
 # omg
 
-![Vue](https://github.com/etherio/omg/workflows/Vue/badge.svg)
+[![Vue](https://github.com/etherio/omg/workflows/Vue/badge.svg)](https://github.com/etherio/omg/actions)
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/4a1fea98-6608-4e58-a29b-ebf2f2d7910b/deploy-status)](https://app.netlify.com/sites/serene-galileo-f84e05/deploys)
 
