@@ -1,7 +1,7 @@
-let BASE_URL = "https://serene-galileo-f84e05.netlify.app";
+let BASE_URL = "https://api.omg.etherio.net";
 
 if (process.env.NODE_ENV === "development") {
-  // BASE_URL = "http://localhost:8888";
+  BASE_URL = "http://localhost:8888";
 }
 
 export default {
