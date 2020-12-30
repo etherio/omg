@@ -14,7 +14,5 @@ jobs:
           node-version: 12
       - run: rm -rf ./docs >/dev/null 2>&1
       - run: npm install
-      - run: npm run build
       - run: ls -lA
-      - run: npm jnstall execa
       - run: node bin/deploy.js
