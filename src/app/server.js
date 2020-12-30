@@ -1,4 +1,4 @@
-let BASE_URL = "https://api.omg.etherio.net";
+let BASE_URL = "https://omg.etherio.net";
 
 if (process.env.NODE_ENV === "development") {
   BASE_URL = "http://localhost:8888";
