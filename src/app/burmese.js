@@ -14,6 +14,7 @@ const year = "နှစ်";
 const half = "ခွဲ";
 
 export function translateNumber(input) {
+  if (!input) return input;
   return input
     .toString()
     .split("")
@@ -22,6 +23,7 @@ export function translateNumber(input) {
 }
 
 export function translateAge(age) {
+  if (!age) return age;
   let [Y, M] = age
     .toString()
     .split(".")

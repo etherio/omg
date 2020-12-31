@@ -1,23 +1,20 @@
 <template>
   <v-container class="mt-2">
-    <h2 class="mb-3">Categories</h2>
-    <div class="text-right">
-      <add-category label="Add" icon="mdi-plus" />
-    </div>
+    <h2 class="mb-3">ကုန်ပစ္စည်းအမျိုးအစားများ</h2>
     <v-card :loading="loading">
       <v-simple-table>
         <template v-slot:default>
           <thead>
             <tr>
-              <th>Category Name</th>
-              <th class="text-center">Products</th>
+              <th>အမျိုးအစား</th>
+              <th class="text-center">ကုန်ပစ္စည်းများ</th>
               <th><span class="sr-only">actions</span></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(category, index) in categories" :key="index">
               <td class="text-capitalize">{{ category._id }}</td>
-              <td class="text-center">{{ category.total }}</td>
+              <td class="text-center">{{ num(category.total) }} မျိုး</td>
               <td class="text-right">
                 <v-menu bottom left>
                   <template v-slot:activator="{ on, attrs }">
@@ -28,17 +25,11 @@
 
                   <v-list>
                     <v-list-item>
-                      <v-list-item-title class="action-link">
-                        Edit
-                      </v-list-item-title>
-                    </v-list-item>
-
-                    <v-list-item>
                       <v-list-item-title
-                        class="action-link"
+                        class="action-link red--text"
                         @click="deleteCategory(category)"
                       >
-                        Delete
+                        <v-icon color="red">mdi-delete</v-icon> ဖျက်ရန်
                       </v-list-item-title>
                     </v-list-item>
                   </v-list>
@@ -53,6 +44,7 @@
 </template>
 
 <script>
+import { translateNumber } from "../app/burmese";
 import Category from "../app/Category";
 import AddCategory from "../components/AddCategory.vue";
 
@@ -65,6 +57,9 @@ export default {
     AddCategory,
   },
   methods: {
+    num(value) {
+      return translateNumber(parseInt(value) || 0);
+    },
     deleteCategory(cat) {
       Category.remove(cat._id).then(() => {
         this.categories = this.categories.filter((c) => c._id !== cat._id);

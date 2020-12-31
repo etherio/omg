@@ -57,7 +57,6 @@ import AccessDenied from "./components/AccessDenied.vue";
 import NavBar from "./components/NavBar.vue";
 import LoginPage from "./components/LoginPage.vue";
 import { translateNumber } from "./app/burmese";
-import { stateSwitch } from "./app/soundEffects";
 import { auth } from "./firebase";
 
 export default {
@@ -83,6 +82,12 @@ export default {
         icon: "mdi-store",
         title: "ကုန်ပစ္စည်းများ",
         path: "/products",
+        visible: ["admin", "moderator"],
+      },
+      {
+        icon: "mdi-tag",
+        title: "အမျိူးအစားများ",
+        path: "/categories",
         visible: ["admin", "moderator"],
       },
       {

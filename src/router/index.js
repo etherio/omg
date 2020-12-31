@@ -36,12 +36,12 @@ const routes = [
     component: () => import("../views/Products.vue"),
   },
   {
-    path: "/product/new",
+    path: "/products/new",
     name: "Create new product",
     component: () => import("../components/ProductCreate.vue"),
   },
   {
-    path: "/product/:id",
+    path: "/products/:id",
     name: "Product",
     component: () => import("../views/Product.vue"),
   },
@@ -53,7 +53,7 @@ const routes = [
 ];
 
 const router = new VueRouter({
-  mode: "history",
+  // mode: "history",
   routes,
 });
 

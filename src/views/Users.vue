@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <h2>Users</h2>
+    <h2>သုံးစွဲသူများ</h2>
     <v-divider class="my-4"></v-divider>
     <v-alert
       v-if="error"
@@ -17,23 +17,27 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Providers</th>
-              <th>Role</th>
-              <th>Last Login</th>
+              <th>အမည်</th>
+              <th>ထုတ်လုပ်သူ</th>
+              <th>ရာထူး</th>
+              <th>နောက်ဆုံးတွေ့ခဲ့ချိန်</th>
               <th><span class="sr-only">actions</span></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="user in users" :key="user.uid">
               <td>
-                {{ user.displayName }} <br />
-                <a v-if="user.email" :href="'mailto:' + user.email">
-                  {{ user.email }}
-                </a>
-                <a v-if="user.phoneNumber" :href="'tel:' + user.phoneNumber">
-                  {{ user.phoneNumber }}
-                </a>
+                <b v-html="user.displayName"></b>
+                <a
+                  v-if="user.email"
+                  :href="'mailto:' + user.email"
+                  v-text="user.email"
+                ></a>
+                <a
+                  v-if="user.phoneNumber"
+                  :href="'tel:' + user.phoneNumber"
+                  v-text="user.phoneNumber"
+                ></a>
               </td>
               <td>
                 <v-icon

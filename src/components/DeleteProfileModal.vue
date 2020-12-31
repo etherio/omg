@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-btn color="error" class="pl-8 pr-10" @click="showDialog">
+    <v-btn color="error" class="pl-8 pr-10" @click="dialog = !dialog">
       <v-icon class="pr-2">mdi-delete</v-icon> အကောင့်ဖျက်သိမ်းရန်
     </v-btn>
 
@@ -30,7 +30,6 @@
 
 <script>
 import firebase from "firebase/app";
-import { error, loading } from "../app/soundEffects";
 
 export default {
   name: "DeleteProfileModal",
@@ -38,21 +37,7 @@ export default {
     dialog: false,
   }),
   methods: {
-    showDialog() {
-      if (this.dialog) {
-        this.dialog = false;
-        return;
-      }
-      error
-        .default()
-        .play()
-        .then(() => {
-          this.dialog = true;
-        });
-    },
-
     async deleteAccount() {
-      await loading.default().play();
       this.dialog = false;
       try {
         await firebase.auth().currentUser.delete();

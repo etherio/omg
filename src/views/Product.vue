@@ -5,8 +5,10 @@
         <v-btn icon to="/products">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
-        {{ name }}
-        <v-chip color="secondary" class="mx-1" small>{{ code }}</v-chip>
+        <span v-if="!loading">
+          {{ name }}
+          <v-chip color="secondary" class="mx-1" small>{{ code }}</v-chip>
+        </span>
       </v-card-title>
       <v-card-text>
         <v-row>
@@ -22,7 +24,7 @@
               </template>
             </v-img>
           </v-col>
-          <v-col cols="7">
+          <v-col cols="7" v-if="!loading">
             <v-card-subtitle id="price">
               {{ priceInBurmese }}
             </v-card-subtitle>
@@ -53,11 +55,18 @@
           </v-col>
         </v-row>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions v-if="!loading">
         <v-spacer></v-spacer>
+        <delete-product-modal :id="id" :images="images" :category="category" />
+        <a v-if="images.length" :href="photoURL" target="_blank" download>
+          <v-btn text color="primary darken-2">
+            <v-icon class="mr-1">mdi-download</v-icon>
+            ပုံယူရန်
+          </v-btn>
+        </a>
         <v-btn text @click="editing = !editing">
-          <v-icon class="mr-2">mdi-pencil</v-icon>
-          ပြုပြင်ရန်
+          <v-icon class="mr-1">mdi-pencil</v-icon>
+          ပြင်ရန်
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -70,9 +79,12 @@ import server from "../app/server";
 import placeholder from "../assets/img/image.png";
 import { databaseName, storage } from "../firebase";
 import { translateAge, translateNumber } from "../app/burmese";
+import DeleteProductModal from "../components/DeleteProductModal.vue";
 
 export default {
+  components: { DeleteProductModal },
   data: () => ({
+    id: null,
     code: null,
     name: null,
     price: null,
@@ -88,10 +100,11 @@ export default {
     editing: false,
     placeholder,
   }),
-  created() {
+  beforeMount() {
     let url = new URL(server.getProduct);
+    this.id = this.$route.params.id;
     url.searchParams.append("dbname", databaseName);
-    url.searchParams.append("id", this.$route.params.id);
+    url.searchParams.append("id", this.id);
     axios
       .get(url, {
         headers: {
@@ -119,18 +132,25 @@ export default {
   },
 
   methods: {
-    convertBurmeseNumber(input) {
-      return input
-        .toString()
-        .split("")
-        .map((c) => burmeseNumber[c] || c)
-        .join("");
+    downloadImage() {
+      if (this.images.length) {
+        let link = document.createElement("a");
+        link.setAttribute("download", true);
+        link.target = `_${this.id}`;
+        link.href = this.photoURL;
+        console.log(link);
+        document.body.appendChild(link);
+        requestAnimationFrame(() => {
+          link.click();
+          link.remove();
+        });
+      }
     },
   },
 
   computed: {
     priceInBurmese() {
-      return translateNumber(this.price.toLocaleString());
+      return translateNumber((this.price || 0).toLocaleString());
     },
     minAgeInBurmese() {
       return translateAge(this.minAge);

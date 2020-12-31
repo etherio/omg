@@ -63,7 +63,6 @@
 </template>
 
 <script>
-import { stateSwitch } from "../app/soundEffects";
 import logo from "../assets/img/logo.png";
 import { auth } from "../firebase";
 
@@ -84,7 +83,6 @@ export default {
     async signOut() {
       let { name } = this.$route;
       this.showAccount = false;
-      await stateSwitch.offline().play();
       await auth().signOut();
     },
   },

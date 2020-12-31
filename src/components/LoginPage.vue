@@ -79,10 +79,8 @@
 
 <script>
 import { auth } from "../firebase";
-import { error, loading } from "../app/soundEffects";
 
 export default {
-  name: "LoginPage",
   data: () => ({
     loading: false,
     error: null,
@@ -102,13 +100,10 @@ export default {
   }),
   methods: {
     signInWithEmailAndPassword() {
-      if (!this.$refs.form.validate()) {
-        error.alternative().play();
-        return;
-      }
+      if (!this.$refs.form.validate()) return;
+
       this.loading = true;
       this.error = null;
-      loading.default().play();
       auth()
         .signInWithEmailAndPassword(this.email, this.password)
         .then(() => {
@@ -116,7 +111,6 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          error.default().play();
           switch (err.code) {
             case "auth/user-not-found":
               this.error = "အကောင့်ရှာမတွေ့ပါ";
@@ -131,7 +125,6 @@ export default {
     },
     signInWithGoogle() {
       const provider = new auth.GoogleAuthProvider();
-      loading.default().play();
       this.loading = true;
       this.error = null;
       auth()
@@ -140,7 +133,6 @@ export default {
     },
     signInWithFacebook() {
       const provider = new auth.FacebookAuthProvider();
-      loading.default().play();
       this.loading = true;
       this.error = null;
       auth()

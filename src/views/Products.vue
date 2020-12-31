@@ -5,7 +5,7 @@
       <v-card-title>ကုန်ပစ္စည်းများ</v-card-title>
       <v-card-actions>
         <v-spacer />
-        <v-btn text to="/product/new">
+        <v-btn text to="/products/new">
           <v-icon>mdi-plus</v-icon>
           အသစ်ထည့်ရန်
         </v-btn>
@@ -26,7 +26,7 @@
               <tr
                 v-for="(product, index) in products"
                 :key="index"
-                @click="viewProduct(product.id)"
+                @click="$router.replace(`/products/${product.id}`)"
               >
                 <td class="text-left">
                   <v-row>
@@ -65,7 +65,7 @@
                     {{ age(product.maxAge) }}ထိ
                   </span>
                 </td>
-                <td class="text-center">{{ product.stock }}</td>
+                <td class="text-center">{{ num(product.stock) }}</td>
               </tr>
             </tbody>
           </template>
@@ -94,12 +94,15 @@ export default {
   },
 
   methods: {
+    num(value) {
+      return translateNumber(parseInt(value)) || "-";
+    },
     price(value) {
-      return translateNumber(value.toLocaleString());
+      return translateNumber(parseInt(value).toLocaleString());
     },
 
     age(value) {
-      return translateAge(value.toLocaleString());
+      return translateAge(parseInt(value).toLocaleString());
     },
 
     viewProduct(id) {

@@ -1,29 +1,35 @@
-let BASE_URL = "https://omg-api.etherio.net";
+let API_URL = "https://omg-api.etherio.net";
 
 // if (process.env.NODE_ENV === "development") {
-//   BASE_URL = "http://localhost:8888";
+//   API_URL = "http://localhost:8888";
 // }
 
 export default {
   get me() {
-    return `${BASE_URL}/api/me`;
+    return `${API_URL}/api/me`;
   },
   get timestamp() {
-    return `${BASE_URL}/api/timestamp`;
+    return `${API_URL}/api/timestamp`;
   },
   get listUsers() {
-    return `${BASE_URL}/api/listUsers`;
+    return `${API_URL}/api/listUsers`;
   },
   get setRole() {
-    return `${BASE_URL}/api/setRole`;
+    return `${API_URL}/api/setRole`;
   },
   get deleteUser() {
-    return `${BASE_URL}/api/deleteUser`;
+    return `${API_URL}/api/deleteUser`;
   },
   get listProducts() {
-    return `${BASE_URL}/api/listProducts`;
+    return `${API_URL}/api/listProducts`;
   },
   get getProduct() {
-    return `${BASE_URL}/api/getProduct`;
+    return `${API_URL}/api/getProduct`;
+  },
+  get optimizeImage() {
+    return "https://api.etherio.net/image";
+  },
+  get status() {
+    return "https://api.etherio.net/status";
   },
 };
