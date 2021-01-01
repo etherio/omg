@@ -58,7 +58,12 @@
       <v-card-actions v-if="!loading">
         <v-spacer></v-spacer>
         <delete-product-modal :id="id" :images="images" :category="category" />
-        <a v-if="images.length" :href="photoURL" target="_blank" download>
+        <a
+          v-if="images.length"
+          :href="photoURL + '?download=true'"
+          target="_blank"
+          download
+        >
           <v-btn text color="primary darken-2">
             <v-icon class="mr-1">mdi-download</v-icon>
             ပုံယူရန်
