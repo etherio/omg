@@ -10,13 +10,14 @@ import "firebase/storage";
 export const databaseName = "ctkesqmPHGJHW95gMvnL";
 
 export const app = firebase.initializeApp({
-  appId: "1:966040745442:web:2a83c08213721cdaacb5bb",
-  apiKey: "AIzaSyBiSkxX_gfnqyhPath2vFwn2gjLclrFCtI",
-  projectId: "etherio-vue",
-  authDomain: "etherio-vue.firebaseapp.com",
-  storageBucket: "etherio-vue.appspot.com",
-  databaseURL: "https://etherio-vue.firebaseio.com",
-  messagingSenderId: "966040745442",
+  apiKey: "AIzaSyBgkNJBP6moWUoBEuOjBd2Yg1EuKsPHx1Q",
+  authDomain: "omg-baby.firebaseapp.com",
+  databaseURL: "https://omg-baby-default-rtdb.firebaseio.com",
+  projectId: "omg-baby",
+  storageBucket: "omg-baby.appspot.com",
+  messagingSenderId: "499374745893",
+  appId: "1:499374745893:web:ae59292b3d99c41b7e12cc",
+  measurementId: "G-VEF70B6QLW",
 });
 
 export const auth = firebase.auth;

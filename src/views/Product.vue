@@ -73,6 +73,20 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+    <v-snackbar v-model="snackbar" timeout="5000">
+      {{ snackbarMessage }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="pink"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+          class="font-weight-bold text--lighten-2"
+        >
+          ပိတ်
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 

@@ -78,17 +78,18 @@ export default class Model {
     return await database.child(`${this.getCollection()}/${this._id}`).remove();
   }
 
-  static async make(snapshot) {
+  static async make(data) {
     let results = [];
-    Object.entries(snapshot.val()).forEach(([id, data]) => {
-      results.push(new this({ id, ...data }));
+    Object.entries(data).forEach(([id, value]) => {
+      results.push(new this({ id, ...value }));
     });
     return results;
   }
 
   static async all() {
     let snapshot = await database.child(new this().getCollection()).get();
-    return await this.make(snapshot);
+
+    return snapshot.exists() ? this.make(snapshot.val()) : [];
   }
 
   static remove(id) {

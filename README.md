@@ -13,15 +13,13 @@ npm install
 ### Compiles and hot-reloads for development
 
 ```sh
-# vue default is `npm run serve`
-npm test
+npm run serve
 ```
 
 ### Compiles and minifies for production
 
 ```sh
-# vue default is `npm run build`
-npm start
+npm run build
 ```
 
 ## Firebase Configuration
@@ -100,17 +98,26 @@ service cloud.firestore {
 {
   "rules": {
     "$database": {
+      "metadata": {
+        ".read": "auth.token.role != null && auth.token.role == 'moderator' || auth.token.role == 'admin'",
+        ".write": "auth.token.role != null && auth.token.role == 'admin'"
+      },
       "colors": {
-        ".read": "auth.uid != null",
-        ".write": "auth.uid != null"
+        ".read": "auth.token.role != null && auth.token.role == 'moderator' || auth.token.role == 'admin'",
+        ".write": "auth.token.role != null && auth.token.role == 'admin'"
       },
       "categories": {
-        ".read": "auth.uid != null",
-        ".write": "auth.uid != null"
+        ".read": "auth.token.role != null && auth.token.role == 'moderator' || auth.token.role == 'admin'",
+        ".write": "auth.token.role != null && auth.token.role == 'admin'"
       },
-      "request_access": {
-        ".read": "auth.token.role === 'admin'",
-        ".write": "auth.uid != null"
+      "products": {
+        ".indexOn": "createdAt",
+        ".read": "auth.token.role != null && auth.token.role == 'moderator' || auth.token.role == 'admin'",
+        ".write": "auth.token.role != null && auth.token.role == 'admin'"
+      },
+      "inventory": {
+        ".read": "auth.token.role != null && auth.token.role == 'moderator' || auth.token.role == 'admin'",
+        ".write": "auth.token.role != null && auth.token.role == 'admin'"
       }
     }
   }

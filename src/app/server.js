@@ -1,5 +1,6 @@
 const OMG_API_URL = "https://omg-api.etherio.net";
 const DEFAULT_API_URL = "https://api.etherio.net";
+// const OMG_API_URL = "http://localhost:8888";
 // const DEFAULT_API_URL = "http://localhost:8000";
 
 export default {

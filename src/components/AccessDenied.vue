@@ -3,11 +3,8 @@
     <v-alert prominent type="error" elevation="2">
       <v-row align="center">
         <v-col class="grow">
-          <b>You do not have permission to access this page.</b><br />
-          Please contact site admin for further more information.
-        </v-col>
-        <v-col class="shrink">
-          <v-btn>Take action</v-btn>
+          <b>တာဝန်ရှိသူမှအပ ​ဝင်ရောက်သူများကိုတာမြစ်ထားသည်။</b><br />
+          ဝင်ရောက်ခွင့်အား တာဝန်ရှိသူထံသို့ဆက်သွယ်၍ ရယူနိုင်ပါသည်။
         </v-col>
       </v-row>
     </v-alert>

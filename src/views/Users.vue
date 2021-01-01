@@ -240,6 +240,13 @@ export default {
 
   created() {
     axios
+      .get(server.me, {
+        headers: {
+          "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
+        },
+      })
+      .then((r) => console.log(r.data));
+    axios
       .get(server.listUsers, {
         headers: {
           "X-Access-Token": this.$root.user.stsTokenManager.accessToken,

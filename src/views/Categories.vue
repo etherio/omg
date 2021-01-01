@@ -11,7 +11,7 @@
               <th><span class="sr-only">actions</span></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody v-if="categories.length">
             <tr v-for="(category, index) in categories" :key="index">
               <td class="text-capitalize">{{ category._id }}</td>
               <td class="text-center">{{ num(category.total) }} မျိုး</td>
@@ -37,9 +37,38 @@
               </td>
             </tr>
           </tbody>
+          <tbody v-if="snackbarMessage">
+            <tr>
+              <td colspan="3">
+                {{ snackbarMessage }} အသစ်တစ်ခုထည့်သွင်းရန်
+                <v-btn
+                  text
+                  rounded
+                  color="primary"
+                  class="font-weight-bold"
+                  to="/products/new"
+                  >ဒီကိုနှိပ်</v-btn
+                >ပါ။
+              </td>
+            </tr>
+          </tbody>
         </template>
       </v-simple-table>
     </v-card>
+    <v-snackbar v-model="snackbar" timeout="5000">
+      {{ snackbarMessage }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="pink"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+          class="font-weight-bold text--lighten-2"
+        >
+          ပိတ်
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -50,6 +79,8 @@ import AddCategory from "../components/AddCategory.vue";
 
 export default {
   data: () => ({
+    snackbar: false,
+    snackbarMessage: null,
     loading: true,
     categories: [],
   }),
@@ -68,11 +99,17 @@ export default {
   },
   async beforeMount() {
     let categories = await Category.all();
-    this.categories = categories.sort(
-      (a, b) =>
-        (a._id || "").substr(0, 1).toUpperCase().charCodeAt() -
-        (b._id || "").substr(0, 1).toUpperCase().charCodeAt()
-    );
+    if (categories.length) {
+      this.categories = categories.sort(
+        (a, b) =>
+          (a._id || "").substr(0, 1).toUpperCase().charCodeAt() -
+          (b._id || "").substr(0, 1).toUpperCase().charCodeAt()
+      );
+    } else {
+      this.categories = [];
+      this.snackbar = true;
+      this.snackbarMessage = "အမျိုးအစားများထည့်သွင်းထားခြင်းမရှိသေးပါ။";
+    }
     this.loading = false;
   },
 };
