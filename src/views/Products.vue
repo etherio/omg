@@ -2,8 +2,8 @@
   <div class="products">
     <!-- <product-create /> -->
     <v-card :loading="loading">
-      <v-card-title>ကုန်ပစ္စည်းများ</v-card-title>
       <v-card-actions>
+        <v-card-title>ကုန်ပစ္စည်းများ</v-card-title>
         <v-spacer />
         <v-btn text to="/products/new">
           <v-icon>mdi-plus</v-icon>
@@ -11,6 +11,7 @@
         </v-btn>
       </v-card-actions>
       <v-card-text>
+        <v-alert v-if="error" type="error">{{ error }}</v-alert>
         <v-simple-table>
           <template>
             <thead>
@@ -22,7 +23,7 @@
                 <th class="text-center">‌ရေတွက်</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody v-if="products.length">
               <tr
                 v-for="(product, index) in products"
                 :key="index"
@@ -68,10 +69,39 @@
                 <td class="text-center">{{ num(product.stock) }}</td>
               </tr>
             </tbody>
+            <tbody v-if="snackbarMessage">
+              <tr>
+                <td colspan="5">
+                  {{ snackbarMessage }} အသစ်တစ်ခုထည့်သွင်းရန်
+                  <v-btn
+                    text
+                    rounded
+                    color="primary"
+                    class="font-weight-bold"
+                    to="/products/new"
+                    >ဒီကိုနှိပ်</v-btn
+                  >ပါ။
+                </td>
+              </tr>
+            </tbody>
           </template>
         </v-simple-table>
       </v-card-text>
     </v-card>
+    <v-snackbar v-model="snackbar" timeout="5000">
+      {{ snackbarMessage }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="pink"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+          class="font-weight-bold text--lighten-2"
+        >
+          ပိတ်
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -86,6 +116,9 @@ import placeholder from "../assets/img/image.png";
 export default {
   name: "Products",
   data: () => ({
+    error: null,
+    snackbar: false,
+    snackbarMessage: null,
     loading: true,
     products: [],
   }),
@@ -143,6 +176,19 @@ export default {
           }
           return product;
         });
+      })
+      .catch((err) => {
+        if (this.products.length) {
+          console.error(err);
+          this.error =
+            "တစ်ခုခုမှားယွင်းနေပါတယ်။ နောက်တစ်ခါထပ်မံကြိုးစားကြည့်ပါ။";
+          return;
+        }
+        this.snackbar = true;
+        this.snackbarMessage = "ကုန်ပစ္စည်းများမရှိသေးပါ။";
+        // this.$router.replace("/products/new");
+      })
+      .then(() => {
         this.loading = false;
       });
   },

@@ -36,6 +36,7 @@
             @input="select.code = (select.code || '').toUpperCase()"
             outlined
             id="input-code"
+            counter="13"
           >
             <template v-slot:label>
               <div>ကုတ်နံပါတ် <b>*</b></div>
@@ -47,6 +48,7 @@
         <v-col cols="6">
           <v-text-field
             v-model="select.price"
+            type="number"
             :rules="rules.price"
             @input="select.price = localePrice"
             suffix="ကျပ်"
@@ -183,12 +185,14 @@ const optimizeImage = async (code, file) => {
   let data = new FormData();
   data.append("code", code);
   data.append("image", file, file.fileName);
-  let response = await axios.post(server.optimizeImage, data, {
+  let response = await axios({
+    data,
+    method: "POST",
+    url: server.optimizeImage,
     headers: {
-      accept: "application/json",
-      "Accept-Language": "en-US,en;q=0.8",
       "Content-Type": `multipart/form-data; boundary=${data._boundary}`,
     },
+    responseType: "blob",
   });
   return response.data;
 };
@@ -235,6 +239,15 @@ export default {
         createdUid: this.$root.user.uid,
         createdAt: null,
       };
+      if (this.select.image) {
+        let dt = new Date();
+        let month = dt.getMonth() + 1;
+        let year = dt.getYear() - 100;
+        let response = await optimizeImage(this.select.code, this.select.image);
+        let imagePath = `${year}/${month}/${product.createdAt}-${product.createdUid}`;
+        await storage.child(imagePath).put(response);
+        product.images.push(imagePath);
+      }
       let { data } = await axios.get(server.timestamp);
       product.createdAt = data.timestamp;
       if (product.category) {
@@ -246,23 +259,11 @@ export default {
           async (color) => await addColor(this.colors, color)
         );
       }
-      if (this.select.image) {
-        let dt = new Date();
-        let month = dt.getMonth() + 1;
-        let year = dt.getYear() - 100;
-        let response = await optimizeImage(this.select.code, this.select.image);
-        let url = new URL(response.path);
-        let path = url.pathname.slice(1).split("-")[0];
-        let imagePath = `${year}/${month}/${product.createdUid}-${path}`;
-        response = await fetch(url);
-        await storage.child(imagePath).put(await response.blob());
-        product.images.push(imagePath);
-      }
       this.loading = false;
       await database.child("products").push(product);
       await increment();
-      this.loading = false;
       this.$router.back();
+      // this.loading = false;
     },
 
     goToRequiredField() {
@@ -314,7 +315,7 @@ export default {
   async created() {
     const updateServerStatus = () =>
       axios.get(server.status).then(({ data }) => {
-        window.localStorage.setItem(
+        window.sessionStorage.setItem(
           "cached:api.etherio.net/status",
           JSON.stringify(data)
         );
@@ -323,8 +324,8 @@ export default {
     this.colors = await Color.all();
     this.categories = await Category.all();
 
-    if ("localStorage" in window) {
-      let remaining = window.localStorage.getItem(
+    if ("sessionStorage" in window) {
+      let remaining = window.sessionStorage.getItem(
         "cached:api.etherio.net/status"
       );
       if (remaining) {
@@ -349,5 +350,15 @@ body {
   .v-list-item {
     text-transform: capitalize;
   }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 </style>

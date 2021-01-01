@@ -3,17 +3,17 @@
     <slot></slot>
 
     <v-toolbar-title>
-      <a :href="$router.resolve('/').href">
+      <a href="/#/">
         <v-img
           id="logo"
           alt="OMG"
           class="shrink mr-2"
           contain
           :src="logo"
+          :lazy-src="logo"
           transition="scale-transition"
           width="80"
-        />
-      </a>
+      /></a>
     </v-toolbar-title>
 
     <v-spacer></v-spacer>
