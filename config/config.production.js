@@ -1,5 +1,5 @@
 const api = {
-  HEROKU_SERVER: "https://afternoon-lake-52643.herokuapp.com",
+  HEROKU_SERVER: "https://omg-api.etherio.net",
 };
 
 const firebaseConfig = {
