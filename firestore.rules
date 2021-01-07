@@ -1,0 +1,28 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // check user is logged in
+    function LoggedIn() {
+      return request.auth != null &&
+      request.auth.uid != null &&
+      request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    // check user has role
+    function hasRole() {
+      return request.auth.token != null &&
+      request.auth.token.role != null;
+    }
+
+    // check user is admin
+    function Admin() {
+      return request.auth.token.role == 'admin';
+    }
+
+    // check user is moderator
+    function Moderator() {
+      return request.auth.token.role == 'moderator';
+    }
+
+    allow read,write: if false;
+  }
+}
