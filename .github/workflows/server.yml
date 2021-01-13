@@ -1,0 +1,21 @@
+name: Deploy to Firebase Web Hosting
+on:
+  push:
+    branches: [server]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - run: |
+      npm i -g heroku
+      git checkout -b server
+      git remote add heroku git@heroku.com:omg-api.git
+      [ -e ~/.ssh ] || mkdir .ssh
+      echo ${{secrets.HEROKU_SSH_KEY}}>~/.ssh/id_rsa
+      eval `ssh-agent`
+      ssh-add ~/.ssh/id_rsa
+      git push heroku master --signed=true --force
+      
