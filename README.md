@@ -1,1 +1,1 @@
-# Server
+# OMG Server
