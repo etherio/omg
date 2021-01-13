@@ -1,4 +1,4 @@
-name: Deploy to Firebase Web Hosting
+name: Deploy to Heroku Server
 on:
   push:
     branches: 
@@ -13,7 +13,7 @@ jobs:
     - run: npm i -g heroku
     - run: git checkout -b server
     - run: git remote add heroku git@heroku.com:omg-api.git
-    - run: [ -e ~/.ssh ] || mkdir .ssh
+    - run: mkdir .ssh 2>/dev/null
     - run: echo ${{secrets.HEROKU_SSH_KEY}}>~/.ssh/id_rsa
     - run: eval `ssh-agent`
     - run: ssh-add ~/.ssh/id_rsa
