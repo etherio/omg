@@ -240,9 +240,9 @@ export default {
         var el = document.querySelector("#input-name");
         el.select();
         return el.scrollIntoView({
-          behavior: "smooth",
           block: "end",
-          inline: "nearest",
+          inline: "start",
+          behavious: "smooth",
         });
       }
       if (!this.select.code) {

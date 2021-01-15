@@ -41,12 +41,12 @@ const routes = [
     component: () => import("@/views/reviews.vue"),
   },
   {
-    path: "/products/:id/clone",
-    component: () => import("@/components/ProductDuplicate.vue"),
+    path: "/products/:id",
+    component: () => import("@/views/products/_id.vue"),
   },
   {
-    path: "/products/:id",
-    component: () => import("@/views/products/product.vue"),
+    path: "/products/:id/:name",
+    component: () => import("@/views/products/index.vue"),
   },
   {
     path: "/categories",

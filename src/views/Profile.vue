@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <h2>User Profile</h2>
+    <h2>သင့်ပရိုဖိုင်</h2>
     <v-divider class="mt-2 py-5"></v-divider>
     <v-alert v-if="error" dense outlined type="error" v-html="error"></v-alert>
 
@@ -11,20 +11,48 @@
         </v-avatar>
       </v-col>
       <v-col sm="7" cols="12">
-        <v-text-field v-model="name" label="Display Name" readonly outlined />
-        <v-text-field v-model="email" label="Email Address" readonly outlined />
-        <v-text-field v-model="phone" label="Phone Number" readonly outlined />
-        <v-btn color="primary" large disabled>
-          <v-icon class="pr-2">mdi-content-save</v-icon> Save
-        </v-btn>
+        <v-text-field
+          v-model="name"
+          label="သင့်နာမည်"
+          :readonly="readonly"
+          outlined
+          ref="displayName"
+        />
+        <v-text-field
+          v-model="email"
+          label="သင့်အီးမေးလ်"
+          :readonly="readonly"
+          outlined
+        />
+        <v-text-field
+          v-model="phone"
+          label="ဖုန်းနံပါတ်"
+          :readonly="readonly"
+          outlined
+        />
+        <v-row class="pr-4">
+          <v-spacer></v-spacer>
+          <v-btn
+            :color="readonly ? 'secondary lighten-2' : 'primary'"
+            depressed
+            @click="readonly = !readonly"
+          >
+            <v-icon
+              class="pr-2"
+              small
+              v-text="readonly ? 'mdi-pencil' : 'mdi-content-save'"
+            ></v-icon>
+            <span v-text="readonly ? 'ပြင်ရန်' : 'သိမ်းရန်'"></span>
+          </v-btn>
+        </v-row>
       </v-col>
       <v-col cols="6">
-        <v-card-title>Created On</v-card-title>
-        <v-card-text>{{ createdAt }}</v-card-text>
+        <v-card-title>စတင်ခဲ့သည့်နေ့</v-card-title>
+        <v-card-text>{{ translateDate(createdAt) }}</v-card-text>
       </v-col>
       <v-col cols="6">
-        <v-card-title>Last Login</v-card-title>
-        <v-card-text>{{ lastLoginAt }}</v-card-text>
+        <v-card-title>နောက်ဆုံး၀င်ရောက်ခဲ့သည့်နေ့</v-card-title>
+        <v-card-text>{{ translateDate(lastLoginAt) }}</v-card-text>
       </v-col>
       <v-col cols="12" sm="6">
         <v-btn
@@ -84,6 +112,7 @@
 import DeleteProfileModal from "../components/DeleteProfileModal.vue";
 import placeholder from "../assets/img/image.png";
 import firebase from "firebase/app";
+import { translateDateTime } from "@/app/burmese";
 
 export default {
   name: "Profile",
@@ -103,9 +132,14 @@ export default {
       google: false,
       facebook: false,
     },
+    readonly: true,
   }),
 
   methods: {
+    translateDate(d) {
+      return translateDateTime(new Date(d), "d-m-Y(Dနေ့)၊ A h:i");
+    },
+
     unlinkWithGoogle() {
       firebase
         .auth()
@@ -175,6 +209,17 @@ export default {
           break;
       }
     });
+  },
+  watch: {
+    readonly(value) {
+      if (value) return;
+      console.log(this.$refs.displayName);
+      this.$refs.displayName.$el.scrollIntoView({
+        block: "end",
+        inline: "start",
+        behavious: "smooth",
+      });
+    },
   },
 };
 </script>

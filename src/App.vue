@@ -4,7 +4,7 @@
 
     <v-navigation-drawer v-model="drawer" fixed temporary v-if="$root.user">
       <template v-slot:prepend>
-        <router-link :to="{ path: '/profile' }">
+        <router-link to="/profile" class="text-decoration-none">
           <v-list-item two-line>
             <v-list-item-avatar>
               <img v-if="$root.user.photoURL" :src="$root.user.photoURL" />

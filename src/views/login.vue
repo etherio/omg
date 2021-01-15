@@ -115,7 +115,7 @@ export default {
               this.error = "အကောင့်ရှာမတွေ့ပါ";
               break;
             case "auth/wrong-password":
-              this.error = "Incorrect password";
+              this.error = "စကားဝှက်မမှန်ပါ";
               break;
             default:
               this.error = err.message || err.toString();

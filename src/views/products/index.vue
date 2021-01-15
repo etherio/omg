@@ -1,68 +1,3 @@
-<script>
-import server from "@/app/server";
-import { translateNumber, translateAge } from "@/app/burmese";
-import placeholder from "@/assets/img/image.png";
-
-export default {
-  name: "Products",
-  data: () => ({
-    error: null,
-    snackbar: false,
-    snackbarMessage: null,
-    loading: true,
-    products: [],
-  }),
-  methods: {
-    num(value) {
-      return translateNumber(parseInt(value)) || "-";
-    },
-    price(value) {
-      return translateNumber(parseInt(value).toLocaleString());
-    },
-
-    age(value) {
-      return translateAge(parseInt(value));
-    },
-
-    viewProduct(id) {
-      this.$router.replace(["product", id].join("/"));
-    },
-  },
-
-  beforeMount() {
-    this.axios
-      .get(server.products, {
-        headers: { "X-Access-Token": this.$root.user.token },
-      })
-      .then(({ data }) => {
-        return data.map((product) => {
-          product.photoURL = placeholder;
-          if (product.images && product.images.length) {
-            product.photoURL = product.images[0];
-          }
-          return product;
-        });
-      })
-      .then((products) => {
-        this.products = products;
-        if (!this.products.length) {
-          this.snackbar = true;
-          this.snackbarMessage = "ကုန်ပစ္စည်းများရှာမတွေ့ပါ။";
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        this.snackbar = true;
-        this.error = this.snackbarMessage =
-          "တစ်ခုခုမှားယွင်းနေပါတယ်။ နောက်တစ်ခါထပ်မံကြိုးစားကြည့်ပါ။";
-      })
-      .then(() => {
-        this.loading = false;
-      });
-  },
-};
-</script>
-
 <template>
   <div class="products">
     <!-- <product-create /> -->
@@ -167,3 +102,68 @@ export default {
     </v-snackbar>
   </div>
 </template>
+
+<script>
+import server from "@/app/server";
+import { translateNumber, translateAge } from "@/app/burmese";
+import placeholder from "@/assets/img/image.png";
+
+export default {
+  name: "Products",
+  data: () => ({
+    error: null,
+    snackbar: false,
+    snackbarMessage: null,
+    loading: true,
+    products: [],
+  }),
+  methods: {
+    num(value) {
+      return translateNumber(parseInt(value)) || "-";
+    },
+    price(value) {
+      return translateNumber(parseInt(value).toLocaleString());
+    },
+
+    age(value) {
+      return translateAge(parseInt(value));
+    },
+
+    viewProduct(id) {
+      this.$router.replace(["product", id].join("/"));
+    },
+  },
+
+  beforeMount() {
+    this.axios
+      .get(server.products, {
+        headers: { "X-Access-Token": this.$root.user.token },
+      })
+      .then(({ data }) => {
+        return data.map((product) => {
+          product.photoURL = placeholder;
+          if (product.images && product.images.length) {
+            product.photoURL = product.images[0];
+          }
+          return product;
+        });
+      })
+      .then((products) => {
+        this.products = products;
+        if (!this.products.length) {
+          this.snackbar = true;
+          this.snackbarMessage = "ကုန်ပစ္စည်းများရှာမတွေ့ပါ။";
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        this.snackbar = true;
+        this.error = this.snackbarMessage =
+          "တစ်ခုခုမှားယွင်းနေပါတယ်။ နောက်တစ်ခါထပ်မံကြိုးစားကြည့်ပါ။";
+      })
+      .then(() => {
+        this.loading = false;
+      });
+  },
+};
+</script>

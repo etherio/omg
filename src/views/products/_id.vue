@@ -156,7 +156,7 @@ export default {
         for (let key in data) {
           this[key] = data[key];
           if (key === "images") {
-            this.photoURL = data[key][0];
+            this.photoURL = data[key][0] || placeholderLight;
           }
         }
       })
@@ -200,11 +200,9 @@ export default {
 
 #min-age::after {
   content: "မှ";
-  /* padding-left: 5px; */
 }
 
 #max-age::after {
   content: "ထိ";
-  /* padding-left: 5px; */
 }
 </style>
