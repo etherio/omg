@@ -1,5 +1,11 @@
-if (process.env.NODE_ENV === "development") {
-  module.exports = require("./config.development");
-} else {
-  module.exports = require("./config.production");
+const config = Object.assign({}, require("./config.production"));
+
+if (process.env.NODE_ENV !== "production") {
+  const localConfig = require("./config.development");
+  for (const [key, value] of Object.entries(localConfig)) {
+    config[key] = value;
+  }
 }
+console.log(config);
+
+module.exports = config;
