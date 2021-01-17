@@ -3,29 +3,6 @@ import firebase from "firebase/app";
 import axios from "axios";
 
 export default {
-  preload() {
-    const updateServerStatus = () =>
-      axios.get(server.status).then(({ data }) => {
-        window.sessionStorage.setItem(
-          "cached:api.etherio.net/status",
-          JSON.stringify(data)
-        );
-      });
-
-    if ("sessionStorage" in window) {
-      let remaining = window.sessionStorage.getItem(
-        "cached:api.etherio.net/status"
-      );
-      if (remaining) {
-        remaining = JSON.parse(remaining);
-        remaining = Math.round((remaining.expiredOn - Date.now()) / 60000);
-        remaining || updateServerStatus();
-      } else {
-        updateServerStatus();
-      }
-    }
-  },
-
   setRole({ uid, role, token }) {
     if (!token) {
       let { currentUser } = firebase.auth();
@@ -42,8 +19,8 @@ export default {
       .then(({ data }) => data);
   },
 
-  get metadata() {
-    return `${api.HEROKU_SERVER}/metadata`;
+  get meta() {
+    return `${api.HEROKU_SERVER}/meta`;
   },
 
   get products() {
@@ -77,6 +54,7 @@ export default {
   get session() {
     return `${api.HEROKU_SERVER}/session`;
   },
+
   get combo() {
     return `${api.HEROKU_SERVER}/metadata/combo`;
   },

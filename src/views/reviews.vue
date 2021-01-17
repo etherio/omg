@@ -23,7 +23,7 @@
 
 <script>
 import server from "@/app/server";
-import ProductCreate from "@/components/product-create.vue";
+import ProductCreate from "@/components/ProductCreate.vue";
 export default {
   data: () => ({
     reviews: [],

@@ -6,6 +6,5 @@ if (process.env.NODE_ENV !== "production") {
     config[key] = value;
   }
 }
-console.log(config);
 
 module.exports = config;

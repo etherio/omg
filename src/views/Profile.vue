@@ -213,7 +213,6 @@ export default {
   watch: {
     readonly(value) {
       if (value) return;
-      console.log(this.$refs.displayName);
       this.$refs.displayName.$el.scrollIntoView({
         block: "end",
         inline: "start",

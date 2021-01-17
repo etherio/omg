@@ -123,15 +123,13 @@ export default {
         });
     },
     signInWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
       this.loading = true;
-      this.error = null;
+      const provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithRedirect(provider);
     },
     signInWithFacebook() {
-      const provider = new firebase.auth.FacebookAuthProvider();
       this.loading = true;
-      this.error = null;
+      const provider = new firebase.auth.FacebookAuthProvider();
       firebase.auth().signInWithRedirect(provider);
     },
   },
