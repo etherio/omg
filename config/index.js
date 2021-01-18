@@ -1,5 +1,5 @@
 export const api = {
-  HEROKU_SERVER: "http://localhost:3000",
+  HEROKU_SERVER: "https://omg-api.etherio.net",
 };
 
 export const firebaseConfig = {
