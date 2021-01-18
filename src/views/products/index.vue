@@ -1,6 +1,5 @@
 <template>
   <div class="products">
-    <!-- <product-create /> -->
     <v-card :loading="loading">
       <v-card-actions>
         <v-card-title>ကုန်ပစ္စည်းများ</v-card-title>
@@ -10,6 +9,11 @@
           အသစ်ထည့်ရန်
         </v-btn>
       </v-card-actions>
+      <v-card-subheader>
+        <product-finder
+          :search="(value) => (search = value)"
+	></product-finder>
+      </v-card-subheader>
       <v-card-text>
         <v-alert v-if="error" type="error">{{ error }}</v-alert>
         <v-simple-table>
@@ -107,15 +111,22 @@
 import server from "@/app/server";
 import { translateNumber, translateAge } from "@/app/burmese";
 import placeholder from "@/assets/img/image.png";
+import ProductFinder from "@/components/ProductFinder.vue";
+
+let $products = [];
 
 export default {
   name: "Products",
+  components: {
+    ProductFinder,
+  },
   data: () => ({
     error: null,
     snackbar: false,
     snackbarMessage: null,
     loading: true,
     products: [],
+    search: "",
   }),
   methods: {
     num(value) {
@@ -149,7 +160,7 @@ export default {
         });
       })
       .then((products) => {
-        this.products = products;
+        this.products = $products = products;
         if (!this.products.length) {
           this.snackbar = true;
           this.snackbarMessage = "ကုန်ပစ္စည်းများရှာမတွေ့ပါ။";
@@ -165,5 +176,18 @@ export default {
         this.loading = false;
       });
   },
+
+  watch: {
+    search(value) {
+      if (!value) {
+        this.products = $products;
+        return;
+      }
+      this.products = $products.filter((product) => {
+        value = value.toLowerCase();
+        return product.code.toLowerCase().match(value) || product.name.toLowerCase().match(value);
+      });
+    },
+  }
 };
 </script>
