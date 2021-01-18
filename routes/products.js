@@ -7,6 +7,7 @@ const databaseName = process.env.FIREBASE_DATABASE_NAME;
 const multer = require("multer");
 const upload = multer({ dest: `${process.cwd()}/tmp` });
 const optimizer = require("../src/image");
+const crc32 = require("crc32");
 
 router.get("/", Guard.firebase("moderator", "admin"), async (req, res) => {
   try {
@@ -48,22 +49,22 @@ router.post(
       product.createdAt = database.ServerValue.TIMESTAMP;
       product.id = (await dbRef.push(product.val())).key;
       await database()
-        .ref(`${databaseName}/metadata/collection/products`)
+        .ref(`${databaseName}/metadata/collection`)
         .update({
-          count: database.ServerValue.increment(1),
+          products: database.ServerValue.increment(1),
         });
       if (product.category) {
         await database()
           .ref(`${databaseName}/categories`)
-          .push()
+	  .child(crc32(product.category))
           .update({
             title: product.category,
             count: database.ServerValue.increment(1),
           });
         await database()
-          .ref(`${databaseName}/metadata/collection/categories`)
+          .ref(`${databaseName}/metadata/collection`)
           .update({
-            count: database.ServerValue.increment(1),
+            categories: database.ServerValue.increment(1),
           });
       }
       res.status(201).json(product);
