@@ -9,8 +9,9 @@ function verifyToken(token) {
 }
 
 async function auth(req, res, next) {
-  if (process.env.NODE_ENV === 'development') 
-    return next();
+  if (process.env.NODE_ENV === "development") {
+    // return next();
+  }
   const { roles } = this;
   try {
     if (!req.accessToken) throw { code: 401 };

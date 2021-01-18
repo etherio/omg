@@ -1,4 +1,5 @@
 const { database, auth, storage } = require("firebase-admin");
+const { color } = require("jimp");
 const databaseName = process.env.FIREBASE_DATABASE_NAME;
 // const storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
 
@@ -23,8 +24,14 @@ class Product {
     this.name = name;
     this.price = parseInt(price);
     this.createdAt = parseInt(createdAt);
-    this.images = Object.values(images || {});
-    this.colors = Object.values(colors || {});
+    this.images =
+      typeof images === "string"
+        ? images.split(",")
+        : Object.values(images || {});
+    this.colors =
+      typeof colors === "string"
+        ? colors.split(",")
+        : Object.values(colors || {});
     this.category = category || null;
     this.description = description || null;
     this.minAge = (minAge && parseFloat(minAge)) || null;

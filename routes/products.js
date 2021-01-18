@@ -35,7 +35,6 @@ router.post(
     try {
       const dbRef = database().ref(`${databaseName}/products`);
       const product = new Product(req.body);
-
       if (req.files.length) {
         for (let file of req.files) {
           let { output, fileName } = await optimizer(file, product.code);
@@ -56,15 +55,10 @@ router.post(
       if (product.category) {
         await database()
           .ref(`${databaseName}/categories`)
-	  .child(crc32(product.category))
+          .child(crc32(product.category))
           .update({
             title: product.category,
             count: database.ServerValue.increment(1),
-          });
-        await database()
-          .ref(`${databaseName}/metadata/collection`)
-          .update({
-            categories: database.ServerValue.increment(1),
           });
       }
       res.status(201).json(product);
