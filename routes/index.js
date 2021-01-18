@@ -21,6 +21,7 @@ router.use("/metadata", require("./metadata"));
 router.use("/session", require("./session"));
 router.use("/webhook", require("./webhook"));
 router.use("/review", require("./review"));
+router.use("/inventory", require("./stocks"));
 
 router.all("/status", (req, res) => {
   const status = {

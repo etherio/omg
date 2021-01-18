@@ -116,7 +116,7 @@ class Product {
     const snapshot = await ref.get();
 
     if (!snapshot.exists()) {
-      throw new Error();
+      throw { code: 404, message: "Product not found" };
     }
 
     // delete from products
@@ -124,9 +124,9 @@ class Product {
 
     // decrement product metadata
     database()
-      .ref(`${databaseName}/metadata/collection/products`)
+      .ref(`${databaseName}/metadata/collection`)
       .update({
-        count: database.ServerValue.increment(-1),
+        products: database.ServerValue.increment(-1),
       });
   }
 }
