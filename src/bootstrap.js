@@ -5,18 +5,20 @@ let app;
 
 require("dotenv").config();
 
+const {
+  GOOGLE_CREDENTIAL_URL,
+  FIREBASE_STORAGE_BUCKET,
+  FIREBASE_DATABASE_URL,
+} = process.env;
+
 async function initializeApp() {
   if (app) return app;
   console.log("fecthing google service account credential...");
-  const url = new URL(process.env.GOOGLE_CLOUD_CREDENTIAL);
-  url.searchParams.append("alt", "media");
-  url.searchParams.append("token", process.env.FIREBASE_STORAGE_TOKEN);
-  const { data: serviceAccount } = await axios.get(url.toString());
-  console.log("initializing firebase admin...");
+  const serviceAccount = (await axios.get(GOOGLE_CREDENTIAL_URL)).data;
   app = admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
+    databaseURL: FIREBASE_DATABASE_URL,
+    storageBucket: FIREBASE_STORAGE_BUCKET,
   });
   return app;
 }

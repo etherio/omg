@@ -7,6 +7,11 @@ const temp = path.resolve(process.cwd(), "dev");
 const port = process.env.PORT || 3000;
 const app = express();
 
+if (process.env.NODE_ENV === "development") {
+  const morgan = require("morgan");
+  app.use(morgan("dev"));
+}
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
