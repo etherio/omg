@@ -20,15 +20,17 @@
                 label="သင့်အီးမေးလ်ထည့်ပါ"
                 type="email"
                 :rules="rules.email"
+		@change="autocompleteEmail"
                 outlined
               />
               <v-text-field
                 v-model="password"
                 label="သင့်စကားဝှက်ထည့်ပါ"
                 autocapitalize="off"
-                :append-icon="showPassword ? '' : ''"
+                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
                 :rules="rules.password"
+		@click:append="showPassword = !showPassword"
                 outlined
               />
               <v-alert
@@ -98,6 +100,10 @@ export default {
     },
   }),
   methods: {
+    autocompleteEmail() {
+      if (!this.email || this.email.match(/@/g)) return;
+      this.email = this.email + '@etherio.net';
+    },
     signInWithEmailAndPassword() {
       if (!this.$refs.form.validate()) return;
       this.loading = true;
