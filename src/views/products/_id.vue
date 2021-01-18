@@ -2,7 +2,7 @@
   <v-container>
     <v-card :loading="loading">
       <v-card-title>
-        <v-btn icon class="mr-2" @click="$router.back()">
+        <v-btn icon class="mr-2" to="/products">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
         <span v-if="name">
@@ -78,7 +78,7 @@
         <v-btn
           text
           color="primary darken-2"
-          :to="`/products/${$route.params.id}/clone`"
+          :to="{ path: '/products/new/' + id }"
         >
           <v-icon class="mr-1">mdi-content-copy</v-icon>
           ပွားရန်

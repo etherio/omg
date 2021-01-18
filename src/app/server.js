@@ -1,4 +1,4 @@
-import { api } from "../../config";
+import { api } from "@/../config";
 import firebase from "firebase/app";
 import axios from "axios";
 
@@ -63,5 +63,8 @@ export default {
   },
   get review() {
     return `${api.HEROKU_SERVER}/review`;
+  },
+  get cors() {
+    return `${api.HEROKU_SERVER}/cors`;
   },
 };

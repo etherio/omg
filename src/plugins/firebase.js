@@ -1,5 +1,4 @@
-import { firebaseConfig } from "../../config";
-import Vue from "vue";
+import { firebaseConfig } from "@/../config/index";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/analytics";
@@ -9,6 +8,9 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-Vue.prototype.$auth = firebase.auth;
+if (process.env.NODE_ENV === "production") {
+  firebase.analytics();
+  firebase.performance();
+}
 
 export default firebase;

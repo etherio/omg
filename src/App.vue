@@ -132,7 +132,7 @@ export default {
         visible: [],
       },
       {
-        icon: "",
+        icon: "mdi-compare",
         title: "အကဲဖြတ်ရန်​",
         path: "/reviews",
         visible: ["admin", "moderator"],

@@ -1,10 +1,11 @@
-const config = Object.assign({}, require("./config.production"));
+export const api = {
+  HEROKU_SERVER: "http://localhost:3000",
+};
 
-if (process.env.NODE_ENV !== "production") {
-  const localConfig = require("./config.development");
-  for (const [key, value] of Object.entries(localConfig)) {
-    config[key] = value;
-  }
-}
-
-module.exports = config;
+export const firebaseConfig = {
+  apiKey: "AIzaSyBgkNJBP6moWUoBEuOjBd2Yg1EuKsPHx1Q",
+  authDomain: "omg-baby.firebaseapp.com",
+  projectId: "omg-baby",
+  appId: "1:499374745893:web:ae59292b3d99c41b7e12cc",
+  measurementId: "G-VEF70B6QLW",
+};

@@ -1,19 +1,17 @@
 <template>
   <div class="products">
     <v-card :loading="loading">
-      <v-card-actions>
+      <v-card-title>
         <v-card-title>ကုန်ပစ္စည်းများ</v-card-title>
         <v-spacer />
-        <v-btn text :to="{ path: '/products/new' }">
+        <v-btn text to="/products/new">
           <v-icon>mdi-plus</v-icon>
           အသစ်ထည့်ရန်
         </v-btn>
-      </v-card-actions>
-      <v-card-subheader>
-        <product-finder
-          :search="(value) => (search = value)"
-	></product-finder>
-      </v-card-subheader>
+
+        <product-finder :search="(value) => (search = value)"></product-finder>
+      </v-card-title>
+
       <v-card-text>
         <v-alert v-if="error" type="error">{{ error }}</v-alert>
         <v-simple-table>
@@ -185,9 +183,12 @@ export default {
       }
       this.products = $products.filter((product) => {
         value = value.toLowerCase();
-        return product.code.toLowerCase().match(value) || product.name.toLowerCase().match(value);
+        return (
+          product.code.toLowerCase().match(value) ||
+          product.name.toLowerCase().match(value)
+        );
       });
     },
-  }
+  },
 };
 </script>

@@ -7,7 +7,7 @@
     <v-form ref="form" @submit.prevent="onSubmit">
       <v-row>
         <v-col cols="12">
-          <v-btn icon @click="$router.back()">
+          <v-btn icon to="/products">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
         </v-col>
@@ -95,7 +95,7 @@
         </v-col>
 
         <!-- Image -->
-        <v-col cols="12">
+        <v-col cols="12" class="text-right">
           <v-text-field
             label="ဓာတ်ပုံလင့်ခ်"
             v-model="select.imageURL"
@@ -117,17 +117,26 @@
             @click="uploadFromUrl = !uploadFromUrl"
             v-text="uploadFromUrl ? 'ဓာတ်ပုံဖိုင်တင်ရန' : 'URL မှပုံတင်ရန်'"
           />
+
+          <!-- preview image -->
+          <v-img
+            v-if="uploadFromUrl"
+            :src="select.imageURL"
+            width="180"
+            height="180"
+          ></v-img>
+
+          <v-divider class="mt-2 mb-2"></v-divider>
         </v-col>
 
         <!-- age group -->
         <v-col cols="12">
-          <v-label></v-label>
+          <v-label>အသက်အရွယ်</v-label>
           <v-range-slider
             class="mt-5 mx-10"
             v-model="select.ageGroup"
             step=".5"
             max="15"
-            label="အသက်အရွယ်"
           />
           <!-- label for selected age -->
           <div
@@ -164,7 +173,7 @@ import FormData from "form-data";
 export default {
   name: "product-create",
   data: () => ({
-    loading: false,
+    loading: true,
     connecting: false,
     uploadFromUrl: false,
     select: {
@@ -198,19 +207,15 @@ export default {
         name: this.select.name,
         code: this.select.code,
         price: parseInt(this.select.price),
-        description: this.select.description,
-        category: this.select.category,
+        description: this.select.description || "",
+        category: this.select.category || "",
         colors: this.select.colors.filter((c) => !!c),
         minAge: this.select.ageGroup[0],
         maxAge: this.select.ageGroup[1],
       };
       if (this.uploadFromUrl && this.select.imageURL) {
-        let { data } = await this.axios.get(this.select.imageURL, {
-          responseType: "blob",
-        });
-        this.select.image = data;
-      }
-      if (this.select.image) {
+        data.append("images", [this.select.imageURL]);
+      } else if (this.select.image) {
         data.append("image", this.select.image);
       }
       for (let [key, value] of Object.entries(product)) {
@@ -282,6 +287,28 @@ export default {
   },
 
   beforeMount() {
+    const { id } = this.$route.params;
+    if (id) {
+      this.axios
+        .get(`${server.products}/${id}`, {
+          headers: { "X-Access-Token": this.$root.user.token },
+        })
+        .then(({ data }) => {
+          this.select.name = data.name;
+          this.select.code = data.code;
+          this.select.price = data.price;
+          this.select.description = data.description;
+          this.select.category = data.category;
+          this.select.colors = data.colors || [];
+          this.select.imageURL = data.images[0];
+          this.select.ageGroup = [data.minAge, data.maxAge];
+          this.loading = false;
+          if (this.select.imageURL) {
+            this.uploadFromUrl = true;
+          }
+        });
+    }
+
     this.axios
       .get(server.combo, {
         headers: { "X-Access-Token": this.$root.user.token },
@@ -289,6 +316,7 @@ export default {
       .then(({ data }) => {
         this.categories = data.categories;
         this.colors = data.colors;
+        if (!id) this.loading = false;
       });
   },
 };

@@ -1,7 +1,14 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" sm="6" v-for="(review, index) in reviews" :key="index">
+      <v-col
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+        v-for="(review, index) in reviews"
+        :key="index"
+      >
         <v-card class="my-4">
           <v-img :src="review.images[0]"></v-img>
           <v-card-title>

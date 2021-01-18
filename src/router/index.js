@@ -33,6 +33,10 @@ const routes = [
     component: () => import("@/views/products/create.vue"),
   },
   {
+    path: "/products/new/:id",
+    component: () => import("@/views/products/create.vue"),
+  },
+  {
     path: "/facebook",
     component: () => import("@/views/products/facebook.vue"),
   },

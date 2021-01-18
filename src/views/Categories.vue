@@ -64,10 +64,6 @@
 import { translateNumber } from "../app/burmese";
 import AddCategory from "@/components/AddCategory.vue";
 
-const zero = "၀";
-
-const wrapper = (id, title, total) => ({ id, title, total });
-
 export default {
   data: () => ({
     loading: true,
