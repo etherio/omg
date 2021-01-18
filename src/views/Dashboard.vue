@@ -23,7 +23,7 @@
           :loading="loading"
           dark
         >
-          <h2>{{ num(inventory) }} မျိုး</h2>
+          <h2>{{ num(inventory) }} ခု</h2>
         </dashboard-card>
       </v-col>
       <v-col cols="12" sm="6" md="6" lg="4" xl="4">

@@ -64,7 +64,7 @@ export default {
   get review() {
     return `${api.HEROKU_SERVER}/review`;
   },
-  get cors() {
-    return `${api.HEROKU_SERVER}/cors`;
+  get stocks() {
+    return `${api.HEROKU_SERVER}/inventory`;
   },
 };

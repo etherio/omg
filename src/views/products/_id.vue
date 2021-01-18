@@ -33,11 +33,11 @@
             <v-card-subtitle id="price" class="font-weight-bold">
               {{ priceInBurmese }}
             </v-card-subtitle>
-            <p>
-              <span v-if="owner">
-                <a href="#">{{ ownerName }}</a> မှ
-              </span>
-              <a href="#">{{ createdDateTime }}</a> တွင် တင်ခဲ့သည်။
+            <p v-if="owner">
+              <a href="#">{{ ownerName }}</a> မှ
+              <a href="#">{{ createdDateTime }}</a> တွင်
+              <span v-text="owner.edited ? 'ပြန်​​​​​ပြင်' : 'စတင်'"></span
+              >ခဲ့သည်။
             </p>
 
             <v-chip v-if="category" color="primary" class="mx-1" small>
@@ -83,12 +83,67 @@
           <v-icon class="mr-1">mdi-content-copy</v-icon>
           ပွားရန်
         </v-btn>
-        <!-- <v-btn text :to="`/${$route.params.id}/edit`">
+        <v-btn text :to="`/products/edit/${$route.params.id}`">
           <v-icon class="mr-1">mdi-pencil</v-icon>
           ပြင်ရန်
-        </v-btn> -->
+        </v-btn>
       </v-card-actions>
     </v-card>
+    <v-divider class="mt-4 mb-2"></v-divider>
+    <v-card :loading="loading">
+      <v-card-title>
+        ကုန်သွင်း/ကုန်ထုတ်
+      </v-card-title>
+      <v-card-subtitle class="pt-2">
+        ကုန်ပစ္စည်း(လက်ကျန်) <b>{{ num(stocks) }} ခု</b>
+      </v-card-subtitle>
+      <v-card-text>
+        <!--  -->
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <!-- new records -->
+        <v-btn @click="ledger = true">
+          <v-icon>mdi-plus</v-icon> စာရင်းသွင်းရန်
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+
+    <v-dialog v-model="ledger" max-width="500" persistent>
+      <v-form @submit.prevent="submitLedger" ref="ledger">
+        <v-card>
+          <v-card-title>
+            ကုန်ပစ္စည်းစာရင်းသွင်းခြင်း
+          </v-card-title>
+          <v-card-text>
+            <v-select
+              v-model="ledgerData.value"
+              label="အရေအတွက်"
+              :rules="required"
+              :items="quanties"
+            ></v-select>
+            <v-text-field
+              v-model="ledgerData.description"
+              label="အကြောင်းအရာ"
+            ></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="grey"
+              text
+              @click="ledger = false"
+              :disabled="loading"
+            >
+              ပယ်ဖျက်ပါ
+            </v-btn>
+            <v-btn color="red" text :loading="loading" type="submit">
+              စာရင်းသွင်းပါ
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -118,16 +173,34 @@ export default {
     maxAge: null,
     images: [],
     colors: [],
-    stock: 0,
+    stocks: 0,
     photoURL: null,
     createdAt: true,
+    updatedAt: true,
     editing: false,
     placeholder,
     uid: null,
     loading: true,
+    ledger: false,
+    ledgerData: {
+      description: null,
+      value: null,
+    },
+    required: [(value) => !!value],
   }),
 
   methods: {
+    async submitLedger() {
+      if (this.loading) return;
+      if (!this.$refs.ledger.validate()) return;
+      this.loading = true;
+      await this.axios.post(`${server.stocks}/${this.id}`, this.ledgerData, {
+        headers: { "x-access-token": this.$root.user.token },
+      });
+      this.stocks += this.ledgerData.value;
+      this.ledgerData = { value: null, description: null };
+      this.loading = this.ledger = false;
+    },
     async deleteProduct() {
       if (this.loading) return;
       this.loading = true;
@@ -142,6 +215,8 @@ export default {
 
       this.$router.push({ path: "/products" });
     },
+
+    num: translateNumber,
   },
 
   beforeMount() {
@@ -169,6 +244,20 @@ export default {
   },
 
   computed: {
+    quanties() {
+      const { stocks } = this;
+      const results = [];
+      for (let i = 0; i < 5; i++) {
+        results.push((i + 1) * 10);
+      }
+      for (let i = 0; i < 10; i++) {
+        results.push(i + 1);
+      }
+      for (let i = 0; i < stocks; i++) {
+        results.push((i + 1) * -1);
+      }
+      return results.sort((a, b) => b - a);
+    },
     priceInBurmese() {
       return translateNumber((this.price || 0).toLocaleString());
     },
@@ -179,7 +268,10 @@ export default {
       return translateAge(this.maxAge);
     },
     createdDateTime() {
-      return translateDateTime(new Date(this.createdAt), "d-m-Y(Dနေ့)၊ A h:i");
+      return translateDateTime(
+        new Date(this.updatedAt || this.createdAt),
+        "d-m-Y(Dနေ့)၊ A h:i"
+      );
     },
     ownerName() {
       return this.owner.name || this.owner.email;

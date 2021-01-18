@@ -66,7 +66,7 @@
                     {{ age(product.maxAge) }}ထိ
                   </span>
                 </td>
-                <td class="text-center">{{ num(product.stocks) }}</td>
+                <td class="text-center">{{ num(product.stocks) }} ခု</td>
               </tr>
             </tbody>
             <tbody v-if="snackbarMessage">

@@ -2,6 +2,10 @@ export const api = {
   HEROKU_SERVER: "https://omg-api.etherio.net",
 };
 
+if (process.env.NODE_ENV === "development") {
+  api.HEROKU_SERVER = "http://localhost:3000";
+}
+
 export const firebaseConfig = {
   apiKey: "AIzaSyBgkNJBP6moWUoBEuOjBd2Yg1EuKsPHx1Q",
   authDomain: "omg-baby.firebaseapp.com",

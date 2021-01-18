@@ -1,22 +1,3 @@
-<script>
-export default {
-  name: "delete-product-modal",
-  props: {
-    loading: {
-      type: Boolean,
-      required: false,
-    },
-    deleteProduct: {
-      type: Function,
-      required: true,
-    },
-  },
-  data: () => ({
-    dialog: false,
-  }),
-};
-</script>
-
 <template>
   <span>
     <v-btn text @click="dialog = true" color="red" dark>
@@ -43,6 +24,25 @@ export default {
     </v-dialog>
   </span>
 </template>
+
+<script>
+export default {
+  name: "delete-product-modal",
+  props: {
+    loading: {
+      type: Boolean,
+      required: false,
+    },
+    deleteProduct: {
+      type: Function,
+      required: true,
+    },
+  },
+  data: () => ({
+    dialog: false,
+  }),
+};
+</script>
 
 <style>
 html,
