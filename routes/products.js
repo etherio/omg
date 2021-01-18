@@ -20,7 +20,7 @@ router.get("/", Guard.firebase("moderator", "admin"), async (req, res) => {
       await product.fetch({ stocks: true });
       response.push(product);
     }
-    return res.json(response.reverse()).end();
+    return res.json(response.reverse());
   } catch (e) {
     console.error(e);
     res.status(e.code || 400).end();
@@ -83,13 +83,36 @@ router.get("/:id", Guard.firebase("admin", "moderator"), async (req, res) => {
       ...snapshot.toJSON(),
     });
     await product.fetch({ owner: true, stocks: true });
-    res.json(product).end();
+    res.json(product);
   } catch (e) {
     console.error(e);
     res.status(e.code || 400);
   }
   res.end();
 });
+
+router.post(
+  "/:id",
+  Guard.firebase("admin", "moderator"),
+  upload.any(),
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      let product = new Product(req.body);
+      product.updatedUid = req.auth["uid"];
+      console.log(product.onUpdate());
+      await database()
+        .ref(`${databaseName}/products/${id}`)
+        .update(product.onUpdate());
+      product.id = id;
+      res.json(product);
+    } catch (e) {
+      console.error(e);
+      res.status(e.code || 400);
+    }
+    res.end();
+  }
+);
 
 router.delete(
   "/:id",

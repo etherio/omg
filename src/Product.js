@@ -1,7 +1,5 @@
 const { database, auth, storage } = require("firebase-admin");
-const { color } = require("jimp");
 const databaseName = process.env.FIREBASE_DATABASE_NAME;
-// const storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
 
 class Product {
   constructor({
@@ -10,6 +8,8 @@ class Product {
     name,
     price,
     createdAt,
+    updatedAt,
+    updatedUid,
     uid,
     images,
     colors,
@@ -20,10 +20,12 @@ class Product {
   }) {
     this.id = id;
     this.uid = uid;
+    this.updatedUid = updatedUid;
     this.code = code;
     this.name = name;
     this.price = parseInt(price);
     this.createdAt = parseInt(createdAt);
+    this.updatedAt = parseInt(updatedAt);
     this.images =
       typeof images === "string"
         ? images.split(",")
@@ -75,13 +77,14 @@ class Product {
     return (
       this.uid &&
       auth()
-        .getUser(this.uid)
+        .getUser(this.updatedUid || this.uid)
         .then((user) => {
           this.owner = {
             name: user.displayName || null,
             email: user.email || null,
             phone: user.phoneNumber || null,
             role: (user.customClaims && user.customClaims.role) || null,
+            edited: Boolean(this.updatedUid),
           };
         })
     );
@@ -135,6 +138,16 @@ class Product {
       .update({
         products: database.ServerValue.increment(-1),
       });
+  }
+
+  onUpdate() {
+    const results = {};
+    this.updatedAt = database.ServerValue.TIMESTAMP;
+    this.uid = this.createdAt = undefined;
+    Object.entries(this).forEach(([id, value]) => {
+      if (value !== null && value !== undefined) results[id] = value;
+    });
+    return results;
   }
 }
 
