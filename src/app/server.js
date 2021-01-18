@@ -20,7 +20,7 @@ export default {
   },
 
   get meta() {
-    return `${api.HEROKU_SERVER}/meta`;
+    return `${api.HEROKU_SERVER}/metadata`;
   },
 
   get products() {
