@@ -1,7 +1,8 @@
-const axios = require("axios").default;
+const { database } = require("firebase-admin");
 const express = require("express");
 const router = express.Router();
 const serverStarted = Date.now();
+const guard = require("../src/guard");
 const serverInfo = {
   requested: 0,
 };
@@ -20,17 +21,28 @@ router.use("/webhook", require("./webhook"));
 router.use("/review", require("./review"));
 router.use("/inventory", require("./stocks"));
 
-router.post("/cors", (req, res) => {
-  let { url } = req.body;
-  axios
-    .get(url)
-    .then((response) => {
-      Object.entries(response.headers).forEach(([key, value]) =>
-        res.setHeader(key, value)
-      );
-      res.status(response.status).send(response.data).end();
-    })
-    .catch((err) => res.status(err.code || 400).json({ error: err.message }));
+router.post("/resync", guard.firebase("admin"), async (req, res) => {
+  const db = database().ref(process.env.FIREBASE_DATABASE_NAME);
+  const productsRef = db.child("products");
+  const categoriesRef = db.child("categories");
+  const inventoryRef = db.child("inventory");
+  // get total ref
+  const products = (await productsRef.get()).val() || {};
+  const categories = (await categoriesRef.get()).val() || {};
+  const inventory = (await inventoryRef.get()).val() || {};
+  let stocks = 0;
+
+  Object.values(inventory).forEach(({ count }) => {
+    stocks += count;
+  });
+
+  await db.child("metadata/collection").set({
+    products: Object.values(products).length,
+    categories: Object.values(categories).length,
+    inventory: stocks,
+  });
+
+  res.status(202).end();
 });
 
 router.all("/status", (req, res) => {

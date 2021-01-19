@@ -129,6 +129,23 @@ class Product {
       throw { code: 404, message: "Product not found" };
     }
 
+    // fetch inventory
+    const inventoryRef = database().ref(`${databaseName}/inventory/${id}`);
+    const inventorySnapshot = await inventoryRef.get();
+    if (inventorySnapshot.exists()) {
+      const { count } = inventorySnapshot.val();
+
+      // decrement stock from inventory
+      database()
+        .ref(`${databaseName}/metadata/collection`)
+        .update({
+          inventory: database.ServerValue.increment((count || 0) * -1),
+        });
+
+      // delete inventory
+      await inventoryRef.remove();
+    }
+
     // delete from products
     await ref.remove();
 
