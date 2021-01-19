@@ -186,12 +186,16 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 #preload {
   display: flex;
   width: 100%;
   height: calc(100vh - 5rem);
   justify-content: center;
   align-items: center;
+}
+
+a {
+  text-decoration: none;
 }
 </style>

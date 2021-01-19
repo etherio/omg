@@ -111,8 +111,6 @@ import { translateNumber, translateAge } from "@/app/burmese";
 import placeholder from "@/assets/img/image.png";
 import ProductFinder from "@/components/ProductFinder.vue";
 
-let $products = [];
-
 export default {
   name: "Products",
   components: {
@@ -164,7 +162,7 @@ export default {
         });
       })
       .then((products) => {
-        this.$root.store.products = this.products = $products = products;
+        this.$root.store.products = this.products = products;
         if (!this.products.length) {
           this.snackbar = true;
           this.snackbarMessage = "ကုန်ပစ္စည်းများရှာမတွေ့ပါ။";
@@ -184,14 +182,15 @@ export default {
   watch: {
     search(value) {
       if (!value) {
-        this.products = $products;
+        this.products = this.$root.store.products;
         return;
       }
-      this.products = $products.filter((product) => {
+      this.products = this.$root.store.products.filter((product) => {
         value = value.toLowerCase();
         return (
           product.code.toLowerCase().match(value) ||
-          product.name.toLowerCase().match(value)
+          product.name.toLowerCase().match(value) ||
+          product.category.toLowerCase().match(value)
         );
       });
     },

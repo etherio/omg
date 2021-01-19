@@ -50,7 +50,11 @@ const routes = [
   },
   {
     path: "/reviews",
-    component: () => import("@/views/reviews.vue"),
+    component: () => import("@/views/reviews/index.vue"),
+  },
+  {
+    path: "/reviews/:id",
+    component: () => import("@/views/reviews/create.vue"),
   },
   {
     path: "/products/:id/:name",

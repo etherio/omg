@@ -3,7 +3,11 @@ export const api = {
 };
 
 if (process.env.NODE_ENV === "development") {
-  api.HEROKU_SERVER = "http://localhost:3000";
+  if (typeof fetch === "function") {
+    fetch("http://localhost:3000/status").then(() => {
+      api.HEROKU_SERVER = "http://localhost:3000";
+    });
+  }
 }
 
 export const firebaseConfig = {
