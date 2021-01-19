@@ -22,7 +22,12 @@ firebase
   });
 
 new Vue({
-  data: { loaded: false, user: null, overlay: () => null },
+  data: {
+    loaded: false,
+    user: null,
+    overlay: () => null,
+    store: { products: [] },
+  },
   router,
   vuetify,
   render(h) {

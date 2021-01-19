@@ -7,7 +7,7 @@
     <v-form ref="form" @submit.prevent="onSubmit">
       <v-row>
         <v-col cols="12">
-          <v-btn icon to="/products">
+          <v-btn icon @click="$router.back()">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
         </v-col>
@@ -167,7 +167,7 @@
 
 <script>
 import server from "@/app/server";
-import { translateAge } from "@/app/burmese";
+import { translateAge, translateBurmeseNumber } from "@/app/burmese";
 import FormData from "form-data";
 
 export default {
@@ -206,7 +206,7 @@ export default {
       let product = {
         name: this.select.name,
         code: this.select.code,
-        price: parseInt(this.select.price),
+        price: parseInt(translateBurmeseNumber(this.select.price)),
         description: this.select.description || "",
         category: this.select.category || "",
         colors: this.select.colors.filter((c) => !!c),
@@ -232,6 +232,7 @@ export default {
         },
       })
         .then(() => {
+          this.$root.store.products = [];
           this.$router.push({ path: "/products" });
         })
         .catch((err) => {
@@ -289,6 +290,7 @@ export default {
   beforeMount() {
     const { id } = this.$route.params;
     if (id) {
+      // fetching data from API
       this.axios
         .get(`${server.products}/${id}`, {
           headers: { "X-Access-Token": this.$root.user.token },

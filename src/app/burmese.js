@@ -1,3 +1,4 @@
+const defaultDateFormat = "d/m/Y D၊ A h:i:s";
 const burmeseDays = [
   "တနင်္ဂနွေ",
   "တနင်္လာ",
@@ -44,8 +45,18 @@ export function translateAge(age) {
   return `${translateNumber(Y)} ${year}${M ? half : ""}`;
 }
 
-var defaultFormat = "d/m/Y D၊ A h:i:s";
-// return format d/m/Y D, h:i(A)
+export function translateBurmeseNumber(input) {
+  const dictionary = {};
+  Object.entries(burmeseNumber).forEach(
+    ([key, value]) => (dictionary[value] = key)
+  );
+  return (input || "")
+    .toString()
+    .split("")
+    .map((n) => dictionary[n] || n)
+    .join("");
+}
+
 export function translateDateTime(dt, format) {
   if (!dt instanceof Date) return dt;
   let d = translateNumber(dt.getDate());
@@ -66,7 +77,7 @@ export function translateDateTime(dt, format) {
   if (m.length < 2) m = burmeseEmptyValue + m;
   if (i.length < 2) i = burmeseEmptyValue + i;
   if (s.length < 2) s = burmeseEmptyValue + s;
-  let formatted = (format || defaultFormat)
+  let formatted = (format || defaultDateFormat)
     .replace(/d/gm, d)
     .replace(/m/gm, m)
     .replace(/Y/gm, Y)

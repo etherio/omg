@@ -144,6 +144,12 @@ export default {
   },
 
   beforeMount() {
+    if (this.$root.store.products.length) {
+      this.loading = false;
+      this.products = this.$root.store.products;
+      return;
+    }
+
     this.axios
       .get(server.products, {
         headers: { "X-Access-Token": this.$root.user.token },
@@ -158,7 +164,7 @@ export default {
         });
       })
       .then((products) => {
-        this.products = $products = products;
+        this.$root.store.products = this.products = $products = products;
         if (!this.products.length) {
           this.snackbar = true;
           this.snackbarMessage = "ကုန်ပစ္စည်းများရှာမတွေ့ပါ။";

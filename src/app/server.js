@@ -67,4 +67,7 @@ export default {
   get stocks() {
     return `${api.HEROKU_SERVER}/inventory`;
   },
+  get resync() {
+    return `${api.HEROKU_SERVER}/resync`;
+  },
 };

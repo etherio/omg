@@ -1,3 +1,9 @@
 {
-  "rules": {}
+  "rules": {
+    "$database": {
+      "$collection": {
+        ".indexOn": ".value"
+      }
+    }
+  }
 }

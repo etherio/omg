@@ -7,7 +7,7 @@
     <v-form ref="form" @submit.prevent="onSubmit">
       <v-row>
         <v-col cols="12">
-          <v-btn icon to="/products">
+          <v-btn icon @click="$router.back()">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
         </v-col>
@@ -233,6 +233,7 @@ export default {
         },
       })
         .then(() => {
+          this.$root.store.products = [];
           this.$router.push({ path: `/products/${this.id}` });
         })
         .catch((err) => {

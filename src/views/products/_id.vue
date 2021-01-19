@@ -2,7 +2,7 @@
   <v-container>
     <v-card :loading="loading">
       <v-card-title>
-        <v-btn icon class="mr-2" to="/products">
+        <v-btn icon class="mr-2" @click="$router.push('/products')">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
         <span v-if="name">
@@ -90,7 +90,7 @@
       </v-card-actions>
     </v-card>
     <v-divider class="mt-4 mb-2"></v-divider>
-    <v-card :loading="loading">
+    <v-card>
       <v-card-title>
         ကုန်သွင်း/ကုန်ထုတ်
       </v-card-title>
@@ -98,7 +98,27 @@
         ကုန်ပစ္စည်း(လက်ကျန်) <b>{{ num(stocks) }} ခု</b>
       </v-card-subtitle>
       <v-card-text>
-        <!--  -->
+        <!-- inventories records -->
+        <v-simple-table>
+          <thead>
+            <tr>
+              <th>နေ့စွဲ</th>
+              <th>ကနဦး</th>
+              <th>အရေအတွက်</th>
+              <th>လက်ကျန်</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(record, index) in records" :key="index">
+              <td>
+                {{ date(new Date(record.createdAt)) }}
+              </td>
+              <td>{{ num(record.count) }} ခု</td>
+              <td>{{ num(record.value) }} ခု</td>
+              <td>{{ num(record.count + record.value) }} ခု</td>
+            </tr>
+          </tbody>
+        </v-simple-table>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -174,12 +194,13 @@ export default {
     images: [],
     colors: [],
     stocks: 0,
+    owner: {},
     photoURL: null,
-    createdAt: true,
-    updatedAt: true,
-    editing: false,
-    placeholder,
+    updatedAt: null,
+    createdAt: null,
     uid: null,
+    placeholder,
+    records: [],
     loading: true,
     ledger: false,
     ledgerData: {
@@ -194,33 +215,49 @@ export default {
       if (this.loading) return;
       if (!this.$refs.ledger.validate()) return;
       this.loading = true;
-      await this.axios.post(`${server.stocks}/${this.id}`, this.ledgerData, {
-        headers: { "x-access-token": this.$root.user.token },
-      });
-      this.stocks += this.ledgerData.value;
+      this.$root.store.products = [];
+      let { data } = await this.axios.post(
+        `${server.stocks}/${this.id}`,
+        this.ledgerData,
+        {
+          headers: { "x-access-token": this.$root.user.token },
+        }
+      );
+      this.stocks = data.total;
+      this.records.unshift(data.record);
       this.ledgerData = { value: null, description: null };
       this.loading = this.ledger = false;
     },
     async deleteProduct() {
       if (this.loading) return;
       this.loading = true;
-      const { status, statusText } = await this.axios.delete(
-        `${server.products}/${this.$route.params.id}`,
-        {
-          headers: {
-            "X-Access-Token": this.$root.user.token,
-          },
-        }
-      );
-
+      await this.axios.delete(`${server.products}/${this.$route.params.id}`, {
+        headers: {
+          "X-Access-Token": this.$root.user.token,
+        },
+      });
+      this.$root.store.products = [];
       this.$router.push({ path: "/products" });
     },
 
     num: translateNumber,
+    date: translateDateTime,
   },
 
   beforeMount() {
-    let id = this.$route.params.id;
+    const { id } = this.$route.params;
+    // preload data
+    if (this.$root.store.products.length) {
+      let product =
+        this.$root.store.products.filter((p) => p.id === id)[0] || {};
+      for (let key in product) {
+        this[key] = product[key];
+        if (key === "images") {
+          this.photoURL = product[key][0] || placeholderLight;
+        }
+      }
+    }
+    // fetching product data from API
     this.axios
       .get(`${server.products}/${id}`, {
         headers: {
@@ -234,12 +271,25 @@ export default {
             this.photoURL = data[key][0] || placeholderLight;
           }
         }
+        this.loading = false;
       })
       .catch((err) => {
+        this.loading = false;
         console.error(err);
       })
       .then(() => {
-        this.loading = false;
+        // fetch inventory records from server
+        this.loading = true;
+        this.axios
+          .get(`${server.stocks}/${id}`, {
+            headers: {
+              "X-Access-Token": this.$root.user.token,
+            },
+          })
+          .then(({ data }) => {
+            this.records = data;
+            this.loading = false;
+          });
       });
   },
 
