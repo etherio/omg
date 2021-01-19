@@ -19,7 +19,7 @@ router.use("/metadata", require("./metadata"));
 router.use("/session", require("./session"));
 router.use("/webhook", require("./webhook"));
 router.use("/review", require("./review"));
-router.use("/inventory", require("./stocks"));
+router.use("/inventory", require("./inventory"));
 
 router.post("/resync", guard.firebase("admin"), async (req, res) => {
   const db = database().ref(process.env.FIREBASE_DATABASE_NAME);
@@ -35,13 +35,11 @@ router.post("/resync", guard.firebase("admin"), async (req, res) => {
   Object.values(inventory).forEach(({ count }) => {
     stocks += count;
   });
-
   await db.child("metadata/collection").set({
     products: Object.values(products).length,
     categories: Object.values(categories).length,
     inventory: stocks,
   });
-
   res.status(202).end();
 });
 
