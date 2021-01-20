@@ -13,6 +13,7 @@ router.use((req, res, next) => {
   next();
 });
 
+router.use("/image", require("./image"));
 router.use("/products", require("./products"));
 router.use("/users", require("./users"));
 router.use("/metadata", require("./metadata"));
@@ -45,15 +46,20 @@ router.post("/resync", guard.firebase("admin"), async (req, res) => {
 
 router.all("/status", (req, res) => {
   const status = {
-    started: serverStarted,
+    uptime: parseInt(process.uptime().toString()),
     requested: serverInfo.requested,
+    started: serverStarted,
     timestamp: Date.now(),
   };
   if ("tz" in req.query) {
-    const tz = req.query.tz || "UTC";
-    status.started = new Date(status.started).toLocaleDateString(tz);
-    status.expired = new Date(status.expired).toUTCString(tz);
-    status.timestamp = new Date(status.timestamp).toUTCString(tz);
+    const locale = "en-US";
+    const timeZone = req.query.tz || "UTC";
+    status.started = new Date(status.started).toLocaleString(locale, {
+      timeZone,
+    });
+    status.timestamp = new Date(status.timestamp).toLocaleString(locale, {
+      timeZone,
+    });
   }
   res.json(status);
 });

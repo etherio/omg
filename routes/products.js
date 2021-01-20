@@ -6,8 +6,8 @@ const Guard = require("../src/guard");
 const databaseName = process.env.FIREBASE_DATABASE_NAME;
 const multer = require("multer");
 const upload = multer({ dest: `${process.cwd()}/tmp` });
-const optimizer = require("../src/image");
 const crc32 = require("crc32");
+const fs = require("fs");
 
 router.get("/", Guard.firebase("moderator", "admin"), async (req, res) => {
   try {
@@ -37,11 +37,12 @@ router.post(
       const product = new Product(req.body);
       if (req.files.length) {
         for (let file of req.files) {
-          let { output, fileName } = await optimizer(file, product.code);
-          await storage().bucket().upload(output);
-          let storageRef = storage().bucket().file(fileName);
+          let { filename, path } = file;
+          await storage().bucket().upload(path);
+          let storageRef = storage().bucket().file(filename);
           storageRef.makePublic();
           product.images.push(storageRef.publicUrl());
+          fs.unlink(path, () => null);
         }
       }
       product.uid = req.auth.uid;
@@ -100,7 +101,6 @@ router.post(
     try {
       let product = new Product(req.body);
       product.updatedUid = req.auth["uid"];
-      console.log(product.onUpdate());
       await database()
         .ref(`${databaseName}/products/${id}`)
         .update(product.onUpdate());
@@ -114,20 +114,16 @@ router.post(
   }
 );
 
-router.delete(
-  "/:id",
-  Guard.firebase("admin", "moderator"),
-  async (req, res) => {
-    const { id } = req.params;
-    try {
-      await Product.remove(id);
-      res.status(202).end();
-    } catch (e) {
-      console.error(e);
-      res.status(e.code || 400);
-    }
-    res.end();
+router.delete("/:id", Guard.firebase("admin"), async (req, res) => {
+  const { id } = req.params;
+  try {
+    await Product.remove(id);
+    res.status(202).end();
+  } catch (e) {
+    console.error(e);
+    res.status(e.code || 400);
   }
-);
+  res.end();
+});
 
 module.exports = router;

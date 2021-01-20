@@ -1,6 +1,4 @@
-const path = require("path");
 const jimp = require("jimp");
-const multer = require("multer");
 
 const IMAGE_WIDTH = jimp.AUTO;
 const IMAGE_HEIGHT = 480;
@@ -34,7 +32,7 @@ module.exports = async (file, code) => {
   ) {
     await image.resize(IMAGE_WIDTH, IMAGE_HEIGHT);
   }
-  await image.quality(80);
+  // await image.quality(80);
   if (code) {
     await image.print(black, 11, 19, `#${code}`);
     await image.print(black, 9, 21, `#${code}`);
