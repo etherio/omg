@@ -72,6 +72,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <delete-product-modal
+          v-if="$root.user.role === 'admin'"
           :deleteProduct="deleteProduct"
           :loading="loading"
         />
@@ -97,15 +98,22 @@
       <v-card-subtitle class="pt-2">
         ကုန်ပစ္စည်း(လက်ကျန်) <b>{{ num(stocks) }} ခု</b>
       </v-card-subtitle>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <!-- new records -->
+        <v-btn @click="ledger = true">
+          <v-icon>mdi-plus</v-icon> စာရင်းသွင်းရန်
+        </v-btn>
+      </v-card-actions>
       <v-card-text>
         <!-- inventories records -->
-        <v-simple-table>
+        <v-simple-table v-show="records.length">
           <thead>
             <tr>
               <th>နေ့စွဲ</th>
-              <th>ကနဦး</th>
-              <th>အရေအတွက်</th>
               <th>လက်ကျန်</th>
+              <th>ရေတ‌ွက်</th>
+              <th>လက်ရှိ</th>
             </tr>
           </thead>
           <tbody>
@@ -120,13 +128,6 @@
           </tbody>
         </v-simple-table>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <!-- new records -->
-        <v-btn @click="ledger = true">
-          <v-icon>mdi-plus</v-icon> စာရင်းသွင်းရန်
-        </v-btn>
-      </v-card-actions>
     </v-card>
 
     <v-dialog v-model="ledger" max-width="500" persistent>
