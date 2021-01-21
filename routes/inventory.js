@@ -24,7 +24,7 @@ router.get("/:id", guard.firebase("admin", "moderator"), async (req, res) => {
   try {
     const { id } = req.params;
     const dbRef = database().ref(`${databaseName}/inventory_records`);
-    const queued = dbRef.orderByKey().startAt(`${id}_`);
+    const queued = dbRef.orderByKey().startAt(`${id}_`).endAt(`${id}_\uf8ff`);
     const snapshot = await queued.get();
     if (!snapshot.exists()) return res.json([]);
     const records = [];
