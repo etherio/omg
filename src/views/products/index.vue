@@ -14,78 +14,62 @@
 
       <v-card-text>
         <v-alert v-if="error" type="error">{{ error }}</v-alert>
-        <v-simple-table>
-          <template>
-            <thead>
-              <tr>
-                <th class="text-left">အကြောင်းအရာ</th>
-                <th class="text-center">စျေးနှုန်း</th>
-                <th class="text-center">အမျိုးအစား</th>
-                <th class="text-center">အသက်အရွယ်</th>
-                <th class="text-center">‌ရေတွက်</th>
-              </tr>
-            </thead>
-            <tbody v-if="products.length">
-              <tr
-                v-for="(product, index) in products"
-                :key="index"
-                @click="$router.push({ path: `/products/${product.id}` })"
-              >
-                <td class="text-left">
-                  <v-row>
-                    <v-col class="ma-1">
-                      <v-img :src="product.photoURL" width="120">
-                        <template v-slot:placeholder>
-                          <v-row
-                            class="fill-height ma-0"
-                            align="center"
-                            justify="center"
-                          >
-                            <v-progress-circular
-                              indeterminate
-                              color="grey lighten-5"
-                            ></v-progress-circular>
-                          </v-row>
-                        </template>
-                      </v-img>
-                    </v-col>
-                    <v-col>
-                      <b>{{ product.name }}</b>
-                    </v-col>
-                  </v-row>
-                </td>
-                <td class="text-center">{{ price(product.price) }} ကျပ်</td>
-                <td class="text-center">
-                  {{ product.category }}
-                </td>
-                <td class="text-center">
-                  <span v-if="product.minAge">
-                    {{ age(product.minAge) }} မှ
-                  </span>
-                  <span v-if="product.maxAge">
-                    {{ age(product.maxAge) }}ထိ
-                  </span>
-                </td>
-                <td class="text-center">{{ num(product.stocks) }} ခု</td>
-              </tr>
-            </tbody>
-            <tbody v-if="snackbarMessage">
-              <tr>
-                <td colspan="5">
-                  {{ snackbarMessage }} အသစ်တစ်ခုထည့်သွင်းရန်
-                  <v-btn
-                    text
-                    rounded
-                    color="primary"
-                    class="font-weight-bold"
-                    to="/products/new"
-                    >ဒီကိုနှိပ်</v-btn
-                  >ပါ။
-                </td>
-              </tr>
-            </tbody>
-          </template>
+        <v-simple-table v-if="loading || products.length">
+          <thead>
+            <tr>
+              <th class="text-left">အကြောင်းအရာ</th>
+              <th class="text-center">စျေးနှုန်း</th>
+              <th class="text-center">အမျိုးအစား</th>
+              <th class="text-center">အသက်အရွယ်</th>
+              <th class="text-center">‌ရေတွက်</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(product, index) in products"
+              :key="index"
+              @click="$router.push(`/products/${product.id}`)"
+            >
+              <td class="text-left">
+                <v-row>
+                  <v-col class="ma-1">
+                    <v-img :src="product.photoURL" width="120">
+                      <template v-slot:placeholder>
+                        <v-row
+                          class="fill-height ma-0"
+                          align="center"
+                          justify="center"
+                        >
+                          <v-progress-circular
+                            indeterminate
+                            color="grey lighten-5"
+                          ></v-progress-circular>
+                        </v-row>
+                      </template>
+                    </v-img>
+                  </v-col>
+                  <v-col>
+                    <b>{{ product.name }}</b>
+                  </v-col>
+                </v-row>
+              </td>
+              <td class="text-center">{{ price(product.price) }} ကျပ်</td>
+              <td class="text-center">
+                {{ product.category }}
+              </td>
+              <td class="text-center">
+                <span v-if="product.minAge">
+                  {{ age(product.minAge) }} မှ
+                </span>
+                <span v-if="product.maxAge"> {{ age(product.maxAge) }}ထိ </span>
+              </td>
+              <td class="text-center">{{ num(product.stocks) }} ခု</td>
+            </tr>
+          </tbody>
         </v-simple-table>
+        <empty-table v-else :items="products">
+          ကုန်ပစ္စည်းများ ထည့်သွင်းထားခြင်းမရှိပါ။
+        </empty-table>
       </v-card-text>
     </v-card>
     <v-snackbar v-model="snackbar" timeout="5000">
@@ -110,12 +94,15 @@ import server from "@/app/server";
 import { translateNumber, translateAge } from "@/app/burmese";
 import placeholder from "@/assets/img/image.png";
 import ProductFinder from "@/components/ProductFinder.vue";
+import EmptyTable from "@/components/EmptyTable.vue";
 
 export default {
   name: "Products",
   components: {
     ProductFinder,
+    EmptyTable,
   },
+
   data: () => ({
     error: null,
     snackbar: false,
@@ -131,11 +118,9 @@ export default {
     price(value) {
       return translateNumber(parseInt(value).toLocaleString());
     },
-
     age(value) {
       return translateAge(parseInt(value));
     },
-
     viewProduct(id) {
       this.$router.replace(["product", id].join("/"));
     },

@@ -71,6 +71,60 @@
       </v-container>
     </v-main>
 
+    <!-- fab floating button -->
+    <v-speed-dial
+      v-if="$root.user"
+      fixed
+      v-model="fab"
+      bottom
+      right
+      direction="top"
+      transition="scale-transition"
+    >
+      <template v-slot:activator>
+        <v-btn v-model="fab" dark fab color="secondary">
+          <v-icon v-if="fab">mdi-close</v-icon>
+          <v-icon v-else>mdi-plus</v-icon>
+        </v-btn>
+      </template>
+
+      <!-- create product -->
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            dark
+            small
+            color="secondary"
+            v-bind="attrs"
+            v-on="on"
+            to="/products/new"
+          >
+            <v-icon>mdi-book-plus-multiple</v-icon>
+          </v-btn>
+        </template>
+        <span>ကုန်ပစ္စည်းအသစ်ထည့်သွင်း</span>
+      </v-tooltip>
+
+      <!-- create category -->
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            dark
+            small
+            color="secondary"
+            v-bind="attrs"
+            v-on="on"
+            to="/categories?new"
+          >
+            <v-icon>mdi-book-plus-multiple</v-icon>
+          </v-btn>
+        </template>
+        <span>ပစ္စည်းအမျိုးအစားထည့်သွင်း</span>
+      </v-tooltip>
+    </v-speed-dial>
+
     <!-- footer -->
     <v-footer padless>
       <v-col class="text-center" cols="12">
@@ -101,6 +155,7 @@ export default {
     overlay: false,
     drawer: false,
     group: null,
+    fab: false,
     items: [
       {
         icon: "mdi-apps",
@@ -120,16 +175,16 @@ export default {
         visible: ["admin", "moderator"],
       },
       {
-        icon: "mdi-tag",
-        title: "အမျိူးအစားများ",
-        path: "/categories",
-        visible: [],
-      },
-      {
         icon: "mdi-truck",
         title: "အော်ဒါများ",
         path: "/orders",
         visible: [],
+      },
+      {
+        icon: "mdi-cart",
+        title: "အမျိုးအစားများ",
+        path: "/categories",
+        visible: ["admin", "moderator"],
       },
       {
         icon: "mdi-compare",
@@ -138,14 +193,8 @@ export default {
         visible: ["admin", "moderator"],
       },
       {
-        icon: "mdi-facebook",
-        title: "ဖေဘွတ်နှင့်ချိတ်ဆက်ခြင်း",
-        path: "/facebook",
-        visible: ["admin", "moderator"],
-      },
-      {
-        icon: "mdi-security",
-        title: "ခွင့်ပြုချက်များ",
+        icon: "mdi-account-multiple ",
+        title: "အသုံးပြုသူများ",
         path: "/users",
         visible: ["admin"],
       },

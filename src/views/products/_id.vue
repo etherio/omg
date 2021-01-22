@@ -216,7 +216,6 @@ export default {
       if (this.loading) return;
       if (!this.$refs.ledger.validate()) return;
       this.loading = true;
-      this.$root.store.products = [];
       let { data } = await this.axios.post(
         `${server.stocks}/${this.id}`,
         this.ledgerData,
@@ -225,6 +224,9 @@ export default {
         }
       );
       this.stocks = data.total;
+      this.$root.store.products.forEach((p) => {
+        if (p.id === this.$route.params.id) p.stocks = this.stocks;
+      });
       this.records.unshift(data.record);
       this.ledgerData = { value: null, description: null };
       this.loading = this.ledger = false;
@@ -237,7 +239,10 @@ export default {
           "X-Access-Token": this.$root.user.token,
         },
       });
-      this.$root.store.products = [];
+      let products = this.$root.store.products || [];
+      this.$root.store.products = products.filter(
+        ({ id }) => this.$route.params.id !== id
+      );
       this.$router.push({ path: "/products" });
     },
 

@@ -95,9 +95,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import server from "../app/server";
-import { translateNumber, translateDateTime } from "../app/burmese";
+import server from "@/app/server";
+import { translateNumber, translateDateTime } from "@/app/burmese";
 
 const providerIcons = {
   password: {
@@ -168,7 +167,7 @@ export default {
       this.loadingDelete = this.loading = true;
       let user = this.users.find((u) => u.uid == uid);
       if (user.role) return this.setUser(uid);
-      axios
+      this.axios
         .delete(`${server.users}/${uid}`, {
           headers: {
             "X-Access-Token": this.$root.user.stsTokenManager.accessToken,
@@ -187,7 +186,7 @@ export default {
   },
 
   created() {
-    axios
+    this.axios
       .get(server.listUsers, {
         headers: {
           "X-Access-Token": this.$root.user.stsTokenManager.accessToken,

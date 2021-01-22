@@ -1,3 +1,4 @@
+import Vue from "vue";
 import { firebaseConfig } from "@/../config/index";
 import firebase from "firebase/app";
 import "firebase/auth";
@@ -12,5 +13,7 @@ if (process.env.NODE_ENV === "production") {
   firebase.analytics();
   firebase.performance();
 }
+
+Vue.prototype.$auth = () => firebase.auth().currentUser;
 
 export default firebase;

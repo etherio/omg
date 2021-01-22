@@ -70,4 +70,7 @@ export default {
   get resync() {
     return `${api.HEROKU_SERVER}/resync`;
   },
+  get url() {
+    return api.HEROKU_SERVER;
+  },
 };

@@ -6,7 +6,7 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    component: () => import("@/views/Dashboard.vue"),
+    component: () => import("@/views/dashboard/index.vue"),
   },
   {
     path: "/login",
@@ -18,7 +18,7 @@ const routes = [
   },
   {
     path: "/users",
-    component: () => import("@/views/Users.vue"),
+    component: () => import("@/views/users/index.vue"),
   },
   {
     path: "/profile",
@@ -53,16 +53,16 @@ const routes = [
     component: () => import("@/views/reviews/index.vue"),
   },
   {
+    path: "/categories",
+    component: () => import("@/views/categories/index.vue"),
+  },
+  {
     path: "/reviews/:id",
     component: () => import("@/views/reviews/create.vue"),
   },
   {
     path: "/products/:id/:name",
     component: () => import("@/views/products/index.vue"),
-  },
-  {
-    path: "/categories",
-    component: () => import("@/views/Categories.vue"),
   },
 ];
 

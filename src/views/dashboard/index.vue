@@ -40,7 +40,7 @@
       <v-col cols="12" sm="6" md="6" lg="4" xl="4">
         <dashboard-card
           color="orange darken-2"
-          to="/products"
+          to="/categories"
           title="ပစ္စည်းအမျိုးအစား"
           subtitle="စုစုပေါင်း"
           :loading="loading"

@@ -20,7 +20,7 @@
             id="input-name"
           >
             <template v-slot:label>
-              <div>ကုန်ပစ္စည်းအမည်<b>*</b></div>
+              <div>ကုန်ပစ္စည်းအမည် <b>*</b></div>
             </template>
           </v-text-field>
         </v-col>
@@ -36,7 +36,7 @@
             counter="13"
           >
             <template v-slot:label>
-              <div>ကုတ်နံပါတ်<b>*</b></div>
+              <div>ကုတ်နံပါတ် <b>*</b></div>
             </template>
           </v-text-field>
         </v-col>
@@ -54,7 +54,7 @@
             id="input-price"
           >
             <template v-slot:label>
-              <div>စျေးနှုန်း<b>*</b></div>
+              <div>စျေးနှုန်း <b>*</b></div>
             </template>
           </v-text-field>
         </v-col>
