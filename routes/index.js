@@ -21,6 +21,7 @@ router.use("/session", require("./session"));
 router.use("/webhook", require("./webhook"));
 router.use("/review", require("./review"));
 router.use("/inventory", require("./inventory"));
+router.use("/mail", require("./mail"));
 
 router.post("/resync", guard.firebase("admin"), async (req, res) => {
   const db = database().ref(process.env.FIREBASE_DATABASE_NAME);
