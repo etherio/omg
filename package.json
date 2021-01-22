@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "base-64": "^1.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "crc32": "^0.2.2",
