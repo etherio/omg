@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <h2>သုံးစွဲသူများ</h2>
+    <h2>အသုံးပြုသူများ</h2>
     <v-divider class="my-4"></v-divider>
     <v-alert
       v-if="error"
@@ -20,20 +20,17 @@
               <th>အမည်</th>
               <th>ထုတ်လုပ်သူ</th>
               <th>ရာထူး</th>
-              <th>စတင်ပြုလုပ်ချိန်</th>
+              <th>နောက်ဆုံံးလက်မှတ်ထိုးခဲ့ချိန်</th>
               <th><span class="sr-only">actions</span></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="user in users" :key="user.uid">
               <td>
-                <b v-html="user.displayName"></b>
-                <a v-if="user.email" :href="'mailto:' + user.email">
-                  {{ user.email }}
+                <a v-if="user.email" :href="`mailto:${user.email}`">
+                  <b v-html="user.displayName || user.email"></b>
                 </a>
-                <a v-if="user.phoneNumber" :href="'tel:' + user.phoneNumber">
-                  {{ num(user.phoneNumber) }}
-                </a>
+                <b v-else>{{ user.displayName }}</b>
               </td>
               <td>
                 <v-icon
@@ -53,7 +50,7 @@
                 />
               </td>
               <td>
-                {{ datetime(new Date(user.createdAt)) }}
+                {{ datetime(new Date(user.lastSignIn)) }}
               </td>
               <td>
                 <v-btn
@@ -125,7 +122,6 @@ export default {
     loadingRole: false,
     error: null,
     users: [],
-    request_access: [],
     providers: providerIcons,
   }),
 
@@ -185,7 +181,7 @@ export default {
     },
   },
 
-  created() {
+  beforeMount() {
     this.axios
       .get(server.listUsers, {
         headers: {
@@ -193,11 +189,13 @@ export default {
         },
       })
       .then(({ data }) => {
-        this.users = data;
+        this.users = data.sort(
+          (a, b) => (b.lastSignIn || 0) - (a.lastSignIn || 0)
+        );
         this.loading = false;
       })
       .catch((e) => {
-        this.error = "Something went wrong! Please reload this page...";
+        this.error = "တစ်စုံတစ်ခုမှားယွင်းနေသည်။";
         this.loading = false;
       });
   },

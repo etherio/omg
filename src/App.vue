@@ -72,58 +72,7 @@
     </v-main>
 
     <!-- fab floating button -->
-    <v-speed-dial
-      v-show="$root.user && $root.fab"
-      fixed
-      v-model="fab"
-      bottom
-      right
-      direction="top"
-      transition="scale-transition"
-    >
-      <template v-slot:activator>
-        <v-btn v-model="fab" dark fab small color="primary">
-          <v-icon v-if="fab">mdi-close</v-icon>
-          <v-icon v-else>mdi-dots-vertical</v-icon>
-        </v-btn>
-      </template>
-
-      <!-- create product -->
-      <v-tooltip left>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            fab
-            dark
-            small
-            color="secondary"
-            v-bind="attrs"
-            v-on="on"
-            to="/products/new"
-          >
-            <v-icon>mdi-basket-plus</v-icon>
-          </v-btn>
-        </template>
-        <span>ကုန်ပစ္စည်းအသစ်ထည့်သွင်း</span>
-      </v-tooltip>
-
-      <!-- create category -->
-      <v-tooltip left>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            fab
-            dark
-            small
-            color="secondary"
-            v-bind="attrs"
-            v-on="on"
-            to="/categories?new"
-          >
-            <v-icon>mdi-book-plus-multiple</v-icon>
-          </v-btn>
-        </template>
-        <span>ပစ္စည်းအမျိုးအစားထည့်သွင်း</span>
-      </v-tooltip>
-    </v-speed-dial>
+    <fab-button></fab-button>
 
     <!-- footer -->
     <v-footer padless>
@@ -144,8 +93,70 @@
 
 <script>
 import AccessDenied from "./components/AccessDenied.vue";
+import FabButton from "./components/FabButton.vue";
 import { translateNumber } from "./app/burmese";
 import logo from "./assets/img/logo.png";
+
+const items = [
+  {
+    icon: "mdi-apps",
+    title: "မူလစာမျက်နှာ",
+    path: "/",
+  },
+  {
+    icon: "mdi-account-multiple",
+    title: "အဆက်အသွယ်များ",
+    path: "/customers",
+    visible: [],
+  },
+  {
+    icon: "mdi-store",
+    title: "ကုန်ပစ္စည်းများ",
+    path: "/products",
+    visible: ["admin", "moderator"],
+  },
+  {
+    icon: "mdi-truck",
+    title: "အော်ဒါများ",
+    path: "/orders",
+    visible: [],
+  },
+  {
+    icon: "mdi-cart",
+    title: "အမျိုးအစားများ",
+    path: "/categories",
+    visible: ["admin", "moderator"],
+  },
+  {
+    icon: "mdi-format-color-fill",
+    title: "အရောင်များ",
+    path: "/colors",
+    visible: ["admin", "moderator"],
+  },
+  {
+    icon: "mdi-compare",
+    title: "အကဲဖြတ်ရန်​",
+    path: "/reviews",
+    visible: ["admin", "moderator"],
+  },
+  {
+    icon: "mdi-account-multiple ",
+    title: "အသုံးပြုသူများ",
+    path: "/users",
+    visible: ["admin"],
+  },
+  {
+    icon: " mdi-receipt",
+    title: "မှတ်တမ်းများ",
+    path: "/logs",
+    visible: [],
+  },
+  {
+    icon: " mdi-monitor-eye",
+    title: "Server Status",
+    path: "/about/server",
+  },
+];
 
 export default {
   name: "App",
@@ -155,71 +166,12 @@ export default {
     overlay: false,
     drawer: false,
     group: null,
-    fab: false,
-    items: [
-      {
-        icon: "mdi-apps",
-        title: "မူလစာမျက်နှာ",
-        path: "/",
-      },
-      {
-        icon: "mdi-account-multiple",
-        title: "အဆက်အသွယ်များ",
-        path: "/customers",
-        visible: [],
-      },
-      {
-        icon: "mdi-store",
-        title: "ကုန်ပစ္စည်းများ",
-        path: "/products",
-        visible: ["admin", "moderator"],
-      },
-      {
-        icon: "mdi-truck",
-        title: "အော်ဒါများ",
-        path: "/orders",
-        visible: [],
-      },
-      {
-        icon: "mdi-cart",
-        title: "အမျိုးအစားများ",
-        path: "/categories",
-        visible: ["admin", "moderator"],
-      },
-      {
-        icon: "mdi-format-color-fill",
-        title: "အရောင်များ",
-        path: "/colors",
-        visible: ["admin", "moderator"],
-      },
-      {
-        icon: "mdi-compare",
-        title: "အကဲဖြတ်ရန်​",
-        path: "/reviews",
-        visible: ["admin", "moderator"],
-      },
-      {
-        icon: "mdi-account-multiple ",
-        title: "အသုံးပြုသူများ",
-        path: "/users",
-        visible: ["admin"],
-      },
-      {
-        icon: " mdi-receipt",
-        title: "မှတ်တမ်းများ",
-        path: "/logs",
-        visible: [],
-      },
-      {
-        icon: " mdi-monitor-eye",
-        title: "Server Status",
-        path: "/about/server",
-      },
-    ],
+    items,
   }),
 
   components: {
     AccessDenied,
+    FabButton,
   },
 
   methods: {

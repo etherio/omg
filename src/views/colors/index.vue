@@ -101,6 +101,7 @@ export default {
     snackbarMessage: null,
     dialog: false,
     colors: [],
+    queries: {},
   }),
 
   methods: {
@@ -124,7 +125,7 @@ export default {
           this.loading = false;
           this.dialog = false;
         })
-        .catch((err, data) => {
+        .catch((err) => {
           console.log(err);
           this.snackbarMessage =
             err.message || "အရောင်အသစ်သွင်းထည့်သွင်းမှု မအောင်မြင်ပါ။";
@@ -135,6 +136,7 @@ export default {
   },
 
   beforeMount() {
+    this.queries = this.$route.query;
     this.axios
       .get(server.combo, {
         headers: {

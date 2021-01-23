@@ -17,22 +17,19 @@
           :readonly="readonly"
           outlined
           ref="displayName"
+          value=" "
         />
         <v-text-field
           v-model="email"
           label="သင့်အီးမေးလ်"
-          :readonly="readonly"
-          outlined
-        />
-        <v-text-field
-          v-model="phone"
-          label="ဖုန်းနံပါတ်"
+          value=" "
           :readonly="readonly"
           outlined
         />
         <v-row class="pr-4">
           <v-spacer></v-spacer>
           <v-btn
+            :loading="loading"
             :color="readonly ? 'secondary lighten-2' : 'primary'"
             depressed
             @click="readonly = !readonly"
@@ -51,7 +48,7 @@
         <v-card-text>{{ translateDate(createdAt) }}</v-card-text>
       </v-col>
       <v-col cols="6">
-        <v-card-title>နောက်ဆုံး၀င်ရောက်ခဲ့သည့်နေ့</v-card-title>
+        <v-card-title>၀င်ရောက်ခဲ့သည့်နေ့</v-card-title>
         <v-card-text>{{ translateDate(lastLoginAt) }}</v-card-text>
       </v-col>
       <v-col cols="12" sm="6">
@@ -122,10 +119,10 @@ export default {
   },
 
   data: () => ({
+    loading: false,
     email: null,
     name: null,
     password: null,
-    phone: null,
     error: null,
     linked: {
       password: false,
@@ -192,9 +189,8 @@ export default {
 
   beforeMount() {
     const user = this.$root.user;
-    this.name = user.displayName || " ";
-    this.email = user.email || " ";
-    this.phone = user.phoneNumber || " ";
+    this.name = user.displayName || "";
+    this.email = user.email || "";
     this.avatar = user.photoURL || placeholder;
     user.providerData.forEach((provider) => {
       switch (provider.providerId) {
@@ -210,9 +206,44 @@ export default {
       }
     });
   },
+
   watch: {
-    readonly(value) {
-      if (value) return;
+    readonly(edited) {
+      if (edited) {
+        const mutated = {};
+        const user = this.$root.user;
+        if (user.displayName !== this.name) {
+          mutated.displayName = this.name;
+        }
+        if (user.email !== this.email) {
+          mutated.email = this.email;
+        }
+        if (Object.keys(mutated).length) {
+          this.loading = true;
+          firebase
+            .auth()
+            .currentUser.updateProfile(mutated)
+            .then(() => {
+              if ("displayName" in mutated) {
+                this.$root.user.displayName = mutated.displayName;
+              }
+              if ("email" in mutated) {
+                user.email = mutated.email;
+              }
+            })
+            .catch((e) => {
+              if ("displayName" in mutated) {
+                this.name = user.displayName;
+              }
+              if ("email" in mutated) {
+                this.email = user.email;
+              }
+            })
+            .then(() => (this.loading = false));
+        }
+
+        return;
+      }
       this.$refs.displayName.$el.scrollIntoView({
         block: "end",
         inline: "start",

@@ -71,7 +71,7 @@ const routes = [
   {
     path: "/about/server",
     component: () => import("@/views/about/server.vue"),
-  }
+  },
 ];
 
 const router = new VueRouter({
