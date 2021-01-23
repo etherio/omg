@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const guard = require("../src/guard");
 const requestIp = require("request-ip");
+const { autoRoute } = require("../src/router");
 const $request = { count: 0 };
 
 router.use((req, res, next) => {
@@ -13,15 +14,11 @@ router.use((req, res, next) => {
   next();
 });
 
-router.use("/image", require("./image"));
-router.use("/products", require("./products"));
-router.use("/users", require("./users"));
-router.use("/metadata", require("./metadata"));
-router.use("/session", require("./session"));
-router.use("/webhook", require("./webhook"));
-router.use("/review", require("./review"));
-router.use("/inventory", require("./inventory"));
-router.use("/mail", require("./mail"));
+autoRoute({
+  routePath: __dirname,
+  router,
+  ignore: ["index.js"],
+});
 
 router.post("/resync", guard.firebase("admin"), async (req, res) => {
   const db = database().ref(process.env.FIREBASE_DATABASE_NAME);
@@ -94,6 +91,14 @@ router.all("/status", (req, res) => {
   }
   res.json(status);
 });
+
+router.get("/healths", (req, res) =>
+  database()
+    .ref("infomation_schema/health_monitor")
+    .get()
+    .then((ref) => res.json(Object.values(ref.val() || {}).reverse()))
+    .catch((err) => res.status(500).json({ status: 500, error: err.message }))
+);
 
 router.use((req, res) => {
   res.status(404).json({ error: "request not found" });
