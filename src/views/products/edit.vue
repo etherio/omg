@@ -288,7 +288,12 @@ export default {
     },
   },
 
+  beforeDestroy() {
+    this.$root.fab = true;
+  },
+
   beforeMount() {
+    this.$root.fab = false;
     const { id } = this.$route.params;
     this.id = id;
     this.axios
