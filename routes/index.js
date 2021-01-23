@@ -67,6 +67,21 @@ router.all("/status", (req, res) => {
     uptime: Math.round(uptime),
     requested: $request.count,
   };
+  if (req.headers["user-agent"] === "health_monitor") {
+    return database()
+      .ref("infomation_schema/health_monitor")
+      .push({
+        st: status.started,
+        ut: status.uptime,
+        rc: status.requested,
+        ht: heapTotal,
+        hu: heapUsed,
+        mem: memUsed,
+        rss,
+        ca: database.ServerValue.TIMESTAMP,
+      })
+      .then((ref) => res.json({ refID: ref.key }));
+  }
   if ("tz" in req.query) {
     const locale = "en-US";
     const timeZone = req.query.tz || "UTC";
