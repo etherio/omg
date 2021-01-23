@@ -187,6 +187,12 @@ export default {
         visible: ["admin", "moderator"],
       },
       {
+        icon: "mdi-format-color-fill",
+        title: "အရောင်များ",
+        path: "/colors",
+        visible: ["admin", "moderator"],
+      },
+      {
         icon: "mdi-compare",
         title: "အကဲဖြတ်ရန်​",
         path: "/reviews",

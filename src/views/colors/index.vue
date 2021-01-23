@@ -1,0 +1,161 @@
+<template>
+  <div class="categories">
+    <v-card class="pa-4" :loading="loading">
+      <v-card-title>
+        <v-card-title>အရောင်များ</v-card-title>
+        <v-spacer />
+        <v-btn text @click="dialog = true">
+          <v-icon>mdi-plus</v-icon>
+          အသစ်ထည့်ရန်
+        </v-btn>
+      </v-card-title>
+
+      <v-card-text>
+        <v-simple-table v-if="loading || colors.length">
+          <thead>
+            <tr>
+              <th>အမျိုးအမည်</th>
+              <th><span class="d-sr-only">actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(color, index) in colors" :key="index">
+              <td class="color-name">{{ color.title }}</td>
+              <td class="text-right">
+                <!--  -->
+              </td>
+            </tr>
+          </tbody>
+        </v-simple-table>
+        <empty-table v-else :items="categories">
+          အရောင်များ ထည့်သွင်းထားခြင်းမရှိပါ။
+        </empty-table>
+      </v-card-text>
+    </v-card>
+
+    <v-dialog v-model="dialog" max-width="500px">
+      <v-form ref="form" @submit.prevent="submitColor">
+        <v-card>
+          <v-card-text>
+            <!-- color name -->
+            <v-combobox
+              label="အရောင် *"
+              v-model="input.title"
+              :rules="(value) => !!value"
+              :items="colors.map(({ title }) => title)"
+            />
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="secondary"
+              class="font-weight-bold pr-4"
+              @click="$refs.form.reset()"
+            >
+              <v-icon small class="px-2">mdi-delete</v-icon>
+              ​ပ​ယ်ဖျက်ပါ
+            </v-btn>
+            <v-btn type="submit" color="primary" class="font-weight-bold pr-4">
+              <v-icon small class="px-2">mdi-send</v-icon>
+              ထည့်သွင်းပါ
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </v-dialog>
+
+    <v-snackbar v-model="snackbar" timeout="5000">
+      {{ snackbarMessage }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="pink"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+          class="font-weight-bold text--lighten-2"
+        >
+          ပိတ်
+        </v-btn>
+      </template>
+    </v-snackbar>
+  </div>
+</template>
+
+<script>
+import EmptyTable from "@/components/EmptyTable.vue";
+import server from "@/app/server";
+
+export default {
+  name: "Colors",
+
+  components: {
+    EmptyTable,
+  },
+
+  data: () => ({
+    loading: true,
+    input: {
+      title: null,
+    },
+    snackbar: false,
+    snackbarMessage: null,
+    dialog: false,
+    colors: [],
+  }),
+
+  methods: {
+    submitColor() {
+      this.snackbarMessage = null;
+      if (!this.$refs.form.validate()) return;
+      this.loading = true;
+      this.axios
+        .post(
+          `${server.url}/colors`,
+          { title: this.input.title.toLowerCase() },
+          {
+            headers: {
+              "x-access-token": this.$root.user.token,
+            },
+          }
+        )
+        .then(({ data }) => {
+          this.colors.unshift(data);
+          this.$refs.form.reset();
+          this.loading = false;
+          this.dialog = false;
+        })
+        .catch((err, data) => {
+          console.log(err);
+          this.snackbarMessage =
+            err.message || "အရောင်အသစ်သွင်းထည့်သွင်းမှု မအောင်မြင်ပါ။";
+          this.snackbar = true;
+          this.loading = false;
+        });
+    },
+  },
+
+  beforeMount() {
+    this.axios
+      .get(server.combo, {
+        headers: {
+          "X-Access-Token": this.$root.user.token,
+        },
+      })
+      .then(({ data }) => {
+        this.colors = data.colors;
+        this.loading = false;
+        this.dialog = "new" in this.$route.query;
+        this.dialog && this.$router.push(this.$route.path);
+      })
+      .catch((e) => {
+        this.loading = false;
+      });
+  },
+};
+</script>
+
+<style scoped>
+.color-name {
+  text-transform: capitalize;
+}
+</style>

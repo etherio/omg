@@ -5,6 +5,7 @@ export const api = {
 if (process.env.NODE_ENV === "development") {
   if (typeof fetch === "function") {
     fetch("http://localhost:3000/status").then(() => {
+      console.warn("using local server");
       api.HEROKU_SERVER = "http://localhost:3000";
     });
   }
