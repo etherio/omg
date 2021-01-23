@@ -1,15 +1,41 @@
 const { database } = require("firebase-admin");
 const express = require("express");
 const router = express.Router();
-const serverStarted = Date.now();
 const guard = require("../src/guard");
-const serverInfo = {
-  requested: 0,
+const $request = { count: 0 };
+const $throttle = { 
+  a: 60, // per X seconds
+  m: 300, // max X requests
+  s: Date.now(), // start couting at
+  c: 0, // total requested
+  get expired() {
+    return this.s + (this.a * 1000);
+  },
+  timeup() {
+    return this.expired < Date.now();
+  },
+  increment() {
+    return this.m - this.c++;
+  }, 
+  reset() {
+    this.s = Date.now();
+    this.c = 0;
+  },
 };
+
 router.use((req, res, next) => {
-  serverInfo.requested++;
-  req.accessToken = req.headers["x-access-token"] || null;
+  $request.count++;
+  req.ip = (req.headers['x-forwarded-for'] || '').split(',').pop().trim() ||
+	   (req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress || '').split(':').pop().trim();
+  $throttle.timeup() && $throttle.reset();
+  let quota = $throttle.increment();
+  if (quota < 1) {	
+    res.setHeader("x-retry-after", Math.round(($throttle.expired - Date.now()) / 1000));
+    return res.status(429).end();
+  }
+  res.setHeader("x-rate-limit-remaining", quota - 1);
   res.setHeader("cache-control", "private, no-cache, must-revalidate");
+  req.accessToken = req.headers["x-access-token"] || null;
   next();
 });
 
@@ -46,23 +72,20 @@ router.post("/resync", guard.firebase("admin"), async (req, res) => {
 });
 
 router.all("/status", (req, res) => {
-  /**
-   * @prop rss - allocated memory
-   * @prop heapTotal - allocated heap
-   * @prop headUsed - actual usage of heap
-   * @prop external
-   * @prop arrayBuffers
-   */
   const { heapTotal, heapUsed, rss, external, arrayBuffers } = process.memoryUsage();
+  const uptime = process.uptime();
+  const timestamp = Date.now();
+  const memUsed = heapUsed + external + arrayBuffers;
   const status = {
+    ip: req.ip || undefined,
     memory: {
       allocated: `${(rss / 1024 / 1024).toFixed(2)}MB`,
-      usage: `${((heapUsed + external + arrayBuffers) / 1024 / 1024).toFixed(2)}MB`,
+      usage: `${(memUsed / 1024 / 1024).toFixed(2)}MB`,
     },
-    uptime: parseInt(process.uptime().toString()),
-    requested: serverInfo.requested,
-    started: serverStarted,
-    timestamp: Date.now(),
+    started: Math.round(timestamp - (uptime * 1000)),
+    timestamp,
+    uptime: Math.round(uptime),
+    requested: $request.count,
   };
   if ("tz" in req.query) {
     const locale = "en-US";
