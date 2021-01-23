@@ -14,21 +14,24 @@ async function auth(req, res, next) {
   }
   const { roles } = this;
   try {
-    if (!req.accessToken) throw { code: 401 };
+    if (!req.accessToken) throw { status: 401, code: "unauthorized", message: "access token required" };
     const auth = await verifyToken(req.accessToken);
     if (!auth.role || !roles.includes(auth.role)) {
-      throw { code: 401, message: "Access permission denied" };
+      throw { status: 403, code: "forbidden", message: "access denied" };
     }
     req.auth = auth;
     next();
   } catch (e) {
-    console.error(e);
     res
-      .status(e.code || 400)
+      .status(e.status || 503)
       .json(e)
       .end();
   }
 }
+
+auth.uid = async function (req, res) {
+  
+};
 
 class Guard {
   static firebase(...roles) {

@@ -9,7 +9,7 @@ const serverInfo = {
 router.use((req, res, next) => {
   serverInfo.requested++;
   req.accessToken = req.headers["x-access-token"] || null;
-  res.setHeader("cache-control", "no-cache");
+  res.setHeader("cache-control", "private, no-cache, must-revalidate");
   next();
 });
 
@@ -46,7 +46,19 @@ router.post("/resync", guard.firebase("admin"), async (req, res) => {
 });
 
 router.all("/status", (req, res) => {
+  /**
+   * @prop rss - allocated memory
+   * @prop heapTotal - allocated heap
+   * @prop headUsed - actual usage of heap
+   * @prop external
+   * @prop arrayBuffers
+   */
+  const { heapTotal, heapUsed, rss, external, arrayBuffers } = process.memoryUsage();
   const status = {
+    memory: {
+      allocated: `${(rss / 1024 / 1024).toFixed(2)}MB`,
+      usage: `${((heapUsed + external + arrayBuffers) / 1024 / 1024).toFixed(2)}MB`,
+    },
     uptime: parseInt(process.uptime().toString()),
     requested: serverInfo.requested,
     started: serverStarted,
