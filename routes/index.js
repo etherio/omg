@@ -3,37 +3,11 @@ const express = require("express");
 const router = express.Router();
 const guard = require("../src/guard");
 const $request = { count: 0 };
-const $throttle = { 
-  a: 60, // per X seconds
-  m: 300, // max X requests
-  s: Date.now(), // start couting at
-  c: 0, // total requested
-  get expired() {
-    return this.s + (this.a * 1000);
-  },
-  timeup() {
-    return this.expired < Date.now();
-  },
-  increment() {
-    return this.m - this.c++;
-  }, 
-  reset() {
-    this.s = Date.now();
-    this.c = 0;
-  },
-};
 
 router.use((req, res, next) => {
   $request.count++;
-  req.ip = (req.headers['x-forwarded-for'] || '').split(',').pop().trim() ||
-	   (req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress || '').split(':').pop().trim();
-  $throttle.timeup() && $throttle.reset();
-  let quota = $throttle.increment();
-  if (quota < 1) {	
-    res.setHeader("x-retry-after", Math.round(($throttle.expired - Date.now()) / 1000));
-    return res.status(429).end();
-  }
-  res.setHeader("x-rate-limit-remaining", quota - 1);
+  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0];
+  if (ip) req.ip = ip;
   res.setHeader("cache-control", "private, no-cache, must-revalidate");
   req.accessToken = req.headers["x-access-token"] || null;
   next();
