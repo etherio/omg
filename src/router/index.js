@@ -64,6 +64,10 @@ const routes = [
     path: "/products/:id/:name",
     component: () => import("@/views/products/index.vue"),
   },
+  {
+    path: "/about/server",
+    component: () => import("@/views/about/server.vue"),
+  }
 ];
 
 const router = new VueRouter({

@@ -24,6 +24,7 @@ firebase
 new Vue({
   data: {
     loaded: false,
+    fab: false,
     user: null,
     overlay: () => null,
     store: { products: [] },

@@ -287,8 +287,13 @@ export default {
     },
   },
 
+  beforeDestroy() {
+    this.$root.fab = true;
+  },
+
   beforeMount() {
     const { id } = this.$route.params;
+    this.$root.fab = false;
     if (id) {
       // fetching data from API
       this.axios

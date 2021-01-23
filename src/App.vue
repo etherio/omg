@@ -73,7 +73,7 @@
 
     <!-- fab floating button -->
     <v-speed-dial
-      v-if="$root.user"
+      v-show="$root.user && $root.fab"
       fixed
       v-model="fab"
       bottom
@@ -82,9 +82,9 @@
       transition="scale-transition"
     >
       <template v-slot:activator>
-        <v-btn v-model="fab" dark fab color="secondary">
+        <v-btn v-model="fab" dark fab small color="primary">
           <v-icon v-if="fab">mdi-close</v-icon>
-          <v-icon v-else>mdi-plus</v-icon>
+          <v-icon v-else>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>
 
@@ -100,7 +100,7 @@
             v-on="on"
             to="/products/new"
           >
-            <v-icon>mdi-book-plus-multiple</v-icon>
+            <v-icon>mdi-basket-plus</v-icon>
           </v-btn>
         </template>
         <span>ကုန်ပစ္စည်းအသစ်ထည့်သွင်း</span>
@@ -204,6 +204,11 @@ export default {
         path: "/logs",
         visible: [],
       },
+      {
+        icon: " mdi-monitor-eye",
+        title: "Server Status",
+        path: "/about/server",
+      },
     ],
   }),
 
@@ -224,6 +229,8 @@ export default {
     this.$root.overlay = (value) => {
       this.overlay = value;
     };
+
+    this.$root.fab = true;
   },
 
   computed: {

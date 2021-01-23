@@ -15,8 +15,8 @@
       <v-card-text>
         <v-row>
           <v-col cols="12" sm="5">
-            <a :href="photoURL" target="_blank" download>
-              <v-img :src="photoURL" :lazy-src="placeholder" alt="image">
+            <a :href="processImage(photoURL)" target="_blank" download>
+              <v-img :src="processImage(photoURL)" :lazy-src="placeholder" alt="image">
                 <template v-slot:placeholder>
                   <v-row
                     class="fill-height ma-0"
@@ -212,6 +212,10 @@ export default {
   }),
 
   methods: {
+    processImage(url) {
+      url = btoa(url);
+      return `${server.url}/image?code=${this.code}&url=${url}`;
+    },
     async submitLedger() {
       if (this.loading) return;
       if (!this.$refs.ledger.validate()) return;

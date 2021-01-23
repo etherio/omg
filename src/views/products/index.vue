@@ -33,7 +33,7 @@
               <td class="text-left">
                 <v-row>
                   <v-col class="ma-1">
-                    <v-img :src="product.photoURL" width="120">
+                    <v-img :src="coverImage(product.photoURL)" width="120">
                       <template v-slot:placeholder>
                         <v-row
                           class="fill-height ma-0"
@@ -124,6 +124,10 @@ export default {
     viewProduct(id) {
       this.$router.replace(["product", id].join("/"));
     },
+    coverImage(url) {
+       url = btoa(url);
+       return `${server.url}/image?height=180&url=${url}`;
+    }
   },
 
   beforeMount() {
