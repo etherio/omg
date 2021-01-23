@@ -2,14 +2,12 @@ const { database } = require("firebase-admin");
 const express = require("express");
 const router = express.Router();
 const guard = require("../src/guard");
+const requestIp = require("request-ip");
 const $request = { count: 0 };
 
 router.use((req, res, next) => {
   $request.count++;
-  const ip =
-    req.headers["client-ip"] ||
-    (req.headers["x-forwarded-for"] || "").split(",")[0];
-  if (ip) req.ip = ip;
+  req.ip = requestIp.getClientIp(req);
   res.setHeader("cache-control", "private, no-cache, must-revalidate");
   req.accessToken = req.headers["x-access-token"] || null;
   next();
