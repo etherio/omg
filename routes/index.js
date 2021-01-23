@@ -6,7 +6,8 @@ const $request = { count: 0 };
 
 router.use((req, res, next) => {
   $request.count++;
-  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0];
+  console.log(req.headers);
+  const ip = (req.headers["x-forwarded-for"] || "").split(",")[0];
   if (ip) req.ip = ip;
   res.setHeader("cache-control", "private, no-cache, must-revalidate");
   req.accessToken = req.headers["x-access-token"] || null;
@@ -46,7 +47,13 @@ router.post("/resync", guard.firebase("admin"), async (req, res) => {
 });
 
 router.all("/status", (req, res) => {
-  const { heapTotal, heapUsed, rss, external, arrayBuffers } = process.memoryUsage();
+  const {
+    heapTotal,
+    heapUsed,
+    rss,
+    external,
+    arrayBuffers,
+  } = process.memoryUsage();
   const uptime = process.uptime();
   const timestamp = Date.now();
   const memUsed = heapUsed + external + arrayBuffers;
@@ -56,7 +63,7 @@ router.all("/status", (req, res) => {
       allocated: `${(rss / 1024 / 1024).toFixed(2)}MB`,
       usage: `${(memUsed / 1024 / 1024).toFixed(2)}MB`,
     },
-    started: Math.round(timestamp - (uptime * 1000)),
+    started: Math.round(timestamp - uptime * 1000),
     timestamp,
     uptime: Math.round(uptime),
     requested: $request.count,
