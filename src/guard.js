@@ -19,6 +19,8 @@ async function auth(req, res, next) {
     if (!auth.role || !roles.includes(auth.role)) {
       throw { status: 403, code: "forbidden", message: "access denied" };
     }
+    res.setHeader('X-Requested-UID', auth.uid);
+    res.setHeader('X-Requested-Role', auth.role);
     req.auth = auth;
     next();
   } catch (e) {

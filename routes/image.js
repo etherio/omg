@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
         .print(white_text, 10, 10, code);
     }
     image.write(imagePath, () => {
-      res.setHeader('cache-control', 'public, max-age=86400, s-max-age=86400');
+      res.setHeader('cache-control', 'public, max-age=86400, s-maxage=86400');
       res.setHeader('content-type', image._originalMime);
       res.sendFile(imagePath, () => {
         fs.unlink(imagePath, () => null);

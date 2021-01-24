@@ -1,18 +1,8 @@
-const { database } = require("firebase-admin");
 const express = require("express");
 const router = express.Router();
 const guard = require("../src/guard");
-const requestIp = require("request-ip");
 const { autoRoute } = require("../src/router");
-const $request = { count: 0 };
-
-router.use((req, res, next) => {
-  $request.count++;
-  req.ip = requestIp.getClientIp(req);
-  res.setHeader("cache-control", "private, no-cache, must-revalidate");
-  req.accessToken = req.headers["x-access-token"] || null;
-  next();
-});
+const { database } = require("firebase-admin");
 
 autoRoute({
   routePath: __dirname,
@@ -20,6 +10,7 @@ autoRoute({
   ignore: ["index.js"],
 });
 
+//* GET /resync 
 router.post("/resync", guard.firebase("admin"), async (req, res) => {
   const db = database().ref(process.env.FIREBASE_DATABASE_NAME);
   const productsRef = db.child("products");
@@ -42,7 +33,8 @@ router.post("/resync", guard.firebase("admin"), async (req, res) => {
   res.status(202).end();
 });
 
-router.all("/status", (req, res) => {
+//* GET /status 
+router.get("/status", (req, res) => {
   const {
     heapTotal,
     heapUsed,
@@ -54,7 +46,6 @@ router.all("/status", (req, res) => {
   const timestamp = Date.now();
   const memUsed = heapUsed + external + arrayBuffers;
   const status = {
-    ip: req.ip || undefined,
     memory: {
       allocated: `${(rss / 1024 / 1024).toFixed(2)}MB`,
       usage: `${(memUsed / 1024 / 1024).toFixed(2)}MB`,
@@ -62,23 +53,9 @@ router.all("/status", (req, res) => {
     started: Math.round(timestamp - uptime * 1000),
     timestamp,
     uptime: Math.round(uptime),
-    requested: $request.count,
+    requested: req.count,
   };
-  if (req.headers["user-agent"] === "health_monitor") {
-    return database()
-      .ref("infomation_schema/health_monitor")
-      .push({
-        st: status.started,
-        ut: status.uptime,
-        rc: status.requested,
-        ht: heapTotal,
-        hu: heapUsed,
-        mem: memUsed,
-        rss,
-        ca: database.ServerValue.TIMESTAMP,
-      })
-      .then((ref) => res.json({ refID: ref.key }));
-  }
+  console.log(req.headers)
   if ("tz" in req.query) {
     const locale = "en-US";
     const timeZone = req.query.tz || "UTC";
@@ -90,16 +67,9 @@ router.all("/status", (req, res) => {
     });
   }
   res.json(status);
-});
+})
 
-router.get("/healths", (req, res) =>
-  database()
-    .ref("infomation_schema/health_monitor")
-    .get()
-    .then((ref) => res.json(Object.values(ref.val() || {}).reverse()))
-    .catch((err) => res.status(500).json({ status: 500, error: err.message }))
-);
-
+//* 404 Not Found - fallback on no matched routes
 router.use((req, res) => {
   res.status(404).json({ error: "request not found" });
 });
