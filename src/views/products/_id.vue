@@ -74,7 +74,7 @@
         <delete-product-modal
           v-if="$root.user.role === 'admin'"
           :deleteProduct="deleteProduct"
-          :loading="loading"
+          :loading="deleting"
         />
         <v-btn
           text
@@ -203,6 +203,7 @@ export default {
     placeholder,
     records: [],
     loading: true,
+    deleting: false,
     ledger: false,
     ledgerData: {
       description: null,
@@ -236,8 +237,8 @@ export default {
       this.loading = this.ledger = false;
     },
     async deleteProduct() {
-      if (this.loading) return;
-      this.loading = true;
+      if (this.deleting) return;
+      this.deleting = true;
       await this.axios.delete(`${server.products}/${this.$route.params.id}`, {
         headers: {
           "X-Access-Token": this.$root.user.token,

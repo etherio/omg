@@ -1,9 +1,19 @@
 <template>
   <v-container>
-    <v-overlay :value="loading">
-      <v-progress-circular indeterminate size="64" />
+    <v-overlay :value="loading" class="text-center">
+      <v-progress-circular 
+        v-if="percent !== null" 
+	size="64" 
+	rotate="-90"
+	:progress="percent"
+	:value="percent"
+	color="blue darken-2"
+      >
+        {{ percent }}
+      </v-progress-circular>
+      <v-progress-circular v-else indeterminate size="64" />
     </v-overlay>
-
+   
     <v-form ref="form" @submit.prevent="onSubmit">
       <v-row>
         <v-col cols="12">
@@ -11,6 +21,11 @@
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
         </v-col>
+	<v-col cols="12" id="error-message" class="pa-0 ma-0">
+          <v-alert v-if="error" type="error">
+            {{ error }}
+          </v-alert>
+	</v-col>
         <!-- Product Name -->
         <v-col cols="12">
           <v-text-field
@@ -74,6 +89,7 @@
           <v-combobox
             v-model="select.category"
             :items="categories.map((category) => category.title)"
+            clearable
             label="ကုန်ပစ္စည်းအမျိုးအစား"
             outlined
           />
@@ -97,15 +113,16 @@
         <!-- Image -->
         <v-col cols="12" class="text-right">
           <v-text-field
+	    type="url"
             label="ဓာတ်ပုံလင့်ခ်"
             v-model="select.imageURL"
-            v-show="uploadFromUrl"
+            v-if="uploadFromUrl"
             prepend-icon="mdi-camera"
           />
           <v-file-input
-            v-show="!uploadFromUrl"
+            v-else
             v-model="select.image"
-            accept="image/png, image/jpeg, image/bmp"
+            accept="image/*"
             prepend-icon="mdi-camera"
             label="ကုန်ပစ္စည်းဓာတ််ပုံ"
           />
@@ -115,16 +132,18 @@
             outlined
             color="primary"
             @click="uploadFromUrl = !uploadFromUrl"
-            v-text="uploadFromUrl ? 'ဓာတ်ပုံဖိုင်တင်ရန' : 'URL မှပုံတင်ရန်'"
+            v-text="uploadFromUrl ? 'ဓာတ်ပုံတင်ရန် ' : 'URL မှပုံတင်ရန်'"
           />
 
           <!-- preview image -->
-          <v-img
-            v-if="uploadFromUrl"
-            :src="select.imageURL"
-            width="180"
-            height="180"
-          ></v-img>
+	  <v-expand-transition>
+            <v-img
+              v-show="uploadFromUrl"
+              :src="select.imageURL"
+              width="180"
+              height="180"
+            />
+	  </v-expand-transition>
 
           <v-divider class="mt-2 mb-2"></v-divider>
         </v-col>
@@ -194,6 +213,8 @@ export default {
     },
     colors: [],
     categories: [],
+    percent: null,
+    error: null,
   }),
 
   methods: {
@@ -201,9 +222,11 @@ export default {
       if (!this.$refs.form.validate()) {
         return this.goToRequiredField();
       }
+      this.percent = 0;
       this.loading = true;
-      const data = new FormData();
-      let product = {
+      this.$root.store.products = [];
+      const productFormData = new FormData();
+      const product = {
         name: this.select.name,
         code: this.select.code,
         price: parseInt(translateBurmeseNumber(this.select.price)),
@@ -214,30 +237,32 @@ export default {
         maxAge: this.select.ageGroup[1],
       };
       if (this.uploadFromUrl && this.select.imageURL) {
-        data.append("images", [this.select.imageURL]);
+        productFormData.append("images", [this.select.imageURL]);
       } else if (this.select.image) {
-        data.append("image", this.select.image);
+        productFormData.append("image", this.select.image);
       }
       for (let [key, value] of Object.entries(product)) {
-        data.append(key, value);
+        productFormData.append(key, value);
       }
-      this.axios({
-        data,
-        method: "POST",
-        url: server.products,
+      this.axios.post(server.products, productFormData, {
         headers: {
           Accept: "application/json",
-          "Content-Type": `multipart/form-data; boundary=${data._boundary}`,
+          "Content-Type": `multipart/form-data; boundary=${productFormData._boundary}`,
           "X-Access-Token": this.$root.user.token,
         },
+	onUploadProgress(pe) {
+          this.percent = (pe.loaded / pe.total) * 100;
+	},
       })
-        .then(() => {
-          this.$root.store.products = [];
+        .then((data) => {
           this.$router.push({ path: "/products" });
         })
         .catch((err) => {
-          console.error(err);
           this.error = "ကုန်ပစ္စည်းအားသိမ်းဆည်းမှုမအောင်မြင်ပါ။";
+	  this.loading = false;
+	  this.percent = null;
+          document.querySelector("#error-message")
+	    .scrollIntoView({ behavior: "smooth" });
         });
     },
 
@@ -245,29 +270,17 @@ export default {
       if (!this.select.name) {
         var el = document.querySelector("#input-name");
         el.select();
-        return el.scrollIntoView({
-          block: "end",
-          inline: "start",
-          behavious: "smooth",
-        });
+        return el.scrollIntoView({ behavior: "smooth" });
       }
       if (!this.select.code) {
         var el = document.querySelector("#input-code");
         el.select();
-        return el.scrollIntoView({
-          behavior: "smooth",
-          block: "end",
-          inline: "nearest",
-        });
+        return el.scrollIntoView({ behavior: "smooth" });
       }
       if (!this.select.price) {
         var el = document.querySelector("#input-price");
         el.select();
-        return el.scrollIntoView({
-          behavior: "smooth",
-          block: "end",
-          inline: "nearest",
-        });
+        return el.scrollIntoView({ behavior: "smooth" });
       }
     },
   },
@@ -295,6 +308,12 @@ export default {
     const { id } = this.$route.params;
     this.$root.fab = false;
     if (id) {
+      if (id === 'undefined') {
+        this.$root.store.products = [];
+        this.error = "ထပ်မံကူးယူလိုသော ကုန်ပစ္စည်းအားရှာမတွေ့ပါ";
+        this.loading = false;
+	return;
+      }
       // fetching data from API
       this.axios
         .get(`${server.products}/${id}`, {
@@ -313,7 +332,13 @@ export default {
           if (this.select.imageURL) {
             this.uploadFromUrl = true;
           }
-        });
+        })
+	.catch(err => {
+          this.error = "ထပ်မံကူးယူလိုသော ကုန်ပစ္စည်းအားရှာမတွေ့ပါ";
+	  this.loading = false;
+	});
+    } else {
+     this.loading = false;
     }
 
     this.axios
@@ -323,8 +348,8 @@ export default {
       .then(({ data }) => {
         this.categories = data.categories;
         this.colors = data.colors;
-        if (!id) this.loading = false;
       });
+
   },
 };
 </script>
