@@ -55,7 +55,8 @@ router.get("/status", (req, res) => {
     uptime: Math.round(uptime),
     requested: req.count,
   };
-  console.log(req.headers)
+  const ip = req.headers["client-ip"] || req.headers["x-bb-ip"] || req.headers["x-nf-client-connection-ip"] ||  req.headers["x-forwarded-for"];
+  console.log(ip)
   if ("tz" in req.query) {
     const locale = "en-US";
     const timeZone = req.query.tz || "UTC";
