@@ -23,6 +23,7 @@ bootstrap().then((firebase) => {
   app.use(async (req, res, next) => {
     req.count = ++count;
     res.setHeader("cache-control", "no-cache");
+    req.clientAddr = req.headers["client-ip"] || req.headers["x-bb-ip"] || req.headers["x-nf-client-connection-ip"] ||  req.headers["x-forwarded-for"];
     req.accessToken = req.headers["x-access-token"] ||
 		      (req.headers["authorization"] || '').split(' ').pop() ||
 		      undefined;

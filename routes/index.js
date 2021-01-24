@@ -46,6 +46,7 @@ router.get("/status", (req, res) => {
   const timestamp = Date.now();
   const memUsed = heapUsed + external + arrayBuffers;
   const status = {
+    ip: req.clientAddr,
     memory: {
       allocated: `${(rss / 1024 / 1024).toFixed(2)}MB`,
       usage: `${(memUsed / 1024 / 1024).toFixed(2)}MB`,
@@ -55,8 +56,6 @@ router.get("/status", (req, res) => {
     uptime: Math.round(uptime),
     requested: req.count,
   };
-  const ip = req.headers["client-ip"] || req.headers["x-bb-ip"] || req.headers["x-nf-client-connection-ip"] ||  req.headers["x-forwarded-for"];
-  console.log(ip)
   if ("tz" in req.query) {
     const locale = "en-US";
     const timeZone = req.query.tz || "UTC";
