@@ -7,14 +7,15 @@ const databaseName = process.env.FIREBASE_DATABASE_NAME;
 const multer = require("multer");
 const upload = multer({ dest: `${process.cwd()}/tmp` });
 const crc32 = require("crc32");
+const axios = require("axios").default;
 const fs = require("fs");
 
 router.get("/", Guard.firebase("moderator", "admin"), async (req, res) => {
   try {
     const dbRef = database().ref(databaseName).child("products");
     const snapshot = await dbRef.get();
-    const products = snapshot.exists() ? Object.entries(snapshot.val()) : [];
     const response = [];
+    const products = Object.entries(snapshot.val() || {});
     for (let [id, data] of products) {
       let product = new Product({ id, ...data });
       await product.fetch({ stocks: true });
@@ -35,7 +36,7 @@ router.post(
     try {
       const dbRef = database().ref(`${databaseName}/products`);
       const product = new Product(req.body);
-      if (req.files.length) {
+      if ((req.files || []).length) {
         for (let file of req.files) {
           let { filename, path } = file;
           await storage().bucket().upload(path);
@@ -54,14 +55,23 @@ router.post(
           products: database.ServerValue.increment(1),
         });
       if (product.category) {
-        await database()
-          .ref(`${databaseName}/categories`)
-          .child(crc32(product.category))
-          .update({
-            title: product.category,
-            count: database.ServerValue.increment(1),
-          });
+	await axios({ url: `http://${req.headers.host}/categories`, method: "POST", data:{ title: product.category }, headers: { 'x-access-token': req.accessToken }});
       }
+      if (product.colors && product.colors.length) {
+	for (let color of product.colors) {
+  	   axios({
+	    url: `http://${req.headers.host}/colors`,
+	    method: "POST",
+	    data: {
+	     title: color 
+	    },
+	    headers: {
+	      'x-access-token': req.accessToken 
+	    }
+	  });
+	}
+      }
+      product.createdAt = Date.now();
       res.status(201).json(product);
     } catch (e) {
       console.error(e);
