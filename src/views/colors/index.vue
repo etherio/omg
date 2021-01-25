@@ -19,8 +19,17 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(color, index) in colors" :key="index">
-              <td class="color-name">{{ color.title }}</td>
+            <tr v-for="color in colors" :key="color.id">
+              <td class="color-name">
+	        <v-avatar
+		  size="16"
+		  v-if="color.code" 
+		>
+		  <!-- -->  
+		  <v-icon :style="`color:${color.code}`">mdi-circle</v-icon>
+	        </v-avatar>
+	        {{ color.title }}
+	      </td>
               <td class="text-right">
                 <!--  -->
               </td>
@@ -33,24 +42,34 @@
       </v-card-text>
     </v-card>
 
-    <v-dialog v-model="dialog" max-width="500px">
+    <v-dialog v-model="dialog" max-width="500">
       <v-form ref="form" @submit.prevent="submitColor">
         <v-card>
           <v-card-text>
             <!-- color name -->
             <v-combobox
-              label="အရောင် *"
+              label="အရောင်အမည်"
               v-model="input.title"
-              :rules="(value) => !!value"
+              :rules="[(value) => !!value]"
               :items="colors.map(({ title }) => title)"
             />
+	    <v-color-picker
+	      v-model="input.code"
+	      dot-size="19"
+	      hide-canvas
+	      hide-inputs
+	      hide-mode-switch
+	      mode="hexa"
+	      show-swatches 
+	      swatches-max-height="142" 
+	    />
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
               color="secondary"
               class="font-weight-bold pr-4"
-              @click="$refs.form.reset()"
+              @click="$refs.form.reset() | (dialog = false)"
             >
               <v-icon small class="px-2">mdi-delete</v-icon>
               ​ပ​ယ်ဖျက်ပါ
@@ -95,7 +114,8 @@ export default {
   data: () => ({
     loading: true,
     input: {
-      title: null,
+      title: '',
+      code: null,
     },
     snackbar: false,
     snackbarMessage: null,
@@ -112,7 +132,7 @@ export default {
       this.axios
         .post(
           `${server.url}/colors`,
-          { title: this.input.title.toLowerCase() },
+          this.input,
           {
             headers: {
               "x-access-token": this.$root.user.token,
@@ -138,13 +158,13 @@ export default {
   beforeMount() {
     this.queries = this.$route.query;
     this.axios
-      .get(server.combo, {
+      .get(`${server.url}/colors`, {
         headers: {
           "X-Access-Token": this.$root.user.token,
         },
       })
       .then(({ data }) => {
-        this.colors = data.colors;
+        this.colors = data;
         this.loading = false;
         this.dialog = "new" in this.$route.query;
         this.dialog && this.$router.push(this.$route.path);
