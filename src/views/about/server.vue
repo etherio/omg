@@ -25,16 +25,16 @@
       <v-card-subtitle>
         <v-simple-table>
           <tr>
-            <th>Requests (times)</th>
-            <td>{{ count.toLocaleString() }}</td>
+            <th>Total Requests</th>
+            <td>{{ count.toLocaleString() }} times</td>
           </tr>
           <tr>
-            <th>Uptime ()</th>
-            <td>{{ uptime.toLocaleString() }}</td>
+            <th>Server Uptime</th>
+            <td>{{ uptime.toLocaleString() }} seconds</td>
           </tr>
           <tr>
-            <th>Requested IP</th>
-            <td><a :href="`https://ipconfig.io/${ipAddr}`" target="_blank" rel="noreferrer">{{ ipAddr }}</a></td>
+            <th>Public IP</th>
+            <td><a :href="`https://ipinfo.io/${ipAddr}`" target="_blank" rel="noreferrer">{{ ipAddr }}</a></td>
           </tr>
         </v-simple-table>
       </v-card-subtitle>
@@ -52,20 +52,20 @@
       <v-card-text>
         <v-simple-table>
 	  <tr>
-	    <th>Resident Set Size (RSS)</th>
-	    <td>{{ rss.toLocaleString() }}KB</td>
+	    <th>RSS <small>ResidentSetSize</small></th>
+	    <td>{{ rss.toLocaleString() }}MB</td>
 	  </tr>
 	  <tr>
 	    <th>Heap Total</th>
-	    <td>{{ heapTotal.toLocaleString() }}KB</td>
+	    <td>{{ heapTotal.toLocaleString() }}MB</td>
 	  </tr>
 	  <tr>
 	    <th>Heap Used</th>
-	    <td>{{ heapUsed.toLocaleString() }}KB</td>
+	    <td>{{ heapUsed.toLocaleString() }}MB</td>
 	  </tr>
 	  <tr>
 	    <th>External</th>
-	    <td>{{ external.toLocaleString() }}KB</td>
+	    <td>{{ external.toLocaleString() }}MB</td>
 	  </tr>
         </v-simple-table>
       </v-card-text>
@@ -126,9 +126,9 @@ export default {
         this.count = data.count;
         this.processor = null;
         this.rss = data.memory.rss;
-        this.external = Math.round(data.memory.external / 1024);
-	this.heapTotal = Math.round(data.memory.heapTotal / 1024);
-	this.heapUsed = Math.round(data.memory.heapUsed / 1024);
+        this.external = Math.round(data.memory.external / 1024 * 1024, 2);
+	this.heapTotal = Math.round(data.memory.heapTotal / 1024 * 1024, 2);
+	this.heapUsed = Math.round(data.memory.heapUsed / 1024 * 1024, 2);
         this.uptime = data.uptime;
         stt = Date.now() - (data.uptime * 1000);
         this.uptimeInterval();
