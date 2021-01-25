@@ -26,11 +26,11 @@
         <v-simple-table>
           <tr>
             <th>Requests (times)</th>
-            <td>{{ count || '-' }}</td>
+            <td>{{ count.toLocaleString() }}</td>
           </tr>
           <tr>
             <th>Uptime ()</th>
-            <td>{{ uptime || '-' }}</td>
+            <td>{{ uptime.toLocaleString() }}</td>
           </tr>
           <tr>
             <th>Requested IP</th>
@@ -53,19 +53,19 @@
         <v-simple-table>
 	  <tr>
 	    <th>Resident Set Size (RSS)</th>
-	    <td>{{ rss }} bytes</td>
+	    <td>{{ rss.toLocaleString() }}KB</td>
 	  </tr>
 	  <tr>
 	    <th>Heap Total</th>
-	    <td>{{ heapTotal }}KB</td>
+	    <td>{{ heapTotal.toLocaleString() }}KB</td>
 	  </tr>
 	  <tr>
 	    <th>Heap Used</th>
-	    <td>{{ heapUsed }}KB</td>
+	    <td>{{ heapUsed.toLocaleString() }}KB</td>
 	  </tr>
 	  <tr>
 	    <th>External</th>
-	    <td>{{ external }}KB</td>
+	    <td>{{ external.toLocaleString() }}KB</td>
 	  </tr>
         </v-simple-table>
       </v-card-text>
@@ -87,11 +87,11 @@ export default {
     failed: false,
     ipAddr: null,
     processor: null,
-    rss: null,
-    count: null,
-    heapTotal: null,
-    heapUsed: null,
-    uptime: null,
+    rss: 0,
+    count: 0,
+    heapTotal: 0,
+    heapUsed: 0,
+    uptime: 0,
   }),
 
   methods: {
