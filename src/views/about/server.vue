@@ -99,11 +99,8 @@ export default {
   methods: {
     uptimeInterval() {
       try {
-        eid = setInterval(() => {
-          this.uptime = Math.round((Date.now() - stt) / 1000);
-        }, 800);
+        eid = setInterval(() => (this.uptime = Math.round((Date.now() - stt) / 1000)), 1000);
       } catch(e) {
-        console.error(e);
         clearInterval(eid);
         this.uptime = eid = undefined;
       }
@@ -111,10 +108,9 @@ export default {
   },
 
   beforeDestroy() {
-    if (eid) {
-      clearInterval(eid);
-      eid = undefined;
-    }
+    if (!eid) return;
+    clearInterval(eid);
+    eid = undefined;
   },
 
   created() {
@@ -127,7 +123,7 @@ export default {
 	this.ipAddr = data.ip;
         this.count = data.count;
         this.processor = null;
-        this.rss = data.memory.rss;
+        this.rss = Math.round(data.memory.rss / unit, 2);
         this.external = Math.round(data.memory.external / unit, 2);
 	this.heapTotal = Math.round(data.memory.heapTotal / unit, 2);
 	this.heapUsed = Math.round(data.memory.heapUsed / unit, 2);
