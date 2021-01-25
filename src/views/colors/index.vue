@@ -129,10 +129,14 @@ export default {
       this.snackbarMessage = null;
       if (!this.$refs.form.validate()) return;
       this.loading = true;
+      const data = Object.assign({}, this.input);
+      if (typeof data.code === "object" && "hex" in data.code) {
+	data.code = data.code.hex;
+      }
       this.axios
         .post(
           `${server.url}/colors`,
-          this.input,
+          data,
           {
             headers: {
               "x-access-token": this.$root.user.token,
