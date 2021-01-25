@@ -76,6 +76,8 @@
 <script>
 import server from "@/app/server";
 
+const unit = 1024 * 1024;
+
 let eid;
 let stt;
 
@@ -126,12 +128,12 @@ export default {
         this.count = data.count;
         this.processor = null;
         this.rss = data.memory.rss;
-        this.external = Math.round(data.memory.external / 1024 * 1024, 2);
-	this.heapTotal = Math.round(data.memory.heapTotal / 1024 * 1024, 2);
-	this.heapUsed = Math.round(data.memory.heapUsed / 1024 * 1024, 2);
+        this.external = Math.round(data.memory.external / unit, 2);
+	this.heapTotal = Math.round(data.memory.heapTotal / unit, 2);
+	this.heapUsed = Math.round(data.memory.heapUsed / unit, 2);
         this.uptime = data.uptime;
         stt = Date.now() - (data.uptime * 1000);
-        this.uptimeInterval();
+        stt && this.uptimeInterval();
       })
       .catch((err) => {
 	this.failed = true;
