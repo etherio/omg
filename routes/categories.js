@@ -23,6 +23,8 @@ router.post("/", guard.firebase("admin"), async (req, res) => {
     const ref = await db.get();
     if (ref.exists()) throw { code: 200, message: 'already existed' };
     await db.set({ title, createdAt: database.ServerValue.TIMESTAMP });
+    await database().ref(`${databaseName}/metadata/collection`)
+      .update({ categories: database.ServerValue.increment(1) });
     res.json({ id, title });
   } catch(e) {
     res.status(e.code || 502).json({ status: e.code || 502, message: e.message });
@@ -36,6 +38,8 @@ router.delete("/:id", guard.firebase("admin"), async (req, res) => {
     const ref = await db.get();
     if (!ref.exists()) throw { code: 404, message: 'not found' };
     await db.remove();
+    await database().ref(`${databaseName}/metadata/collection`)
+      .update({ categories: database.ServerValue.increment(-1) });
     res.status(201).json({ id });
   } catch(e) {
     res.status(e.code || 502)
