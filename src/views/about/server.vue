@@ -16,7 +16,7 @@
     <!-- Total Requested -->
     <v-card>
       <v-card-title>
-	Requests
+	Information
 	<v-spacer />
         <v-icon class="pr-2">
 	  mdi-router-network
@@ -25,16 +25,16 @@
       <v-card-subtitle>
         <v-simple-table>
           <tr>
-            <th>Total Counts</th>
-            <td>{{ requested || '-' }} times</td>
+            <th>Requests (times)</th>
+            <td>{{ count || '-' }}</td>
           </tr>
           <tr>
-            <th>Server Uptime</th>
-            <td>{{ uptime || '-' }} seconds</td>
+            <th>Uptime ()</th>
+            <td>{{ uptime || '-' }}</td>
           </tr>
           <tr>
             <th>Requested IP</th>
-            <td>{{ ipAddr }}</td>
+            <td><a :href="`https://ipconfig.io/${ipAddr}`" target="_blank" rel="noreferrer">{{ ipAddr }}</a></td>
           </tr>
         </v-simple-table>
       </v-card-subtitle>
@@ -57,15 +57,15 @@
 	  </tr>
 	  <tr>
 	    <th>Heap Total</th>
-	    <td>{{ heapTotal }} bytes</td>
+	    <td>{{ heapTotal }}KB</td>
 	  </tr>
 	  <tr>
 	    <th>Heap Used</th>
-	    <td>{{ heapUsed }} bytes</td>
+	    <td>{{ heapUsed }}KB</td>
 	  </tr>
 	  <tr>
 	    <th>External</th>
-	    <td>{{ external }} bytes</td>
+	    <td>{{ external }}KB</td>
 	  </tr>
         </v-simple-table>
       </v-card-text>
@@ -98,7 +98,7 @@ export default {
     uptimeInterval() {
       try {
         eid = setInterval(() => {
-          this.uptime = Math.round(Date.now() - stt, 2);
+          this.uptime = Math.round((Date.now() - stt) / 1000);
         }, 800);
       } catch(e) {
         console.error(e);
@@ -126,9 +126,9 @@ export default {
         this.count = data.count;
         this.processor = null;
         this.rss = data.memory.rss;
-        this.external = data.memory.external;
-	this.heapTotal = data.memory.heapTotal;
-	this.heapUsed = data.memory.heapUsed;
+        this.external = Math.round(data.memory.external / 1024);
+	this.heapTotal = Math.round(data.memory.heapTotal / 1024);
+	this.heapUsed = Math.round(data.memory.heapUsed / 1024);
         this.uptime = data.uptime;
         stt = Date.now() - (data.uptime * 1000);
         this.uptimeInterval();
