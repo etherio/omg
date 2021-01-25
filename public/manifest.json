@@ -1,0 +1,16 @@
+{
+  "name": "OMG: Baby Store",
+  "short_name": "OMG",
+  "description": "OMG Baby Store Product Managment System",
+  "icons": [
+    {
+      "src": "/omg-logo.png",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#3F51B5",
+  "background_color": "#263238"
+}
