@@ -36,36 +36,23 @@ router.post("/resync", guard.firebase("admin"), async (req, res) => {
 //* GET /status 
 router.get("/status", (req, res) => {
   const {
-    heapTotal,
-    heapUsed,
     rss,
     external,
-    arrayBuffers,
+    heapUsed,
+    heapTotal,
   } = process.memoryUsage();
-  const uptime = process.uptime();
-  const timestamp = Date.now();
-  const memUsed = heapUsed + external + arrayBuffers;
+  const uptime = Math.round(process.uptime());
   const status = {
-    ip: req.clientAddr,
+    uptime,
     memory: {
-      allocated: `${(rss / 1024 / 1024).toFixed(2)}MB`,
-      usage: `${(memUsed / 1024 / 1024).toFixed(2)}MB`,
+      rss,
+      external,
+      heapUsed,
+      heapTotal,
     },
-    started: Math.round(timestamp - uptime * 1000),
-    timestamp,
-    uptime: Math.round(uptime),
-    requested: req.count,
+    count: req.count,
+    ip: req.clientAddr,
   };
-  if ("tz" in req.query) {
-    const locale = "en-US";
-    const timeZone = req.query.tz || "UTC";
-    status.started = new Date(status.started).toLocaleString(locale, {
-      timeZone,
-    });
-    status.timestamp = new Date(status.timestamp).toLocaleString(locale, {
-      timeZone,
-    });
-  }
   res.json(status);
 })
 
