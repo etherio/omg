@@ -3,6 +3,7 @@ const router = express.Router();
 const guard = require("../src/guard");
 const { autoRoute } = require("../src/router");
 const { database } = require("firebase-admin");
+const clientIp = require('../src/client-ip');
 
 autoRoute({
   routePath: __dirname,
@@ -34,7 +35,7 @@ router.post("/resync", guard.firebase("admin"), async (req, res) => {
 });
 
 //* GET /status 
-router.get("/status", (req, res) => {
+router.get("/status", async (req, res) => {
   const {
     rss,
     external,
@@ -53,6 +54,12 @@ router.get("/status", (req, res) => {
     count: req.count,
     ip: req.clientAddr,
   };
+  if (process.env.NODE_ENV === 'production' && 
+    typeof status.ip === 'string' &&
+    status.ip.match(/^\d+{1,3}\.\d+{1,3}\.\d{1,3}\.\d{1,3}$/)) {
+    const client = await clientIp(status.ip);
+    status.client = client;
+  }
   res.json(status);
 })
 
