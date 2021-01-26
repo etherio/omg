@@ -54,11 +54,11 @@ router.get("/status", async (req, res) => {
     count: req.count,
     ip: req.clientAddr,
   };
-  if (process.env.NODE_ENV === 'production' && 
-    typeof status.ip === 'string' &&
-    status.ip.match(/^\d+{1,3}\.\d+{1,3}\.\d{1,3}\.\d{1,3}$/)) {
-    const client = await clientIp(status.ip);
-    status.client = client;
+  if (
+    process.env.NODE_ENV === 'production' && 
+    typeof status.ip === 'string'
+  ) {
+    status.ipDetails = await clientIp(status.ip);
   }
   res.json(status);
 })
