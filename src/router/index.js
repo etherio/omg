@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import goTo from 'vuetify/es5/services/goto';
 
 Vue.use(VueRouter);
 
@@ -74,9 +75,16 @@ const routes = [
   },
 ];
 
-const router = new VueRouter({
+export default new VueRouter({
+  scrollBehavior(from, to, pos) {
+    let scrollTo = 0;
+    if (to.hash) {
+      scrollTo = to.hash;
+    } else if (pos) {
+      scrollTo = pos;
+    }
+    return goTo(scrollTo);
+  },
   mode: "history",
   routes,
 });
-
-export default router;
