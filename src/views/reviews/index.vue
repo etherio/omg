@@ -1,9 +1,8 @@
 <template>
   <v-container>
-    <v-overlay :value="loading">
-      <v-progress-circular indeterminate size="64" />
-    </v-overlay>
-
+    <div v-if="loading" class="text-center">
+      <v-progress-circular :size="50" color="primary" indeterminate />
+    </div>
     <v-row>
       <v-col cols="12" v-if="!reviews.length" v-show="!loading">
         စစ်ဆေးရန် အကြောင်းအရာများမရှိပါ။ ဖေ့ဘွတ်နှင့်ချိတ်ဆက်ရန်

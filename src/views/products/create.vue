@@ -1,19 +1,19 @@
 <template>
   <v-container>
     <v-overlay :value="loading" class="text-center">
-      <v-progress-circular 
-        v-if="percent !== null" 
-	size="64" 
-	rotate="-90"
-	:progress="percent"
-	:value="percent"
-	color="blue darken-2"
+      <v-progress-circular
+        v-if="percent !== null"
+        size="64"
+        rotate="-90"
+        :progress="percent"
+        :value="percent"
+        color="blue darken-2"
       >
         {{ percent }}
       </v-progress-circular>
       <v-progress-circular v-else indeterminate size="64" />
     </v-overlay>
-   
+
     <v-form ref="form" @submit.prevent="onSubmit">
       <v-row>
         <v-col cols="12">
@@ -21,11 +21,11 @@
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
         </v-col>
-	<v-col cols="12" id="error-message" class="pa-0 ma-0">
+        <v-col cols="12" id="error-message" class="pa-0 ma-0">
           <v-alert v-if="error" type="error">
             {{ error }}
           </v-alert>
-	</v-col>
+        </v-col>
         <!-- Product Name -->
         <v-col cols="12">
           <v-text-field
@@ -113,7 +113,7 @@
         <!-- Image -->
         <v-col cols="12" class="text-right">
           <v-text-field
-	    type="url"
+            type="url"
             label="ဓာတ်ပုံလင့်ခ်"
             v-model="select.imageURL"
             v-if="uploadFromUrl"
@@ -136,14 +136,14 @@
           />
 
           <!-- preview image -->
-	  <v-expand-transition>
+          <v-expand-transition>
             <v-img
               v-show="uploadFromUrl"
               :src="select.imageURL"
               width="180"
               height="180"
             />
-	  </v-expand-transition>
+          </v-expand-transition>
 
           <v-divider class="mt-2 mb-2"></v-divider>
         </v-col>
@@ -244,25 +244,27 @@ export default {
       for (let [key, value] of Object.entries(product)) {
         productFormData.append(key, value);
       }
-      this.axios.post(server.products, productFormData, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": `multipart/form-data; boundary=${productFormData._boundary}`,
-          "X-Access-Token": this.$root.user.token,
-        },
-	onUploadProgress(pe) {
-          this.percent = (pe.loaded / pe.total) * 100;
-	},
-      })
+      this.axios
+        .post(server.products, productFormData, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": `multipart/form-data; boundary=${productFormData._boundary}`,
+            "X-Access-Token": this.$root.user.token,
+          },
+          onUploadProgress(pe) {
+            this.percent = (pe.loaded / pe.total) * 100;
+          },
+        })
         .then((data) => {
           this.$router.push({ path: "/products" });
         })
         .catch((err) => {
           this.error = "ကုန်ပစ္စည်းအားသိမ်းဆည်းမှုမအောင်မြင်ပါ။";
-	  this.loading = false;
-	  this.percent = null;
-          document.querySelector("#error-message")
-	    .scrollIntoView({ behavior: "smooth" });
+          this.loading = false;
+          this.percent = null;
+          document
+            .querySelector("#error-message")
+            .scrollIntoView({ behavior: "smooth" });
         });
     },
 
@@ -308,11 +310,11 @@ export default {
     const { id } = this.$route.params;
     this.$root.fab = false;
     if (id) {
-      if (id === 'undefined') {
+      if (id === "undefined") {
         this.$root.store.products = [];
         this.error = "ထပ်မံကူးယူလိုသော ကုန်ပစ္စည်းအားရှာမတွေ့ပါ";
         this.loading = false;
-	return;
+        return;
       }
       // fetching data from API
       this.axios
@@ -333,12 +335,12 @@ export default {
             this.uploadFromUrl = true;
           }
         })
-	.catch(err => {
+        .catch((err) => {
           this.error = "ထပ်မံကူးယူလိုသော ကုန်ပစ္စည်းအားရှာမတွေ့ပါ";
-	  this.loading = false;
-	});
+          this.loading = false;
+        });
     } else {
-     this.loading = false;
+      this.loading = false;
     }
 
     this.axios
@@ -349,7 +351,6 @@ export default {
         this.categories = data.categories;
         this.colors = data.colors;
       });
-
   },
 };
 </script>

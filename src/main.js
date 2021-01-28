@@ -1,12 +1,13 @@
 import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import vuetify from "./plugins/vuetify";
-import firebase from "./plugins/firebase";
 import axios from "axios";
 import VueAxios from "vue-axios";
+import router from "./router";
+import store from "./store";
+import vuetify from "./plugins/vuetify";
+import firebase from "./plugins/firebase";
 import User from "./app/User";
 import server from "./app/server";
+import App from "./App.vue";
 
 Vue.use(VueAxios, axios);
 
@@ -29,6 +30,7 @@ new Vue({
     overlay: () => null,
     store: { products: [] },
   },
+  store,
   router,
   vuetify,
   render(h) {

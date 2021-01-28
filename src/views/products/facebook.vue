@@ -40,7 +40,6 @@
 import axios from "axios";
 import firebase from "firebase/app";
 import server from "@/app/server";
-import config from "../../../config";
 
 const parseAttachments = (attachments, subattachments) => {
   let images = [];
@@ -56,7 +55,6 @@ const parseAttachments = (attachments, subattachments) => {
 };
 
 const parseMessage = (message) => {
-  let title, price, ageRange;
   message = message
     .split("\n")
     .filter((m) => !!m)

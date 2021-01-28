@@ -1,17 +1,17 @@
 <template>
-  <div class="categories">
-    <v-card class="pa-4" :loading="loading">
-      <v-card-title>
-        <v-card-title>အရောင်များ</v-card-title>
+  <v-container class="pa-4">
+    <v-row>
+      <v-col cols="12" class="mx-2 d-flex">
+        <h2>အရောင်များ</h2>
         <v-spacer />
         <v-btn text @click="dialog = true">
           <v-icon>mdi-plus</v-icon>
           အသစ်ထည့်ရန်
         </v-btn>
-      </v-card-title>
+      </v-col>
 
-      <v-card-text>
-        <v-simple-table v-if="loading || colors.length">
+      <v-col cols="12">
+        <v-simple-table v-if="colors.length">
           <thead>
             <tr>
               <th>အမျိုးအမည်</th>
@@ -21,26 +21,26 @@
           <tbody>
             <tr v-for="color in colors" :key="color.id">
               <td class="color-name">
-	        <v-avatar
-		  size="16"
-		  v-if="color.code" 
-		>
-		  <!-- -->  
-		  <v-icon :style="`color:${color.code}`">mdi-circle</v-icon>
-	        </v-avatar>
-	        {{ color.title }}
-	      </td>
+                <v-avatar size="16" v-if="color.code">
+                  <!-- -->
+                  <v-icon :style="`color:${color.code}`">mdi-circle</v-icon>
+                </v-avatar>
+                {{ color.title }}
+              </td>
               <td class="text-right">
                 <!--  -->
               </td>
             </tr>
           </tbody>
         </v-simple-table>
-        <empty-table v-else :items="categories">
+        <empty-table v-else-if="!loading && !colors.length" :items="categories">
           အရောင်များ ထည့်သွင်းထားခြင်းမရှိပါ။
         </empty-table>
-      </v-card-text>
-    </v-card>
+        <div v-else class="text-center">
+          <v-progress-circular :size="50" color="primary" indeterminate />
+        </div>
+      </v-col>
+    </v-row>
 
     <v-dialog v-model="dialog" max-width="500">
       <v-form ref="form" @submit.prevent="submitColor">
@@ -53,16 +53,16 @@
               :rules="[(value) => !!value]"
               :items="colors.map(({ title }) => title)"
             />
-	    <v-color-picker
-	      v-model="input.code"
-	      dot-size="19"
-	      hide-canvas
-	      hide-inputs
-	      hide-mode-switch
-	      mode="hexa"
-	      show-swatches 
-	      swatches-max-height="142" 
-	    />
+            <v-color-picker
+              v-model="input.code"
+              dot-size="19"
+              hide-canvas
+              hide-inputs
+              hide-mode-switch
+              mode="hexa"
+              show-swatches
+              swatches-max-height="142"
+            />
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -97,7 +97,7 @@
         </v-btn>
       </template>
     </v-snackbar>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -114,7 +114,7 @@ export default {
   data: () => ({
     loading: true,
     input: {
-      title: '',
+      title: "",
       code: null,
     },
     snackbar: false,
@@ -131,18 +131,14 @@ export default {
       this.loading = true;
       const data = Object.assign({}, this.input);
       if (typeof data.code === "object" && "hex" in data.code) {
-	data.code = data.code.hex;
+        data.code = data.code.hex;
       }
       this.axios
-        .post(
-          `${server.url}/colors`,
-          data,
-          {
-            headers: {
-              "x-access-token": this.$root.user.token,
-            },
-          }
-        )
+        .post(`${server.url}/colors`, data, {
+          headers: {
+            "x-access-token": this.$root.user.token,
+          },
+        })
         .then(({ data }) => {
           this.colors.unshift(data);
           this.$refs.form.reset();

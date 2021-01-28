@@ -1,6 +1,7 @@
-import { api } from "@/../config";
 import firebase from "firebase/app";
 import axios from "axios";
+
+const api = "https://omg-api.etherio.net";
 
 export default {
   setRole({ uid, role, token }) {
@@ -20,57 +21,57 @@ export default {
   },
 
   get meta() {
-    return `${api.HEROKU_SERVER}/metadata`;
+    return `${api}/metadata`;
   },
 
   get products() {
-    return `${api.HEROKU_SERVER}/products`;
+    return `${api}/products`;
   },
 
   get users() {
-    return `${api.HEROKU_SERVER}/users`;
+    return `${api}/users`;
   },
   get getUser() {
-    return `${api.HEROKU_SERVER}/users`;
+    return `${api}/users`;
   },
   get listUsers() {
-    return `${api.HEROKU_SERVER}/users`;
+    return `${api}/users`;
   },
   get deleteUser() {
-    return `${api.HEROKU_SERVER}/users`;
+    return `${api}/users`;
   },
   get listProducts() {
-    return `${api.HEROKU_SERVER}/products`;
+    return `${api}/products`;
   },
   get getProduct() {
-    return `${api.HEROKU_SERVER}/products`;
+    return `${api}/products`;
   },
   get optimizeImage() {
-    return `${api.HEROKU_SERVER}/image`;
+    return `${api}/image`;
   },
   get status() {
-    return `${api.HEROKU_SERVER}/status`;
+    return `${api}/status`;
   },
   get session() {
-    return `${api.HEROKU_SERVER}/session`;
+    return `${api}/session`;
   },
 
   get combo() {
-    return `${api.HEROKU_SERVER}/metadata/combo`;
+    return `${api}/metadata/combo`;
   },
   get facebook() {
     return "https://graph.facebook.com";
   },
   get review() {
-    return `${api.HEROKU_SERVER}/review`;
+    return `${api}/review`;
   },
   get stocks() {
-    return `${api.HEROKU_SERVER}/inventory`;
+    return `${api}/inventory`;
   },
   get resync() {
-    return `${api.HEROKU_SERVER}/resync`;
+    return `${api}/resync`;
   },
   get url() {
-    return api.HEROKU_SERVER;
+    return api;
   },
 };

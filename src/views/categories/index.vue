@@ -1,17 +1,16 @@
 <template>
-  <div class="categories">
-    <v-card class="pa-4" :loading="loading">
-      <v-card-title>
-        <v-card-title>ကုန်ပစ္စည်းအမျိုးအစားများ</v-card-title>
+  <v-container class="pa-4">
+    <v-row>
+      <v-col cols="12" class="mx-2 d-flex">
+        <h2>ကုန်ပစ္စည်းအမျိုးအစားများ</h2>
         <v-spacer />
         <v-btn text @click="dialog = true">
           <v-icon>mdi-plus</v-icon>
           အသစ်ထည့်ရန်
         </v-btn>
-      </v-card-title>
-
-      <v-card-text>
-        <v-simple-table v-if="loading || categories.length">
+      </v-col>
+      <v-col cols="12">
+        <v-simple-table v-if="categories.length">
           <thead>
             <tr>
               <th>အမျိုးအမည်</th>
@@ -27,11 +26,17 @@
             </tr>
           </tbody>
         </v-simple-table>
-        <empty-table v-else :items="categories">
+        <empty-table
+          v-else-if="!loading && !categories.length"
+          :items="categories"
+        >
           ကုန်ပစ္စည်းအမျိုးအစားများ ထည့်သွင်းထားခြင်းမရှိပါ။
         </empty-table>
-      </v-card-text>
-    </v-card>
+        <div v-else class="text-center">
+          <v-progress-circular :size="50" color="primary" indeterminate />
+        </div>
+      </v-col>
+    </v-row>
 
     <v-dialog v-model="dialog" max-width="500px">
       <v-form ref="form" @submit.prevent>
@@ -62,7 +67,7 @@
         </v-card>
       </v-form>
     </v-dialog>
-  </div>
+  </v-container>
 </template>
 
 <script>

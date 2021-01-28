@@ -1,20 +1,25 @@
 <template>
-  <div class="products">
-    <v-card :loading="loading">
-      <v-card-title>
-        <v-card-title>ကုန်ပစ္စည်းများ</v-card-title>
+  <v-container>
+    <v-row>
+      <v-col cols="12" class="d-flex mx-3">
+        <h2>ကုန်ပစ္စည်းများ</h2>
         <v-spacer />
         <v-btn text to="/products/new">
           <v-icon>mdi-plus</v-icon>
           အသစ်ထည့်ရန်
         </v-btn>
+      </v-col>
 
+      <v-col cols="12">
         <product-finder :search="(value) => (search = value)"></product-finder>
-      </v-card-title>
+      </v-col>
 
-      <v-card-text>
-        <v-alert v-if="error" type="error">{{ error }}</v-alert>
-        <v-simple-table v-if="loading || products.length">
+      <v-col cols="12">
+        <v-expand-transition>
+          <v-alert v-show="error" type="error">{{ error }}</v-alert>
+        </v-expand-transition>
+
+        <v-simple-table v-if="products.length">
           <thead>
             <tr>
               <th class="text-left">အကြောင်းအရာ</th>
@@ -67,11 +72,15 @@
             </tr>
           </tbody>
         </v-simple-table>
-        <empty-table v-else :items="products">
+        <empty-table v-else-if="!loading && !product.length" :items="products">
           ကုန်ပစ္စည်းများ ထည့်သွင်းထားခြင်းမရှိပါ။
         </empty-table>
-      </v-card-text>
-    </v-card>
+        <div v-else class="text-center">
+          <v-progress-circular :size="50" color="primary" indeterminate />
+        </div>
+      </v-col>
+    </v-row>
+
     <v-snackbar v-model="snackbar" timeout="5000">
       {{ snackbarMessage }}
       <template v-slot:action="{ attrs }">
@@ -86,7 +95,7 @@
         </v-btn>
       </template>
     </v-snackbar>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -125,9 +134,9 @@ export default {
       this.$router.replace(["product", id].join("/"));
     },
     coverImage(url) {
-       url = btoa(url);
-       return `${server.url}/image?height=180&url=${url}`;
-    }
+      url = btoa(url);
+      return `${server.url}/image?height=180&url=${url}`;
+    },
   },
 
   beforeMount() {
