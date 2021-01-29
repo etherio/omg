@@ -40,7 +40,7 @@ new Vue({
         });
       } else {
         const userData = user.toJSON();
-        const { token, claims } = await user.getIdTokenResults(true);
+        const { token, claims } = await user.getIdTokenResult(true);
         userData.token = token;
         userData.role = claims.role;
         userData.access_token = claims.access_token;
@@ -52,3 +52,4 @@ new Vue({
     return h(App);
   },
 }).$mount("#app");
+
