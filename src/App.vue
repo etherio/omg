@@ -35,7 +35,18 @@
     <v-footer padless>
       <v-col class="text-center" cols="12">
         &copy; {{ translateNumber(new Date().getFullYear()) }}
-        <strong>OMG</strong>
+        <strong>OMG</strong> -
+        <router-link
+          class="text-decoration-underline"
+          to="/terms-of-service"
+          v-text="'Terms of service'"
+        />
+        |
+        <router-link
+          class="text-decoration-underline"
+          to="/privacy-policy"
+          v-text="'Privacy Policy'"
+        />
       </v-col>
     </v-footer>
   </v-app>
@@ -69,7 +80,6 @@ export default {
   name: "App",
 
   data: () => ({
-    user: null,
     drawer: false,
     items,
   }),
@@ -80,13 +90,11 @@ export default {
     translateNumber,
 
     can(visible) {
-      let user = this.$root.user;
-      return visible ? visible.includes(user && user.role) : true;
+      return visible ? visible.includes(this.user && this.user.role) : true;
     },
   },
 
   beforeMount() {
-    this.user = this.$root.user;
     this.$root.fab = true;
   },
 
@@ -105,6 +113,10 @@ export default {
     isMobile() {
       const breakpoints = ["sm", "xs"];
       return breakpoints.includes(this.$vuetify.breakpoint.name);
+    },
+
+    user() {
+      return this.$root.user;
     },
 
     loggedIn() {

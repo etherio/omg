@@ -69,6 +69,14 @@ const routes = [
     path: "/about/server",
     component: () => import("@/views/about/server.vue"),
   },
+  {
+    path: "/terms-of-service",
+    component: () => import("@/views/about/terms-of-service.vue"),
+  },
+  {
+    path: "/privacy-policy",
+    component: () => import("@/views/about/privacy-policy.vue"),
+  },
 ];
 
 export default new VueRouter({

@@ -34,18 +34,14 @@
             <tr>
               <th>Server Uptime</th>
               <td class="text-right">
-                <code>{{ uptime }}</code>
+                <code>{{ uptimeInSeconds }} seconds</code>
               </td>
             </tr>
             <tr>
               <th>Public IP</th>
               <td class="text-right">
                 <code>
-                  <a
-                    :href="`https://ipinfo.io/${ipAddr}`"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
+                  <a @click="dialog = true">
                     {{ ipAddr }}
                   </a>
                 </code>
@@ -96,6 +92,61 @@
         </v-simple-table>
       </v-card-text>
     </v-card>
+
+    <v-dialog v-model="dialog" width="500">
+      <v-card>
+        <v-card-title>
+          <code>{{ ipAddr }}</code>
+        </v-card-title>
+        <v-card-text>
+          <v-simple-table>
+            <tbody>
+              <tr v-show="ipDetails.bogon">
+                <th>Network Type</th>
+                <td>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      Bongo
+                      <v-icon v-bind="attrs" v-on="on" small
+                        >mdi-information</v-icon
+                      >
+                    </template>
+                    <span style="width: 500px;">
+                      Some IP addresses and IP ranges are reserved for special
+                      use, such as for local or private networks, and should not
+                      appear on the public internet. These reserved ranges,
+                      along with other IP ranges that haven’t yet been allocated
+                      and therefore also shouldn’t appear on the public internet
+                      are sometimes known as bogons.
+                    </span>
+                  </v-tooltip>
+                </td>
+              </tr>
+              <tr v-show="ipDetails.city">
+                <th>Provider</th>
+                <td>{{ ipDetails.org }}</td>
+              </tr>
+              <tr v-show="ipDetails.city">
+                <th>City</th>
+                <td>{{ ipDetails.city }}</td>
+              </tr>
+              <tr v-show="ipDetails.region">
+                <th>Region</th>
+                <td>{{ ipDetails.region }}</td>
+              </tr>
+              <tr v-show="ipDetails.country">
+                <th>Country</th>
+                <td>{{ ipDetails.country }}</td>
+              </tr>
+              <tr>
+                <th>Timezone</th>
+                <td>{{ ipDetails.timezone }}</td>
+              </tr>
+            </tbody>
+          </v-simple-table>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -105,31 +156,29 @@ const unit = 1024 * 1024;
 let eid, stt;
 
 export default {
+  name: "ServerStatus",
+
   data: () => ({
     loading: true,
     active: false,
     pending: false,
     failed: false,
     ipAddr: null,
+    ipDetails: {},
     rss: 0,
     count: 0,
     heapTotal: 0,
     heapUsed: 0,
     external: 0,
     uptime: 0,
+    dialog: false,
   }),
 
   methods: {
     uptimeInterval() {
       try {
-        let dt = new Date(Date.now() - this.uptime);
         eid = setInterval(() => {
-          this.uptime = [
-            dt.getUTCHours(),
-            dt.getUTCMinutes(),
-            dt.getUTCDate(),
-          ].join(":");
-          this.uptime = dt.getTime();
+          this.uptime = Date.now() - stt;
         }, 1000);
       } catch (e) {
         clearInterval(eid);
@@ -152,6 +201,7 @@ export default {
           this.active = true;
           this.pending = this.failed = this.loading = false;
           this.ipAddr = data.ip;
+          this.ipDetails = data.ipDetails;
           this.count = data.count;
           this.rss = data.memory.rss;
           this.external = data.memory.external;
@@ -159,7 +209,7 @@ export default {
           this.heapUsed = data.memory.heapUsed;
           this.uptime = data.uptime;
           stt = Date.now() - data.uptime * 1000;
-          stt && this.uptimeInterval();
+          this.uptimeInterval();
         })
         .catch((err) => {
           this.failed = true;
@@ -172,16 +222,19 @@ export default {
       return Number(this.count || 0).toLocaleString();
     },
     residentSetSizeInMB() {
-      return (Number(this.rss || 0) / unit).toFixed(3);
+      return (Number(this.rss || 0) / unit).toFixed(2);
     },
     heapTotalInMB() {
-      return (Number(this.heapTotal || 0) / unit).toFixed(3);
+      return (Number(this.heapTotal || 0) / unit).toFixed(2);
     },
     heapUsedInMB() {
-      return (Number(this.heapUsed || 0) / unit).toFixed(3);
+      return (Number(this.heapUsed || 0) / unit).toFixed(2);
     },
     externalInMB() {
-      return (Number(this.external || 0) / unit).toFixed(3);
+      return (Number(this.external || 0) / unit).toFixed(2);
+    },
+    uptimeInSeconds() {
+      return (Number(this.uptime || 0) / 1000).toFixed(0);
     },
   },
 };

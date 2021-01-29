@@ -12,11 +12,14 @@
 
 <script>
 export default {
-  props: [
-    'search' 
-  ],
+  props: {
+    search: {
+      required: true,
+      type: Function,
+    },
+  },
   data: () => ({
     value: null,
   }),
-}
+};
 </script>

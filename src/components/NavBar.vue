@@ -20,7 +20,7 @@
           <v-icon>{{ mini ? "mdi-chevron-right" : "mdi-chevron-left" }}</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn icon to="/logout" small v-if="user">
+        <v-btn icon to="/logout" small v-if="logged">
           <v-icon>mdi-logout</v-icon>
         </v-btn>
       </v-list-item>

@@ -11,7 +11,7 @@
       </v-col>
 
       <v-col cols="12">
-        <product-finder :search="(value) => (search = value)"></product-finder>
+        <product-finder :search="search"></product-finder>
       </v-col>
 
       <v-col cols="12">
@@ -73,7 +73,7 @@
           </tbody>
         </v-simple-table>
         <empty-table v-else-if="!loading && !product.length" :items="products">
-          ကုန်ပစ္စည်းများ ထည့်သွင်းထားခြင်းမရှိပါ။
+          ကုန်ပစ္စည်းများ ရှာမတွေ့ပါ။
         </empty-table>
         <div v-else class="text-center">
           <v-progress-circular :size="50" color="primary" indeterminate />
@@ -105,21 +105,24 @@ import placeholder from "@/assets/img/image.png";
 import ProductFinder from "@/components/ProductFinder.vue";
 import EmptyTable from "@/components/EmptyTable.vue";
 
+const data = () => ({
+  error: null,
+  snackbar: false,
+  snackbarMessage: null,
+  loading: true,
+  products: [],
+});
+
+const components = {
+  ProductFinder,
+  EmptyTable,
+};
+
 export default {
   name: "Products",
-  components: {
-    ProductFinder,
-    EmptyTable,
-  },
+  components,
+  data,
 
-  data: () => ({
-    error: null,
-    snackbar: false,
-    snackbarMessage: null,
-    loading: true,
-    products: [],
-    search: "",
-  }),
   methods: {
     num(value) {
       return translateNumber(parseInt(value)) || "-";
@@ -137,6 +140,23 @@ export default {
       url = btoa(url);
       return `${server.url}/image?height=180&url=${url}`;
     },
+    search(value) {
+      if (!value) {
+        data.products = this.$root.store.products;
+        return;
+      }
+      value = value.toLowerCase();
+      const products = this.$root.store.products.filter(
+        ({ code, name, category }) => {
+          return (
+            code.toLowerCase().match(value) ||
+            name.toLowerCase().match(value) ||
+            category.toLowerCase().match(value)
+          );
+        }
+      );
+      data.products = products;
+    },
   },
 
   beforeMount() {
@@ -145,7 +165,7 @@ export default {
       this.products = this.$root.store.products;
       return;
     }
-
+    a;
     this.axios
       .get(server.products, {
         headers: { "X-Access-Token": this.$root.user.token },
@@ -175,23 +195,6 @@ export default {
       .then(() => {
         this.loading = false;
       });
-  },
-
-  watch: {
-    search(value) {
-      if (!value) {
-        this.products = this.$root.store.products;
-        return;
-      }
-      this.products = this.$root.store.products.filter((product) => {
-        value = value.toLowerCase();
-        return (
-          product.code.toLowerCase().match(value) ||
-          product.name.toLowerCase().match(value) ||
-          product.category.toLowerCase().match(value)
-        );
-      });
-    },
   },
 };
 </script>

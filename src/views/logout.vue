@@ -2,12 +2,6 @@
 import firebase from "firebase/app";
 
 export default {
-  beforeRouteEnter: () =>
-    firebase
-      .auth()
-      .signOut()
-      .then(() => {
-        location.reload();
-      }),
+  beforeRouteEnter: () => firebase.auth().signOut(),
 };
 </script>
