@@ -1,8 +1,10 @@
 import firebase from "firebase/app";
 import axios from "axios";
 
-// const api = "https://omg-api.etherio.net";
-const api = "/api";
+const api =
+  process.env.NODE_ENV === "production"
+    ? "https://omg-api.etherio.net"
+    : "/api";
 
 export default {
   setRole({ uid, role, token }) {
