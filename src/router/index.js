@@ -77,6 +77,14 @@ const routes = [
     path: "/privacy-policy",
     component: () => import("@/views/about/privacy-policy.vue"),
   },
+  {
+    path: "/invoices",
+    component: () => import("@/views/invoices/index.vue"),
+  },
+  {
+    path: "/invoices/new",
+    component: () => import("@/views/invoices/create.vue"),
+  },
 ];
 
 export default new VueRouter({

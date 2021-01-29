@@ -35,6 +35,12 @@ export default [
     visible: ["admin", "moderator"],
   },
   {
+    icon: "mdi-receipt",
+    title: "Invoices",
+    path: "/invoices",
+    visible: ["admin", "moderator"],
+  },
+  {
     icon: "mdi-compare",
     title: "အကဲဖြတ်ရန်​",
     path: "/reviews",
@@ -45,12 +51,6 @@ export default [
     title: "အသုံးပြုသူများ",
     path: "/users",
     visible: ["admin"],
-  },
-  {
-    icon: " mdi-receipt",
-    title: "မှတ်တမ်းများ",
-    path: "/logs",
-    visible: [],
   },
   {
     icon: " mdi-monitor-eye",

@@ -165,7 +165,6 @@ export default {
       this.products = this.$root.store.products;
       return;
     }
-    a;
     this.axios
       .get(server.products, {
         headers: { "X-Access-Token": this.$root.user.token },
