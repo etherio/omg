@@ -1,7 +1,7 @@
 <template>
   <v-app v-if="$root.loaded">
-    <nav-bar :items="items" :user="user" :can="can" v-if="isMobile"></nav-bar>
-    <app-bar :items="items" :user="user" :can="can" v-else></app-bar>
+    <app-bar :items="items" :user="user" :can="can" v-if="isMobile"></app-bar>
+    <nav-bar :items="items" :user="user" :can="can" v-else></nav-bar>
 
     <!-- contents -->
     <v-main>
@@ -91,7 +91,8 @@ export default {
     },
 
     isMobile() {
-      return this.$vuetify.breakpoint.sm;
+      const breakpoints = ["sm", "xs"];
+      return breakpoints.includes(this.$vuetify.breakpoint.name);
     },
 
     loggedIn() {

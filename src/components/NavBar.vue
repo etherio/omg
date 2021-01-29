@@ -57,7 +57,11 @@ export default {
   },
 
   data: () => ({
-    mini: false,
+    mini: true,
   }),
+
+  beforeDestroy() {
+    this.mini = true;
+  },
 };
 </script>
