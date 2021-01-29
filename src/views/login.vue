@@ -113,6 +113,7 @@ export default {
       firebase
         .auth()
         .signInWithEmailAndPassword(this.email, this.password)
+        .then(() => (this.$root.loaded = false))
         .catch((err) => {
           this.loading = false;
           switch (err.code) {

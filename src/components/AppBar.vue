@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-navigation-drawer v-model="drawer" fixed temporary>
-      <template v-slot:prepend v-if="user">
+      <template v-slot:prepend v-if="logged">
         <router-link to="/profile" class="text-decoration-none">
           <v-list-item two-line>
             <v-list-item-avatar>
@@ -73,6 +73,10 @@ export default {
     },
     user: {
       type: Object,
+    },
+    logged: {
+      type: Boolean,
+      required: true,
     },
   },
 

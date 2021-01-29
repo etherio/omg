@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer app fixed permanent :mini-variant="mini">
     <v-list>
-      <v-list-item link to="/profile" v-if="user">
+      <v-list-item link to="/profile" v-if="logged">
         <v-list-item-avatar>
           <v-img v-if="user.photoURL" :src="user.photoURL"></v-img>
           <v-avatar size="42">
@@ -53,6 +53,10 @@ export default {
     },
     user: {
       type: Object,
+    },
+    logged: {
+      type: Boolean,
+      required: true,
     },
   },
 

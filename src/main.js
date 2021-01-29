@@ -24,7 +24,8 @@ new Vue({
   data: {
     loaded: false,
     fab: false,
-    user: null,
+    user: {},
+    loggedIn: false,
     overlay: () => null,
     store: { products: [] },
   },
@@ -32,23 +33,25 @@ new Vue({
   router,
   vuetify,
   render(h) {
-    firebase.auth().onAuthStateChanged(async (user) => {
+    firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         const userData = user.toJSON();
-        const { token, claims } = await user.getIdTokenResult(true);
-        userData.token = token;
-        userData.role = claims.role;
-        userData.access_token = claims.access_token;
-        store.dispatch("SIGNIN", userData);
-        this.user = userData;
-        this.loaded = true;
+        user.getIdTokenResult(true).then(({ token, claims }) => {
+          userData.token = token;
+          userData.role = claims.role;
+          userData.access_token = claims.access_token;
+          // store.dispatch("SIGNIN", userData);
+          this.loggedIn = true;
+          this.user = userData;
+          this.loaded = true;
+        });
       } else {
-        store.dispatch("SIGNOUT");
+        // store.dispatch("SIGNOUT");
+        this.loggedIn = false;
+        this.user = {};
         this.loaded = true;
-        this.user = null;
       }
     });
-
     return h(App);
   },
 }).$mount("#app");

@@ -1,7 +1,19 @@
 <template>
   <v-app v-if="$root.loaded">
-    <app-bar :items="items" :user="user" :can="can" v-if="isMobile"></app-bar>
-    <nav-bar :items="items" :user="user" :can="can" v-else></nav-bar>
+    <app-bar
+      :items="items"
+      :user="user"
+      :logged="loggedIn"
+      :can="can"
+      v-if="isMobile"
+    ></app-bar>
+    <nav-bar
+      :items="items"
+      :user="user"
+      :logged="loggedIn"
+      :can="can"
+      v-else
+    ></nav-bar>
 
     <!-- contents -->
     <v-main>
@@ -74,7 +86,7 @@ export default {
   },
 
   beforeMount() {
-    this.user = this.$store.state.user || this.$root.user;
+    this.user = this.$root.user;
     this.$root.fab = true;
   },
 
@@ -96,7 +108,7 @@ export default {
     },
 
     loggedIn() {
-      return Boolean(this.user);
+      return this.$root.loggedIn;
     },
   },
 };
