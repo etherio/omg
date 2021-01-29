@@ -69,7 +69,7 @@
             <v-btn
               color="secondary"
               class="font-weight-bold pr-4"
-              @click="$refs.form.reset() | (dialog = false)"
+              @click="resetForm"
             >
               <v-icon small class="px-2">mdi-delete</v-icon>
               ​ပ​ယ်ဖျက်ပါ
@@ -125,6 +125,10 @@ export default {
   }),
 
   methods: {
+    resetForm() {
+      this.$refs.form.reset();
+      this.dialog = false;
+    },
     submitColor() {
       this.snackbarMessage = null;
       if (!this.$refs.form.validate()) return;

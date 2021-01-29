@@ -58,7 +58,7 @@ export function translateBurmeseNumber(input) {
 }
 
 export function translateDateTime(dt, format) {
-  if (!dt instanceof Date) return dt;
+  if (!(dt instanceof Date)) return dt;
   let d = translateNumber(dt.getDate());
   let m = translateNumber(dt.getMonth() + 1);
   let Y = translateNumber(dt.getFullYear());

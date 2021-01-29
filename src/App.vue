@@ -66,8 +66,10 @@
     <!-- contents -->
     <v-main>
       <v-container>
-        <router-view />
-        <!-- <access-denied /> -->
+        <v-expand-transition>
+          <access-denied v-show="!authorize"></access-denied>
+        </v-expand-transition>
+        <router-view></router-view>
       </v-container>
     </v-main>
 
@@ -193,9 +195,15 @@ export default {
 
   computed: {
     displayName() {
-      const user = this.$root.user;
+      const user = this.$root.user || {};
       return user.displayName || user.email || user.phoneNumber;
     },
+
+    authorize() {
+      const roles = ['admin', 'moderator'];
+      const user = this.$root.user || {};
+      return user.role && roles.includes(user.role);
+    }
   },
 };
 </script>
