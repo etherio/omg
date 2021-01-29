@@ -5,7 +5,6 @@ import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
 import firebase from "./plugins/firebase";
-import User from "./app/User";
 import server from "./app/server";
 import App from "./App.vue";
 
@@ -34,16 +33,19 @@ new Vue({
   router,
   vuetify,
   render(h) {
-    firebase.auth().onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged(async (user) => {
       if (!user && this.$route.path !== "/login") {
         this.$router.push({ path: "/login" }).then(() => {
           this.loaded = true;
         });
       } else {
-        User.resolve(user).then(async (user) => {
-          this.user = user;
-          this.loaded = true;
-        });
+        const userData = user.toJSON();
+        const { token, claims } = await user.getIdTokenResults(true);
+        userData.token = token;
+        userData.role = claims.role;
+        userData.access_token = claims.access_token;
+        this.user = userData;
+        this.loaded = true;
       }
     });
 
