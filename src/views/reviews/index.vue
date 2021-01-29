@@ -61,7 +61,6 @@
 
 <script>
 import server from "@/app/server";
-import ProductCreate from "@/components/ProductCreate.vue";
 export default {
   data: () => ({
     reviews: [],
@@ -79,9 +78,6 @@ export default {
           this.reviews = this.reviews.filter((r) => r.id !== id);
         });
     },
-  },
-  components: {
-    ProductCreate,
   },
   beforeMount() {
     this.axios

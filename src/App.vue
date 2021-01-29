@@ -1,11 +1,18 @@
 <template>
   <v-app v-if="$root.loaded">
-    <nav-bar :items="items"></nav-bar>
+    <nav-bar :items="items" :user="user" :can="can" v-if="isMobile"></nav-bar>
+    <app-bar :items="items" :user="user" :can="can" v-else></app-bar>
 
     <!-- contents -->
-    <v-main class="ms-15">
-      <v-container>
+    <v-main>
+      <v-container v-if="loggedIn">
+        <v-expand-transition>
+          <access-denied v-show="!authorize"></access-denied>
+        </v-expand-transition>
         <router-view></router-view>
+      </v-container>
+      <v-container v-else>
+        <login-page></login-page>
       </v-container>
     </v-main>
 
@@ -31,74 +38,20 @@
 
 <script>
 import NavBar from "./components/NavBar.vue";
+import AppBar from "./components/AppBar.vue";
+import AccessDenied from "./components/AccessDenied.vue";
 import FabButton from "./components/FabButton.vue";
+import LoginPage from "./views/login.vue";
+import items from "./nav-menu";
 import { translateNumber } from "./app/burmese";
 
 const components = {
   NavBar,
+  AppBar,
+  AccessDenied,
   FabButton,
+  LoginPage,
 };
-
-const items = [
-  {
-    icon: "mdi-apps",
-    title: "မူလစာမျက်နှာ",
-    path: "/",
-  },
-  {
-    icon: "mdi-account-multiple",
-    title: "အဆက်အသွယ်များ",
-    path: "/customers",
-    visible: [],
-  },
-  {
-    icon: "mdi-store",
-    title: "ကုန်ပစ္စည်းများ",
-    path: "/products",
-    visible: ["admin", "moderator"],
-  },
-  {
-    icon: "mdi-truck",
-    title: "အော်ဒါများ",
-    path: "/orders",
-    visible: [],
-  },
-  {
-    icon: "mdi-cart",
-    title: "အမျိုးအစားများ",
-    path: "/categories",
-    visible: ["admin", "moderator"],
-  },
-  {
-    icon: "mdi-format-color-fill",
-    title: "အရောင်များ",
-    path: "/colors",
-    visible: ["admin", "moderator"],
-  },
-  {
-    icon: "mdi-compare",
-    title: "အကဲဖြတ်ရန်​",
-    path: "/reviews",
-    visible: ["admin", "moderator"],
-  },
-  {
-    icon: "mdi-account-multiple ",
-    title: "အသုံးပြုသူများ",
-    path: "/users",
-    visible: ["admin"],
-  },
-  {
-    icon: " mdi-receipt",
-    title: "မှတ်တမ်းများ",
-    path: "/logs",
-    visible: [],
-  },
-  {
-    icon: " mdi-monitor-eye",
-    title: "Server Status",
-    path: "/about/server",
-  },
-];
 
 export default {
   name: "App",
@@ -113,11 +66,37 @@ export default {
 
   methods: {
     translateNumber,
+
+    can(visible) {
+      let user = this.$root.user;
+      return visible ? visible.includes(user && user.role) : true;
+    },
   },
 
-  created() {
-    this.user = this.$store.state.user;
+  beforeMount() {
+    this.user = this.$store.state.user || this.$root.user;
     this.$root.fab = true;
+  },
+
+  computed: {
+    displayName() {
+      const user = this.$root.user || {};
+      return user.displayName || user.email || user.phoneNumber;
+    },
+
+    authorize() {
+      const roles = ["admin", "moderator"];
+      const user = this.$root.user || {};
+      return user.role && roles.includes(user.role);
+    },
+
+    isMobile() {
+      return this.$vuetify.breakpoint.sm;
+    },
+
+    loggedIn() {
+      return Boolean(this.user);
+    },
   },
 };
 </script>

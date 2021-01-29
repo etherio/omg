@@ -1,20 +1,20 @@
 <template>
   <div>
-    <v-navigation-drawer v-model="drawer" fixed temporary v-if="$root.user">
-      <template v-slot:prepend>
+    <v-navigation-drawer v-model="drawer" fixed temporary>
+      <template v-slot:prepend v-if="user">
         <router-link to="/profile" class="text-decoration-none">
           <v-list-item two-line>
             <v-list-item-avatar>
-              <img v-if="$root.user.photoURL" :src="$root.user.photoURL" />
+              <img v-if="user.photoURL" :src="user.photoURL" />
               <v-icon v-else large>mdi-account</v-icon>
             </v-list-item-avatar>
 
             <v-list-item-content>
               <v-list-item-title>
-                {{ displayName }}
+                {{ user.displayName }}
               </v-list-item-title>
               <v-list-item-subtitle>
-                <v-btn text small color="red" dark :to="{ path: '/logout' }">
+                <v-btn text small color="red" dark to="/logout">
                   အကောင့်မှထွက်ရန်
                 </v-btn>
               </v-list-item-subtitle>
@@ -26,10 +26,7 @@
       <v-divider></v-divider>
 
       <v-list nav dense>
-        <v-list-item-group
-          v-model="group"
-          active-class="deep-purple--text text--accent-4"
-        >
+        <v-list-item-group active-class="deep-purple--text text--accent-4">
           <template v-for="(item, index) in items">
             <v-list-item :to="item.path" :key="index" v-if="can(item.visible)">
               <v-list-item-icon>
@@ -42,16 +39,16 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="primary" dark v-if="$root.user">
+    <v-app-bar app color="primary" dark>
       <v-app-bar-nav-icon @click="drawer = true" />
       <v-toolbar-title>
-        <router-link :to="{ path: '/' }">
+        <router-link to="/">
           <v-img
             id="logo"
             alt="OMG"
             class="shrink mr-2"
             contain
-            src="../assets/logo-2.png"
+            src="../assets/img/logo-2.png"
             transition="scale-transition"
             width="80"
           />
@@ -65,5 +62,22 @@
 <script>
 export default {
   name: "AppBar",
+  props: {
+    items: {
+      required: true,
+      type: Array,
+    },
+    can: {
+      type: Function,
+      required: true,
+    },
+    user: {
+      type: Object,
+    },
+  },
+
+  data: () => ({
+    drawer: false,
+  }),
 };
 </script>

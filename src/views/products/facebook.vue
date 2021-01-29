@@ -77,7 +77,7 @@ const testFacebookApi = (token) => {
   return axios.get(url).then(({ data }) => data);
 };
 
-const renderPost = (vm, { id, message, attachments }) => {
+const renderPost = ({ id, message, attachments }) => {
   if (!message) return;
   message = parseMessage(message);
   attachments = attachments && attachments.data && attachments.data[0];
@@ -226,7 +226,7 @@ export default {
         let payload = {};
         let posts = data.data;
         posts
-          .map((post) => renderPost(this, post))
+          .map((post) => renderPost(post))
           .filter((p) => !!p && p.images && p.images.length)
           .map(({ message, images, id }) => {
             payload[id] = { message, images };

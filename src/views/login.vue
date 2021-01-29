@@ -20,7 +20,7 @@
                 label="သင့်အီးမေးလ်ထည့်ပါ"
                 type="email"
                 :rules="rules.email"
-		@change="autocompleteEmail"
+                @change="autocompleteEmail"
                 outlined
               />
               <v-text-field
@@ -30,16 +30,18 @@
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
                 :rules="rules.password"
-		@click:append="showPassword = !showPassword"
+                @click:append="showPassword = !showPassword"
                 outlined
               />
-              <v-alert
-                v-if="error"
-                dense
-                outlined
-                type="error"
-                v-text="error"
-              ></v-alert>
+              <v-expand-transition>
+                <v-alert
+                  v-show="error"
+                  dense
+                  outlined
+                  type="error"
+                  v-text="error"
+                ></v-alert>
+              </v-expand-transition>
             </v-card-text>
             <v-card-actions>
               <v-spacer />
@@ -102,7 +104,7 @@ export default {
   methods: {
     autocompleteEmail() {
       if (!this.email || this.email.match(/@/g)) return;
-      this.email = this.email + '@etherio.net';
+      this.email = this.email + "@etherio.net";
     },
     signInWithEmailAndPassword() {
       if (!this.$refs.form.validate()) return;
@@ -111,9 +113,6 @@ export default {
       firebase
         .auth()
         .signInWithEmailAndPassword(this.email, this.password)
-        .then((user) => {
-          this.$router.go("/");
-        })
         .catch((err) => {
           this.loading = false;
           switch (err.code) {
@@ -138,9 +137,6 @@ export default {
       const provider = new firebase.auth.FacebookAuthProvider();
       firebase.auth().signInWithRedirect(provider);
     },
-  },
-  beforeCreate() {
-    firebase.auth().currentUser && this.$router.push("/");
   },
 };
 </script>

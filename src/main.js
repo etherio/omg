@@ -15,11 +15,10 @@ Vue.config.productionTip = true;
 firebase
   .auth()
   .getRedirectResult()
-  .then((result) => {
-    if (result && result.credential) {
-      axios.post(server.session, result);
-    }
-  });
+  .then(
+    (result) =>
+      result && result.credential && axios.post(server.session, result)
+  );
 
 new Vue({
   data: {
@@ -33,22 +32,20 @@ new Vue({
   router,
   vuetify,
   render(h) {
-    firebase.auth().onAuthStateChanged((user) => {
-      if (!user && this.$route.path !== "/login") {
-        this.$router.push({ path: "/login" }).then(() => {
-          this.loaded = true;
-          store.dispatch("SIGNOUT");
-        });
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        const userData = user.toJSON();
+        const { token, claims } = await user.getIdTokenResult(true);
+        userData.token = token;
+        userData.role = claims.role;
+        userData.access_token = claims.access_token;
+        store.dispatch("SIGNIN", userData);
+        this.user = userData;
+        this.loaded = true;
       } else {
-        user.getIdTokenResult(true).then(({ token, claims }) => {
-          user = user.toJSON();
-          user.token = token;
-          user.role = claims.role;
-          user.access_token = claims.access_token;
-          this.user = user;
-          this.loaded = true;
-          store.dispatch("SIGNIN", user);
-        });
+        store.dispatch("SIGNOUT");
+        this.loaded = true;
+        this.user = null;
       }
     });
 

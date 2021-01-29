@@ -1,21 +1,28 @@
 <template>
-  <v-navigation-drawer fixed permanent expand-on-hover>
-    <v-list v-if="user">
-      <v-list-item class="px-2" v-if="user.photoURL" to="/profile">
+  <v-navigation-drawer app fixed permanent :mini-variant="mini">
+    <v-list>
+      <v-list-item link to="/profile" v-if="user">
         <v-list-item-avatar>
-          <v-img :src="user.photoURL"></v-img>
+          <v-img v-if="user.photoURL" :src="user.photoURL"></v-img>
+          <v-avatar size="42">
+            <v-icon>mdi-account</v-icon>
+          </v-avatar>
         </v-list-item-avatar>
-      </v-list-item>
 
-      <v-list-item link to="/profile">
         <v-list-item-content>
-          <v-list-item-title class="title">
+          <v-list-item-title class="subtitle-1">
             {{ user.displayName }}
           </v-list-item-title>
-          <v-list-item-subtitle>
-            {{ user.email }}
-          </v-list-item-subtitle>
         </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-btn icon @click.stop="mini = !mini">
+          <v-icon>{{ mini ? "mdi-chevron-right" : "mdi-chevron-left" }}</v-icon>
+        </v-btn>
+        <v-spacer></v-spacer>
+        <v-btn icon to="/logout" small v-if="user">
+          <v-icon>mdi-logout</v-icon>
+        </v-btn>
       </v-list-item>
     </v-list>
 
@@ -40,21 +47,17 @@ export default {
       type: Array,
       required: true,
     },
-  },
-
-  data: () => ({
-    user: null,
-  }),
-
-  methods: {
-    can(visible) {
-      let user = this.$root.user;
-      return visible ? visible.includes(user && user.role) : true;
+    can: {
+      type: Function,
+      required: true,
+    },
+    user: {
+      type: Object,
     },
   },
 
-  created() {
-    this.user = this.$store.state.user;
-  },
+  data: () => ({
+    mini: false,
+  }),
 };
 </script>

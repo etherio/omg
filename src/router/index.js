@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import goTo from 'vuetify/es5/services/goto';
+import goTo from "vuetify/es5/services/goto";
 
 Vue.use(VueRouter);
 
@@ -8,10 +8,6 @@ const routes = [
   {
     path: "/",
     component: () => import("@/views/dashboard/index.vue"),
-  },
-  {
-    path: "/login",
-    component: () => import("@/views/login.vue"),
   },
   {
     path: "/logout",
