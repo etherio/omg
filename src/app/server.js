@@ -1,7 +1,7 @@
 import firebase from "firebase/app";
 import axios from "axios";
 
-const api = "/api";
+const api = "https://omg-api.etherio.net";
 
 export default {
   setRole({ uid, role, token }) {
