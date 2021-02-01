@@ -32,7 +32,7 @@ require("./src/bootstrap").then((firebase) => {
   app.use(require("./routes"));
 
   app.listen(port,
-    () => console.log("\033[1;44;37m INFO \033[0m", `serving on http://localhost:${port}`)
+    () => console.log(`serving on http://localhost:${port}`)
   );
 }).catch(err => {
   console.log("\033[1;41;37m ERROR \033[0m", err.message);
