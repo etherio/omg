@@ -59,6 +59,7 @@ router.get("/status", async (req, res) => {
     typeof status.ip === 'string'
   ) {
     status.ipDetails = await clientIp(status.ip);
+    status.ipDetails["readme"] = undefined;
   }
   res.json(status);
 })
