@@ -24,8 +24,9 @@ exports.autoRoute = function autoRoute({ routePath, router, ignore, include }) {
     } catch (e) {
       console.warn(
         "\033[1;43m WARNING \033[0m",
-        `route: ${route}(${absolutePath}) is loaded`
+        `route: ${route}(${absolutePath}) is not loaded`
       );
+      console.error("\033[1;37;41m STACKS \033[0m", e);
     }
     // router.use(`/${routeName}`, );
   }
