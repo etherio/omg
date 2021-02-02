@@ -64,9 +64,4 @@ router.get("/status", async (req, res) => {
   res.json(status);
 })
 
-//* 404 Not Found - fallback on no matched routes
-router.use((req, res) => {
-  res.status(404).json({ error: "request not found" });
-});
-
 module.exports = router;

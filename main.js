@@ -29,7 +29,13 @@ require("./src/bootstrap").then((firebase) => {
     next();
   });
 
+  app.use('/api', require("./routes"));
   app.use(require("./routes"));
+
+  //* 404 Not Found - fallback on no matched routes
+  app.use((req, res) => {
+    res.status(404).json({ error: "request not found" });
+  });
 
   app.listen(port,
     () => console.log(`serving on http://localhost:${port}`)
