@@ -3,7 +3,7 @@ import axios from "axios";
 
 const api =
   process.env.NODE_ENV === "production"
-    ? "https://omg-api.etherio.net"
+    ? "https://omg.etherio.net/api"
     : "/api";
 
 export default {
