@@ -1,6 +1,6 @@
 const path = require("path");
 const express = require("express");
-//const cors = require("cors");
+const cors = require("cors");
 const bodyParser = require("body-parser");
 const temp = path.resolve(process.cwd(), "dev");
 const port = process.env.PORT || 3000;
@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-//app.use(cors());
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(temp));
