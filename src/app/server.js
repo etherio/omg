@@ -2,8 +2,8 @@ import firebase from "firebase/app";
 import axios from "axios";
 
 const api =  process.env.NODE_ENV === "production"
-  ? "/api"
-  : "https://omg-api.herokuapp.com/api"
+  ? "https://omg-api.herokuapp.com/api"
+  : "/api";
 
 export default {
   setRole({ uid, role, token }) {
