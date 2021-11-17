@@ -6,7 +6,7 @@
         <v-spacer />
         <v-btn text to="/products/new">
           <v-icon>mdi-plus</v-icon>
-          အသစ်ထည့်ရန်
+          အသစ်ထည့်ရန်
         </v-btn>
       </v-col>
 
@@ -38,7 +38,7 @@
               <td class="text-left">
                 <v-row>
                   <v-col class="ma-1">
-                    <v-img :src="coverImage(product.photoURL)" width="120">
+                    <v-img :src="product.photoURL" width="120">
                       <template v-slot:placeholder>
                         <v-row
                           class="fill-height ma-0"
@@ -189,7 +189,7 @@ export default {
         console.error(err);
         this.snackbar = true;
         this.error = this.snackbarMessage =
-          "တစ်ခုခုမှားယွင်းနေပါတယ်။ နောက်တစ်ခါထပ်မံကြိုးစားကြည့်ပါ။";
+          "တစ်ခုခုမှားယွင်းနေပါတယ်။ နောက်တစ်ခါထပ်မံကြိုးစားကြည့်ပါ။";
       })
       .then(() => {
         this.loading = false;
