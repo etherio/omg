@@ -114,7 +114,7 @@
         <v-col cols="12" class="text-right">
           <v-text-field
             type="url"
-            label="ဓာတ်ပုံလင့်ခ်"
+            label="ဓာတ်ပုံလင့်ခ်"
             v-model="select.imageURL"
             v-if="uploadFromUrl"
             prepend-icon="mdi-camera"
@@ -251,9 +251,6 @@ export default {
             "Content-Type": `multipart/form-data; boundary=${productFormData._boundary}`,
             "X-Access-Token": this.$root.user.token,
           },
-          onUploadProgress(pe) {
-            this.percent = (pe.loaded / pe.total) * 100;
-          },
         })
         .then((data) => {
           this.$router.push({ path: "/products" });
@@ -262,9 +259,10 @@ export default {
           this.error = "ကုန်ပစ္စည်းအားသိမ်းဆည်းမှုမအောင်မြင်ပါ။";
           this.loading = false;
           this.percent = null;
-          document
+          setTimeout(() => document
             .querySelector("#error-message")
-            .scrollIntoView({ behavior: "smooth" });
+            .scrollIntoView({ behavior: "smooth" })
+          , 800);
         });
     },
 
