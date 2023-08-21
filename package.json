@@ -9,7 +9,7 @@
   "dependencies": {
     "axios": "^0.21.2",
     "core-js": "^3.6.5",
-    "firebase": "^8.2.0",
+    "firebase": "^10.2.0",
     "form-data": "^2.3.3",
     "vue": "^2.6.11",
     "vue-axios": "^3.2.1",
